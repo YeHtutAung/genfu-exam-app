@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import useAuthStore from './store/authStore'
 import ProtectedRoute from './components/layout/ProtectedRoute'
+import Header from './components/layout/Header'
 import Spinner from './components/ui/Spinner'
 
 import Home            from './pages/Home'
@@ -33,6 +34,7 @@ export default function App() {
 
   return (
     <BrowserRouter>
+      <Header />
       <Routes>
         {/* Public */}
         <Route path="/login" element={<Login />} />
