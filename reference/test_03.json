@@ -1,0 +1,579 @@
+{
+  "meta": {
+    "test_id": "genfu_03",
+    "category": "genfu",
+    "category_name_jp": "原付",
+    "category_name_en": "Moped",
+    "test_number": 3,
+    "title_jp": "原付模擬テスト 第3回",
+    "title_en": "Moped Practice Test - Round 3",
+    "time_limit": 1800,
+    "pass_score": 45,
+    "total_points": 50,
+    "total_questions": 48
+  },
+  "questions": [
+    {
+      "id": "q03_001",
+      "question_number": 1,
+      "type": "standard",
+      "question_jp": "歩行者や自転車のそばを通るときは、安全な間隔をあけるか徐行しなければならない。",
+      "answer": true,
+      "hint_jp": "歩行者や自転車を安全に通行させるために、安全な間隔をあけるか徐行します。",
+      "image": null,
+      "points": 1
+    },
+    {
+      "id": "q03_002",
+      "question_number": 2,
+      "type": "standard",
+      "question_jp": "前方の交通が混雑しているため、踏切内で停止するおそれのあるときは、踏切に入ってはならない。",
+      "answer": true,
+      "hint_jp": "設問のような場合は、踏切に進入してはいけません。",
+      "image": null,
+      "points": 1
+    },
+    {
+      "id": "q03_003",
+      "question_number": 3,
+      "type": "standard",
+      "question_jp": "停止距離とは、空走距離と制動距離を合わせた距離のことをいう。",
+      "answer": true,
+      "hint_jp": "危険を感じてブレーキをかけ、実際に車が停止するまでの距離が停止距離です。",
+      "image": null,
+      "points": 1
+    },
+    {
+      "id": "q03_004",
+      "question_number": 4,
+      "type": "standard",
+      "question_jp": "図１の灯火信号が表示された場合、すでに停止位置を越えている車は、そのまま進行することができる。",
+      "answer": true,
+      "hint_jp": "黄色の灯火信号に変わったとき、すでに停止位置を越えている車は、そのまま進行できます。",
+      "image": {
+        "render": "css",
+        "sign_code": "signal_yellow",
+        "alt": "図1 - Yellow traffic light signal"
+      },
+      "points": 1
+    },
+    {
+      "id": "q03_005",
+      "question_number": 5,
+      "type": "standard",
+      "question_jp": "原動機付自転車は、高速自動車国道はもちろん、自動車専用道路も通行することができない。",
+      "answer": true,
+      "hint_jp": "原動機付自転車は、高速道路（高速自動車国道や自動車専用道路）を通行できません。",
+      "image": null,
+      "points": 1
+    },
+    {
+      "id": "q03_006",
+      "question_number": 6,
+      "type": "standard",
+      "question_jp": "原動機付自転車の乗車定員は１名だけで、二人乗りをすることはできない。",
+      "answer": true,
+      "hint_jp": "原動機付自転車の二人乗りは禁止されています。",
+      "image": null,
+      "points": 1
+    },
+    {
+      "id": "q03_007",
+      "question_number": 7,
+      "type": "standard",
+      "question_jp": "信号機の信号と警察官の手信号が違っている場合は、信号機の信号に従わなければならない。",
+      "answer": false,
+      "hint_jp": "信号機の信号ではなく、警察官の手信号に従わなければなりません。",
+      "image": null,
+      "points": 1
+    },
+    {
+      "id": "q03_008",
+      "question_number": 8,
+      "type": "standard",
+      "question_jp": "排気ガスに含まれる一酸化炭素、炭化水素、窒素酸化物などは、人体に無害である。",
+      "answer": false,
+      "hint_jp": "一酸化炭素、炭化水素、窒素酸化物などは、人体に有害な物質です。",
+      "image": null,
+      "points": 1
+    },
+    {
+      "id": "q03_009",
+      "question_number": 9,
+      "type": "standard",
+      "question_jp": "図２の標示板のあるところでは、前方の信号が赤や黄であっても、まわりの交通に注意して左折することができる。",
+      "answer": true,
+      "hint_jp": "図２は「左折可」の標示板で、周囲の交通に注意して左折できます。",
+      "image": {
+        "render": "css",
+        "sign_code": "left_turn_permitted",
+        "alt": "図2 - Left turn permitted sign (blue rectangle with white arrow)"
+      },
+      "points": 1
+    },
+    {
+      "id": "q03_010",
+      "question_number": 10,
+      "type": "standard",
+      "question_jp": "原動機付自転車に積載できる荷物の重量は、50キログラムまでである。",
+      "answer": false,
+      "hint_jp": "原動機付自転車に積載できる荷物の重量は、30キログラムまでです。",
+      "image": null,
+      "points": 1
+    },
+    {
+      "id": "q03_011",
+      "question_number": 11,
+      "type": "standard",
+      "question_jp": "信号機のない交差点で、交差する道路のほうが幅が広かったが、こちらのほうが左方車なので先に進行した。",
+      "answer": false,
+      "hint_jp": "設問のような交差点では、広い道路を通行する車の進行を妨げてはいけません。",
+      "image": null,
+      "points": 1
+    },
+    {
+      "id": "q03_012",
+      "question_number": 12,
+      "type": "standard",
+      "question_jp": "ぬかるみや砂利道を通行するときは、速度を上げて一気に通過するのがよい。",
+      "answer": false,
+      "hint_jp": "ぬかるみや砂利道は、低速ギアで速度を落として通過します。",
+      "image": null,
+      "points": 1
+    },
+    {
+      "id": "q03_013",
+      "question_number": 13,
+      "type": "standard",
+      "question_jp": "図３の信号機に対面するすべての車は、矢印の方向に進むことができる。",
+      "answer": false,
+      "hint_jp": "青色の右折の矢印信号では、軽車両と二段階右折が必要な原動機付自転車は進行できません。",
+      "image": {
+        "render": "css",
+        "sign_code": "signal_arrow_right",
+        "alt": "図3 - Traffic signal with right turn arrow (red light with blue right arrow)"
+      },
+      "points": 1
+    },
+    {
+      "id": "q03_014",
+      "question_number": 14,
+      "type": "standard",
+      "question_jp": "エンジンブレーキは、高速ギアより低速ギアのほうが制動効果が高い。",
+      "answer": true,
+      "hint_jp": "エンジンブレーキは、低速ギアのほうがよく効きます。",
+      "image": null,
+      "points": 1
+    },
+    {
+      "id": "q03_015",
+      "question_number": 15,
+      "type": "standard",
+      "question_jp": "二輪車でカーブにさしかかったときは、車体を傾けると危険なので、ハンドルを切って曲がるようにする。",
+      "answer": false,
+      "hint_jp": "ハンドルだけで曲がろうとすると転倒する危険があります。車体を傾けて、自然にカーブを曲がります。",
+      "image": null,
+      "points": 1
+    },
+    {
+      "id": "q03_016",
+      "question_number": 16,
+      "type": "standard",
+      "question_jp": "見通しがよければ、こう配の急な下り坂であっても徐行する必要はない。",
+      "answer": false,
+      "hint_jp": "こう配の急な下り坂は、見通しにかかわらず徐行しなければなりません。",
+      "image": null,
+      "points": 1
+    },
+    {
+      "id": "q03_017",
+      "question_number": 17,
+      "type": "standard",
+      "question_jp": "警察官が図４のような手信号をしているとき、矢印の方向に進行する交通については、信号機の赤色の灯火の意味と同じである。",
+      "answer": true,
+      "hint_jp": "警察官の身体の正面または背面に対面する交通は、赤色の灯火信号と同じ意味です。",
+      "image": {
+        "render": "static",
+        "src": "/assets/q03_fig_04.png",
+        "alt": "図4 - Police officer hand signal with arms raised vertically"
+      },
+      "points": 1
+    },
+    {
+      "id": "q03_018",
+      "question_number": 18,
+      "type": "standard",
+      "question_jp": "規制標識は、道路上の危険などを前もって道路利用者に知らせて注意を促すものである。",
+      "answer": false,
+      "hint_jp": "設問の内容は警戒標識です。規制標識は、特定の交通方法を禁止したり、特定の方法に従って通行するよう指定したりするものです。",
+      "image": null,
+      "points": 1
+    },
+    {
+      "id": "q03_019",
+      "question_number": 19,
+      "type": "standard",
+      "question_jp": "原動機付自転車を運転するときは、できるだけ人目につきやすい服装をするのがよい。",
+      "answer": true,
+      "hint_jp": "他の運転者から見落とされないように、視認性のよい服装で運転します。",
+      "image": null,
+      "points": 1
+    },
+    {
+      "id": "q03_020",
+      "question_number": 20,
+      "type": "standard",
+      "question_jp": "図５のように区画された車両通行帯では、矢印のように進路変更することができる。",
+      "answer": false,
+      "hint_jp": "黄色の線で区画された通行帯は「進路変更禁止」を意味します。黄色の線がある側からは、進路変更してはいけません。",
+      "image": {
+        "render": "css",
+        "sign_code": "yellow_lane_divider",
+        "alt": "図5 - Lane with yellow dividing line showing prohibited lane change"
+      },
+      "points": 1
+    },
+    {
+      "id": "q03_021",
+      "question_number": 21,
+      "type": "standard",
+      "question_jp": "故障した車を道路に止めておくことはやむを得ないので、駐車には当たらない。",
+      "answer": false,
+      "hint_jp": "故障車でも、車の継続的な停止になるので、駐車に該当します。",
+      "image": null,
+      "points": 1
+    },
+    {
+      "id": "q03_022",
+      "question_number": 22,
+      "type": "standard",
+      "question_jp": "車道の左端を走っている原動機付自転車は、左折する自動車に巻き込まれることがあるので、左折車の動きに注意しなければならない。",
+      "answer": true,
+      "hint_jp": "左折するときは、自動車の内輪差に注意が必要です。",
+      "image": null,
+      "points": 1
+    },
+    {
+      "id": "q03_023",
+      "question_number": 23,
+      "type": "standard",
+      "question_jp": "大型特殊免許を受けていれば、原動機付自転車を運転することができる。",
+      "answer": true,
+      "hint_jp": "大型特殊免許では、大型特殊自動車のほか、原動機付自転車と小型特殊自動車を運転できます。",
+      "image": null,
+      "points": 1
+    },
+    {
+      "id": "q03_024",
+      "question_number": 24,
+      "type": "standard",
+      "question_jp": "原動機付自転車の法定速度は、時速40キロメートルである。",
+      "answer": false,
+      "hint_jp": "標識などで最高速度が指定されていない道路での原動機付自転車の最高速度は、時速30キロメートルです。",
+      "image": null,
+      "points": 1
+    },
+    {
+      "id": "q03_025",
+      "question_number": 25,
+      "type": "standard",
+      "question_jp": "速度が２倍になれば、制動距離も２倍になる。",
+      "answer": false,
+      "hint_jp": "制動距離は速度の二乗に比例するので、速度が２倍になれば４倍になります。",
+      "image": null,
+      "points": 1
+    },
+    {
+      "id": "q03_026",
+      "question_number": 26,
+      "type": "standard",
+      "question_jp": "図６の標識のある通行帯を、原動機付自転車で通行した。",
+      "answer": true,
+      "hint_jp": "原動機付自転車は、路線バスなどの「専用通行帯」を通行できます。",
+      "image": {
+        "render": "css",
+        "sign_code": "dedicated_lane",
+        "alt": "図6 - Dedicated lane sign (blue with 専用 text and down arrow)"
+      },
+      "points": 1
+    },
+    {
+      "id": "q03_027",
+      "question_number": 27,
+      "type": "standard",
+      "question_jp": "自動車や原動機付自転車を運転するときは、周囲の歩行者や車の動きに注意し、相手の立場について思いやりの気持ちを持つことが大切である。",
+      "answer": true,
+      "hint_jp": "思いやりを持って運転するのは、運転者の心得として大切なことです。",
+      "image": null,
+      "points": 1
+    },
+    {
+      "id": "q03_028",
+      "question_number": 28,
+      "type": "standard",
+      "question_jp": "同一方向に３つ以上の車両通行帯があるとき、原動機付自転車はどの通行帯を通行してもよい。",
+      "answer": false,
+      "hint_jp": "原動機付自転車は、原則として最も左側の通行帯を通行します。",
+      "image": null,
+      "points": 1
+    },
+    {
+      "id": "q03_029",
+      "question_number": 29,
+      "type": "standard",
+      "question_jp": "カーブを通行するときは速度を落とさなければならないが、ブレーキはカーブ内でかけるのが最も効果的である。",
+      "answer": false,
+      "hint_jp": "ブレーキはカーブの手前の直線部分で使用し、カーブに入ってからブレーキをかけないようにします。",
+      "image": null,
+      "points": 1
+    },
+    {
+      "id": "q03_030",
+      "question_number": 30,
+      "type": "standard",
+      "question_jp": "路線バスが方向指示器で発進のための合図をしたとき、後方の車は原則としてその発進を妨げてはならない。",
+      "answer": true,
+      "hint_jp": "急ブレーキや急ハンドルで避けなければならない場合を除き、路線バスの発進を妨げてはいけません。",
+      "image": null,
+      "points": 1
+    },
+    {
+      "id": "q03_031",
+      "question_number": 31,
+      "type": "standard",
+      "question_jp": "図７の標示は、近くに横断歩道または自転車横断帯があることを表している。",
+      "answer": true,
+      "hint_jp": "図７は「横断歩道または自転車横断帯あり」を表す標示です。",
+      "image": {
+        "render": "css",
+        "sign_code": "pedestrian_crossing_marking",
+        "alt": "図7 - Road marking indicating nearby pedestrian crossing or bicycle crossing"
+      },
+      "points": 1
+    },
+    {
+      "id": "q03_032",
+      "question_number": 32,
+      "type": "standard",
+      "question_jp": "原動機付自転車の前輪ブレーキと後輪ブレーキは、別々に操作できるようになっている。",
+      "answer": true,
+      "hint_jp": "二輪車の前輪と後輪のブレーキは、独立して働く構造になっています。",
+      "image": null,
+      "points": 1
+    },
+    {
+      "id": "q03_033",
+      "question_number": 33,
+      "type": "standard",
+      "question_jp": "交通事故が発生した場合、人身事故でないときは、当事者同士で話し合えば警察官に届けなくてもよい。",
+      "answer": false,
+      "hint_jp": "事故の内容にかかわらず、交通事故は警察官に届け出なければなりません。",
+      "image": null,
+      "points": 1
+    },
+    {
+      "id": "q03_034",
+      "question_number": 34,
+      "type": "standard",
+      "question_jp": "交差点を通行中、緊急自動車が近づいてきたので、交差点内の左側に寄って一時停止した。",
+      "answer": false,
+      "hint_jp": "交差点を避け、道路の左側に寄って一時停止しなければなりません。",
+      "image": null,
+      "points": 1
+    },
+    {
+      "id": "q03_035",
+      "question_number": 35,
+      "type": "standard",
+      "question_jp": "原付免許を受けていれば、原動機付自転車、ミニカー、小型特殊自動車を運転することができる。",
+      "answer": false,
+      "hint_jp": "原付免許では、原動機付自転車しか運転できません。",
+      "image": null,
+      "points": 1
+    },
+    {
+      "id": "q03_036",
+      "question_number": 36,
+      "type": "standard",
+      "question_jp": "火災報知機から１メートル以内は、駐車が禁止されている。",
+      "answer": true,
+      "hint_jp": "火災報知機から１メートル以内は、駐車禁止場所に指定されています。",
+      "image": null,
+      "points": 1
+    },
+    {
+      "id": "q03_037",
+      "question_number": 37,
+      "type": "standard",
+      "question_jp": "図８の標示は、最低速度を表したものである。",
+      "answer": false,
+      "hint_jp": "最低速度ではなく、「最高速度時速20キロメートル」を表す規制標示です。",
+      "image": {
+        "render": "css",
+        "sign_code": "speed_max_20",
+        "alt": "図8 - Maximum speed 20km/h road marking (yellow background with 20)"
+      },
+      "points": 1
+    },
+    {
+      "id": "q03_038",
+      "question_number": 38,
+      "type": "standard",
+      "question_jp": "自動車や原動機付自転車は、歩道や路側帯を通行することはできないが、横断することはできる。",
+      "answer": true,
+      "hint_jp": "自動車や原動機付自転車は、歩道や路側帯を横断することはできます。",
+      "image": null,
+      "points": 1
+    },
+    {
+      "id": "q03_039",
+      "question_number": 39,
+      "type": "standard",
+      "question_jp": "原動機付自転車は車体が小さいので、割り込みをしても違反にはならない。",
+      "answer": false,
+      "hint_jp": "原動機付自転車でも、割り込みをしてはいけません。",
+      "image": null,
+      "points": 1
+    },
+    {
+      "id": "q03_040",
+      "question_number": 40,
+      "type": "standard",
+      "question_jp": "信号機のない踏切を前車に続いて通過するときは、必ずしも一時停止しなくてもよい。",
+      "answer": false,
+      "hint_jp": "青信号に従う以外は、停止位置で一時停止しなければなりません。",
+      "image": null,
+      "points": 1
+    },
+    {
+      "id": "q03_041",
+      "question_number": 41,
+      "type": "standard",
+      "question_jp": "大地震が起きたときは、できるだけ早く避難するため、自動車や原動機付自転車を積極的に利用する。",
+      "answer": false,
+      "hint_jp": "やむを得ない場合を除き、避難のために車を使用してはいけません。",
+      "image": null,
+      "points": 1
+    },
+    {
+      "id": "q03_042",
+      "question_number": 42,
+      "type": "standard",
+      "question_jp": "図９の標識は、横断歩道を表している。",
+      "answer": false,
+      "hint_jp": "図９は「学校、幼稚園、保育所などあり」を表す警戒標識です。",
+      "image": {
+        "render": "css",
+        "sign_code": "school_zone_warning",
+        "alt": "図9 - School zone warning sign (yellow diamond with children walking)"
+      },
+      "points": 1
+    },
+    {
+      "id": "q03_043",
+      "question_number": 43,
+      "type": "standard",
+      "question_jp": "重い荷物を積んでいる場合、制動距離は短くなる。",
+      "answer": false,
+      "hint_jp": "重い荷物を積んでいる場合、制動距離は長くなります。",
+      "image": null,
+      "points": 1
+    },
+    {
+      "id": "q03_044",
+      "question_number": 44,
+      "type": "standard",
+      "question_jp": "発進するときは、右側の方向指示器で合図をするとともに、前後・左右の安全を確かめなければならない。",
+      "answer": true,
+      "hint_jp": "あらかじめ周囲の安全を確かめてから発進します。",
+      "image": null,
+      "points": 1
+    },
+    {
+      "id": "q03_045",
+      "question_number": 45,
+      "type": "standard",
+      "question_jp": "事故を起こさない自信があれば、走行中に携帯電話を使用してもよい。",
+      "answer": false,
+      "hint_jp": "走行中の携帯電話の使用は危険です。通話や操作のために使用してはいけません。",
+      "image": null,
+      "points": 1
+    },
+    {
+      "id": "q03_046",
+      "question_number": 46,
+      "type": "standard",
+      "question_jp": "下り坂では、加速がついて停止距離が長くなるので、車間距離を長くとることが大切である。",
+      "answer": true,
+      "hint_jp": "下り坂は、平地よりも車間距離を長くとって走行します。",
+      "image": null,
+      "points": 1
+    },
+    {
+      "id": "q03_047",
+      "question_number": 47,
+      "type": "scenario",
+      "question_jp": "交差点を左折するため、時速10キロメートルに減速しました。どのようなことに注意して運転しますか？",
+      "scenario_context_jp": "夜間は、視界が悪く周囲の安全が確認しにくい状況です。歩行者の動向にも注意が必要です。",
+      "image": {
+        "render": "static",
+        "src": "/assets/q03_fig_47.png",
+        "alt": "Night time scenario: approaching intersection to turn left, pedestrian visible at crosswalk"
+      },
+      "sub_questions": [
+        {
+          "id": "q03_047_1",
+          "sub_number": 1,
+          "text_jp": "歩行者が横断歩道を横断し始めようとしているので、横断を終えるまでその手前で待つ。",
+          "answer": true
+        },
+        {
+          "id": "q03_047_2",
+          "sub_number": 2,
+          "text_jp": "夜間は視界が悪くなるため、自転車などの発見が遅れがちになるので、十分注意して左折する。",
+          "answer": true
+        },
+        {
+          "id": "q03_047_3",
+          "sub_number": 3,
+          "text_jp": "前照灯の照らす範囲の外は見えにくいので、左側の横断歩道全体を確認しながら進行し、横断歩道の手前で停止する。",
+          "answer": true
+        }
+      ],
+      "points": 2
+    },
+    {
+      "id": "q03_048",
+      "question_number": 48,
+      "type": "scenario",
+      "question_jp": "時速30キロメートルで進行しています。前方に停止中の車の後ろからバスが近づいてくるときは、どのようなことに注意して運転しますか？",
+      "scenario_context_jp": "進路の前方にはとくに危険はないようですが、反対車線には駐車車両があり、後続のバスも迫っています。",
+      "image": {
+        "render": "static",
+        "src": "/assets/q03_fig_48.png",
+        "alt": "Daytime scenario: riding at 30km/h, stopped truck ahead on opposite lane, bus approaching from behind"
+      },
+      "sub_questions": [
+        {
+          "id": "q03_048_1",
+          "sub_number": 1,
+          "text_jp": "バスが中央線をはみ出してくるかもしれないので、はみ出してこないように中央線に寄って進行する。",
+          "answer": false
+        },
+        {
+          "id": "q03_048_2",
+          "sub_number": 2,
+          "text_jp": "バスは旅客の安全を考え、無理な運転をせずに自分の車を先に通過させると思われるので、待たせないように加速して通過する。",
+          "answer": false
+        },
+        {
+          "id": "q03_048_3",
+          "sub_number": 3,
+          "text_jp": "止まっている車のかげから歩行者が出てくるかもしれないので、車のかげの様子やバスの動きに気をつけながら減速して通過する。",
+          "answer": true
+        }
+      ],
+      "points": 2
+    }
+  ]
+}
