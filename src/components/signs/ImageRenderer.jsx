@@ -1,4 +1,24 @@
-// Hybrid image dispatcher
-// image_render === 'css'    → <SignRenderer signCode={...} />
-// image_render === 'static' → <img src={image_url} alt={image_alt} />
-// null                      → null
+import SignRenderer from './SignRenderer'
+
+export default function ImageRenderer({ image }) {
+  if (!image) return null
+
+  if (image.render === 'css') {
+    return <SignRenderer signCode={image.sign_code} />
+  }
+
+  if (image.render === 'static') {
+    return (
+      <div className="mx-auto max-w-sm">
+        <img
+          src={image.src}
+          alt={image.alt || ''}
+          className="h-auto w-full rounded"
+          loading="lazy"
+        />
+      </div>
+    )
+  }
+
+  return null
+}
