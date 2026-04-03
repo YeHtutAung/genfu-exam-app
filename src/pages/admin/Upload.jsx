@@ -1,8 +1,41 @@
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { uploadBundle } from '../../lib/api'
+import UploadForm from '../../components/admin/UploadForm'
+
 export default function Upload() {
+  const [uploading, setUploading] = useState(false)
+  const [error, setError] = useState(null)
+  const navigate = useNavigate()
+
+  const handleUpload = async (formData) => {
+    setUploading(true)
+    setError(null)
+    try {
+      const preview = await uploadBundle(formData)
+      // Pass preview data to UploadPreview page via state
+      navigate('/admin/upload/preview', { state: { preview } })
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setUploading(false)
+    }
+  }
+
   return (
-    <div className="mx-auto max-w-3xl px-4 py-12 text-center">
-      <h1 className="text-2xl font-bold text-gray-900">テストアップロード</h1>
-      <p className="mt-2 text-gray-500">Coming Soon</p>
+    <div className="mx-auto max-w-2xl px-4 py-8">
+      <h1 className="mb-6 text-2xl font-bold text-gray-900">テストアップロード</h1>
+      <p className="mb-6 text-sm text-gray-500">
+        ZIPバンドル（JSON + 画像）をアップロードして新しいテストを追加します。
+      </p>
+
+      <UploadForm onUpload={handleUpload} uploading={uploading} />
+
+      {error && (
+        <div className="mt-4 rounded-md bg-red-50 p-4 text-sm text-red-700">
+          {error}
+        </div>
+      )}
     </div>
   )
 }

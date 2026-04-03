@@ -432,15 +432,15 @@ genfu-exam-app/
 ### Config & Bootstrap
 | File | Status |
 |---|---|
-| `package.json` | pending |
-| `vite.config.js` | pending |
-| `tailwind.config.js` | pending |
-| `postcss.config.js` | pending |
-| `vercel.json` | pending |
-| `index.html` | pending |
-| `src/main.jsx` | pending |
+| `package.json` | complete |
+| `vite.config.js` | complete |
+| `tailwind.config.js` | complete |
+| `postcss.config.js` | complete |
+| `vercel.json` | complete |
+| `index.html` | complete |
+| `src/main.jsx` | complete |
 | `src/App.jsx` | complete |
-| `src/index.css` | pending |
+| `src/index.css` | complete |
 
 ### Supabase
 | File | Status |
@@ -452,45 +452,45 @@ genfu-exam-app/
 | File | Status |
 |---|---|
 | `src/store/authStore.js` | complete |
-| `src/hooks/useAuth.js` | pending |
-| `src/pages/Login.jsx` | pending |
+| `src/hooks/useAuth.js` | complete |
+| `src/pages/Login.jsx` | complete |
 | `src/components/layout/ProtectedRoute.jsx` | complete |
 
 ### Layout
 | File | Status |
 |---|---|
-| `src/components/layout/Header.jsx` | pending |
+| `src/components/layout/Header.jsx` | complete |
 | `src/components/layout/Footer.jsx` | pending |
 
 ### Shared UI
 | File | Status |
 |---|---|
 | `src/components/ui/Button.jsx` | pending |
-| `src/components/ui/Modal.jsx` | pending |
-| `src/components/ui/Spinner.jsx` | pending |
+| `src/components/ui/Modal.jsx` | complete |
+| `src/components/ui/Spinner.jsx` | complete |
 
 ### Image / Signs
 | File | Status |
 |---|---|
-| `src/components/signs/SignRenderer.jsx` | pending |
-| `src/components/signs/ImageRenderer.jsx` | pending |
+| `src/components/signs/SignRenderer.jsx` | complete |
+| `src/components/signs/ImageRenderer.jsx` | complete |
 
 ### Exam Mode
 | File | Status |
 |---|---|
-| `src/store/examStore.js` | pending |
-| `src/hooks/useExam.js` | pending |
-| `src/lib/api.js` | pending |
-| `src/pages/Home.jsx` | pending |
-| `src/pages/Exam.jsx` | pending |
-| `src/pages/Study.jsx` | pending |
-| `src/pages/Results.jsx` | pending |
-| `src/components/exam/QuestionCard.jsx` | pending |
-| `src/components/exam/Timer.jsx` | pending |
-| `src/components/exam/ProgressBar.jsx` | pending |
-| `src/components/exam/ScoreCard.jsx` | pending |
-| `src/components/study/StudyCard.jsx` | pending |
-| `src/components/study/AIExplanation.jsx` | pending |
+| `src/store/examStore.js` | complete |
+| `src/hooks/useExam.js` | complete |
+| `src/lib/api.js` | complete |
+| `src/pages/Home.jsx` | complete |
+| `src/pages/Exam.jsx` | complete |
+| `src/pages/Study.jsx` | complete |
+| `src/pages/Results.jsx` | complete |
+| `src/components/exam/QuestionCard.jsx` | complete |
+| `src/components/exam/Timer.jsx` | complete |
+| `src/components/exam/ProgressBar.jsx` | complete |
+| `src/components/exam/ScoreCard.jsx` | complete |
+| `src/components/study/StudyCard.jsx` | complete |
+| `src/components/study/AIExplanation.jsx` | complete |
 
 ### Edge Functions
 | File | Status |
@@ -504,12 +504,12 @@ genfu-exam-app/
 |---|---|
 | `src/store/adminStore.js` | pending |
 | `src/hooks/useAdmin.js` | pending |
-| `src/pages/admin/AdminDashboard.jsx` | pending |
-| `src/pages/admin/Upload.jsx` | pending |
-| `src/pages/admin/UploadPreview.jsx` | pending |
-| `src/pages/admin/Tests.jsx` | pending |
-| `src/pages/admin/Users.jsx` | pending |
-| `src/components/admin/UploadForm.jsx` | pending |
-| `src/components/admin/UploadPreview.jsx` | pending |
-| `src/components/admin/TestList.jsx` | pending |
-| `src/components/admin/UserList.jsx` | pending |
+| `src/pages/admin/AdminDashboard.jsx` | complete |
+| `src/pages/admin/Upload.jsx` | complete |
+| `src/pages/admin/UploadPreview.jsx` | complete |
+| `src/pages/admin/Tests.jsx` | complete |
+| `src/pages/admin/Users.jsx` | complete |
+| `src/components/admin/UploadForm.jsx` | complete |
+| `src/components/admin/UploadPreview.jsx` | complete |
+| `src/components/admin/TestList.jsx` | complete |
+| `src/components/admin/UserList.jsx` | complete |
