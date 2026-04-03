@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
+import { supabase } from '../../lib/supabase'
 import { confirmUpload } from '../../lib/api'
 import UploadPreviewPanel from '../../components/admin/UploadPreview'
 
@@ -8,6 +9,20 @@ export default function UploadPreview() {
   const navigate = useNavigate()
   const [confirming, setConfirming] = useState(false)
   const [error, setError] = useState(null)
+  const [categoryId, setCategoryId] = useState(null)
+
+  // Resolve category code → UUID
+  useEffect(() => {
+    if (!state?.preview?.meta?.category) return
+    supabase
+      .from('categories')
+      .select('id')
+      .eq('code', state.preview.meta.category)
+      .single()
+      .then(({ data }) => {
+        if (data) setCategoryId(data.id)
+      })
+  }, [state?.preview?.meta?.category])
 
   // If no preview data (e.g. direct navigation), redirect back
   if (!state?.preview) {
@@ -25,10 +40,14 @@ export default function UploadPreview() {
   }
 
   const handleConfirm = async () => {
+    if (!categoryId) {
+      setError(`カテゴリ "${state.preview.meta.category}" が見つかりません`)
+      return
+    }
     setConfirming(true)
     setError(null)
     try {
-      await confirmUpload(state.preview)
+      await confirmUpload({ ...state.preview, categoryId })
       navigate('/admin/tests')
     } catch (err) {
       setError(err.message)

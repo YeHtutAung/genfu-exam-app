@@ -495,9 +495,9 @@ genfu-exam-app/
 ### Edge Functions
 | File | Status |
 |---|---|
-| `api/explain.js` | pending |
-| `api/upload-bundle.js` | pending |
-| `api/confirm-upload.js` | pending |
+| `api/explain.js` | complete |
+| `api/upload-bundle.js` | complete |
+| `api/confirm-upload.js` | complete |
 
 ### Admin
 | File | Status |
