@@ -20,8 +20,9 @@ export default function App() {
   const loading = useAuthStore(s => s.loading)
 
   useEffect(() => {
-    const unsubscribe = useAuthStore.getState().init()
-    return unsubscribe
+    // No cleanup — App never unmounts, and returning unsubscribe
+    // breaks StrictMode (kills the auth listener on dev double-mount)
+    useAuthStore.getState().init()
   }, [])
 
   if (loading) {

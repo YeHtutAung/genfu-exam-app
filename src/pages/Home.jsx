@@ -25,7 +25,8 @@ export default function Home() {
         setError(error.message)
       } else {
         setCategories(data)
-        if (data.length > 0) setSelectedCategory(data[0].id)
+        const genfu = data.find(c => c.code === 'genfu')
+        setSelectedCategory(genfu?.id ?? data[0]?.id ?? null)
       }
       setLoading(false)
     }

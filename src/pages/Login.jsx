@@ -5,8 +5,7 @@ import Spinner from '../components/ui/Spinner'
 
 export default function Login() {
   const user = useAuthStore(s => s.user)
-  const error = useAuthStore(s => s.error)
-  const loading = useAuthStore(s => s.loading)
+  const authError = useAuthStore(s => s.error)
   const signInWithEmail = useAuthStore(s => s.signInWithEmail)
   const signInWithGoogle = useAuthStore(s => s.signInWithGoogle)
   const signInWithFacebook = useAuthStore(s => s.signInWithFacebook)
@@ -14,13 +13,16 @@ export default function Login() {
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [submitting, setSubmitting] = useState(false)
 
   // Already logged in — redirect to home
   if (user) return <Navigate to="/" replace />
 
   const handleEmailLogin = async (e) => {
     e.preventDefault()
+    setSubmitting(true)
     const { error } = await signInWithEmail(email, password)
+    setSubmitting(false)
     if (!error) navigate('/')
   }
 
@@ -32,9 +34,9 @@ export default function Login() {
           <p className="mt-1 text-sm text-gray-500">ログインして試験を始めましょう</p>
         </div>
 
-        {error && (
+        {authError && (
           <div className="rounded-md bg-red-50 p-3 text-sm text-red-700">
-            {error}
+            {authError}
           </div>
         )}
 
@@ -69,10 +71,10 @@ export default function Login() {
 
           <button
             type="submit"
-            disabled={loading}
+            disabled={submitting}
             className="flex w-full items-center justify-center rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
           >
-            {loading ? <Spinner size="h-5 w-5" /> : 'ログイン'}
+            {submitting ? <Spinner size="h-5 w-5" /> : 'ログイン'}
           </button>
         </form>
 
