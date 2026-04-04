@@ -165,7 +165,7 @@ function SpeedMax20() {
   )
 }
 
-/** Yellow diamond school zone warning sign — adult and child figures with 黄 label */
+/** Yellow diamond school zone warning sign — adult and child silhouettes with 黄 label */
 function SchoolZoneWarning() {
   return (
     <SignFrame>
@@ -174,20 +174,24 @@ function SchoolZoneWarning() {
           {/* Diamond background */}
           <polygon points="45,2 88,45 45,88 2,45" fill="#f8c8c8" stroke="#e8a0a0" strokeWidth="2" />
 
-          {/* Adult figure (left) */}
-          <circle cx="32" cy="28" r="5" fill="#4a5568" />
-          <line x1="32" y1="33" x2="32" y2="52" stroke="#4a5568" strokeWidth="3" strokeLinecap="round" />
-          <line x1="32" y1="38" x2="25" y2="46" stroke="#4a5568" strokeWidth="2.5" strokeLinecap="round" />
-          <line x1="32" y1="40" x2="40" y2="36" stroke="#4a5568" strokeWidth="2.5" strokeLinecap="round" />
-          <line x1="32" y1="52" x2="26" y2="66" stroke="#4a5568" strokeWidth="3" strokeLinecap="round" />
-          <line x1="32" y1="52" x2="38" y2="66" stroke="#4a5568" strokeWidth="3" strokeLinecap="round" />
+          {/* Adult figure (left) — walking silhouette */}
+          <path d="
+            M33,27 a5,5 0 1,0 0.01,0 Z
+            M30,33 Q33,36 36,33 L38,44 Q36,45 33,45 Q30,45 28,44 Z
+            M28,44 L24,64 L27,65 L30,50 L33,45
+            M38,44 L42,64 L39,65 L36,50 L33,45
+            M29,36 L22,42
+            M37,36 L43,34
+          " fill="#4a5568" stroke="#4a5568" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
 
-          {/* Child figure (right) */}
-          <circle cx="54" cy="34" r="4.5" fill="#4a5568" />
-          <line x1="54" y1="39" x2="54" y2="54" stroke="#4a5568" strokeWidth="3" strokeLinecap="round" />
-          <line x1="54" y1="43" x2="46" y2="40" stroke="#4a5568" strokeWidth="2.5" strokeLinecap="round" />
-          <line x1="54" y1="54" x2="49" y2="66" stroke="#4a5568" strokeWidth="3" strokeLinecap="round" />
-          <line x1="54" y1="54" x2="59" y2="66" stroke="#4a5568" strokeWidth="3" strokeLinecap="round" />
+          {/* Child figure (right) — walking silhouette, smaller */}
+          <path d="
+            M55,35 a4,4 0 1,0 0.01,0 Z
+            M53,40 Q55,42 57,40 L58.5,48 Q57,49 55,49 Q53,49 51.5,48 Z
+            M51.5,48 L48,65 L50.5,65.5 L53,52 L55,49
+            M58.5,48 L62,65 L59.5,65.5 L57,52 L55,49
+            M53,42 L43,38
+          " fill="#4a5568" stroke="#4a5568" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
         {/* 黄 label with pointing line */}
         <div className="flex flex-col items-center -mt-1">
