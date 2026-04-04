@@ -121,19 +121,29 @@ function DedicatedLane() {
   )
 }
 
-/** Diamond road marking pattern — pedestrian crossing */
+/** Diamond road markings on two-lane road — pedestrian crossing ahead */
 function PedestrianCrossingMarking() {
   return (
     <SignFrame>
-      <div className="relative h-20 w-28 rounded bg-gray-500">
+      <svg viewBox="0 0 80 110" className="h-32 w-24">
         {/* Road surface */}
-        <svg viewBox="0 0 112 80" className="h-full w-full">
-          {/* Diamond shape */}
-          <polygon points="56,10 76,40 56,70 36,40" fill="white" />
-          {/* Inner diamond outline */}
-          <polygon points="56,18 70,40 56,62 42,40" fill="none" stroke="white" strokeWidth="1" />
-        </svg>
-      </div>
+        <rect x="0" y="0" width="80" height="110" rx="4" fill="#9ca3af" />
+
+        {/* Center line (dashed white) */}
+        <line x1="40" y1="0" x2="40" y2="18" stroke="white" strokeWidth="2" />
+        <line x1="40" y1="26" x2="40" y2="44" stroke="white" strokeWidth="2" />
+        <line x1="40" y1="52" x2="40" y2="58" stroke="white" strokeWidth="2" />
+        <line x1="40" y1="66" x2="40" y2="84" stroke="white" strokeWidth="2" />
+        <line x1="40" y1="92" x2="40" y2="110" stroke="white" strokeWidth="2" />
+
+        {/* Left lane diamonds */}
+        <polygon points="20,18 27,30 20,42 13,30" fill="none" stroke="white" strokeWidth="2" />
+        <polygon points="20,68 27,80 20,92 13,80" fill="none" stroke="white" strokeWidth="2" />
+
+        {/* Right lane diamonds */}
+        <polygon points="60,18 67,30 60,42 53,30" fill="none" stroke="white" strokeWidth="2" />
+        <polygon points="60,68 67,80 60,92 53,80" fill="none" stroke="white" strokeWidth="2" />
+      </svg>
     </SignFrame>
   )
 }
