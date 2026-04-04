@@ -26,32 +26,20 @@ const useExamStore = create(
       // ── Load & start ──────────────────────────────────────────────
 
       startExam: async (testId, mode) => {
-        // If we already have an in-progress session for the same test/mode, resume it
         const current = get()
-        if (
+        const isResuming =
           !current.completed &&
           current.sessionId &&
-          current.testMeta?.id === testId &&
-          current.mode === mode &&
-          current.questions.length > 0
-        ) {
-          // Recalculate time remaining for exam mode based on elapsed time
-          if (mode === 'exam' && current.startTime) {
-            const elapsed = Math.floor((Date.now() - current.startTime) / 1000)
-            const remaining = Math.max(0, current.testMeta.time_limit - elapsed)
-            if (remaining <= 0) {
-              // Time expired while away — auto-complete
-              get().completeExam()
-              return
-            }
-            set({ timeRemaining: remaining, loading: false })
-          }
-          return // resume existing session
+          current._testId === testId &&
+          current.mode === mode
+
+        if (!isResuming) {
+          set({ ...INITIAL_STATE, loading: true, mode, _testId: testId })
+        } else {
+          set({ loading: true })
         }
 
-        set({ ...INITIAL_STATE, loading: true, mode })
-
-        // Fetch test meta
+        // Always fetch fresh questions from DB
         const { data: test, error: testError } = await supabase
           .from('tests')
           .select('*')
@@ -63,7 +51,6 @@ const useExamStore = create(
           return
         }
 
-        // Fetch questions with sub_questions
         const { data: questions, error: qError } = await supabase
           .from('questions')
           .select('*, sub_questions(*)')
@@ -79,7 +66,6 @@ const useExamStore = create(
         const sorted = questions.map(q => ({
           ...q,
           sub_questions: (q.sub_questions || []).sort((a, b) => a.sub_number - b.sub_number),
-          // Build image object from DB columns for ImageRenderer compatibility
           image: q.image_render
             ? {
                 render: q.image_render,
@@ -90,7 +76,24 @@ const useExamStore = create(
             : null,
         }))
 
-        // Create exam session in DB
+        if (isResuming) {
+          // Resume: update questions + test meta, keep answers/index/session
+          const resumeState = { testMeta: test, questions: sorted, loading: false }
+          if (mode === 'exam' && current.startTime) {
+            const elapsed = Math.floor((Date.now() - current.startTime) / 1000)
+            const remaining = Math.max(0, test.time_limit - elapsed)
+            if (remaining <= 0) {
+              set({ ...resumeState })
+              get().completeExam()
+              return
+            }
+            resumeState.timeRemaining = remaining
+          }
+          set(resumeState)
+          return
+        }
+
+        // New session: create in DB
         const userId = (await supabase.auth.getUser()).data.user?.id
         const { data: session, error: sError } = await supabase
           .from('exam_sessions')
@@ -111,6 +114,7 @@ const useExamStore = create(
           testMeta: test,
           questions: sorted,
           sessionId: session.id,
+          _testId: testId,
           startTime: Date.now(),
           timeRemaining: mode === 'exam' ? test.time_limit : 0,
           loading: false,
@@ -242,14 +246,12 @@ const useExamStore = create(
     {
       name: 'genfu-exam-session',
       partialize: (state) => ({
-        testMeta: state.testMeta,
-        questions: state.questions,
+        _testId: state._testId,
         currentIndex: state.currentIndex,
         answers: state.answers,
         mode: state.mode,
         sessionId: state.sessionId,
         startTime: state.startTime,
-        timeRemaining: state.timeRemaining,
         completed: state.completed,
         score: state.score,
         passed: state.passed,
