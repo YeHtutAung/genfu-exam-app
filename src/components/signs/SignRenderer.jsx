@@ -51,11 +51,11 @@ function SignalArrowRight() {
           <div className="h-6 w-6 rounded-full bg-gray-600" />
           <div className="h-6 w-6 rounded-full bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.8)]" />
         </div>
-        {/* Arrow box under the right light with 青 label */}
+        {/* Arrow circle under the right light with 青 label */}
         <div className="flex flex-col items-center mr-2 mt-1">
-          <div className="flex h-7 w-7 items-center justify-center rounded border-2 border-gray-700 bg-gray-800">
+          <div className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-gray-600 bg-gray-300">
             <svg viewBox="0 0 20 16" className="h-3.5 w-3.5">
-              <polygon points="20,8 12,2 12,5.5 2,5.5 2,10.5 12,10.5 12,14" fill="white" />
+              <polygon points="20,8 12,2 12,5.5 2,5.5 2,10.5 12,10.5 12,14" fill="#1e293b" />
             </svg>
           </div>
           <span className="text-xs text-text-secondary font-jp leading-none mt-0.5">青</span>
