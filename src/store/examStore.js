@@ -160,18 +160,14 @@ const useExamStore = create((set, get) => ({
   },
 
   completeExam: async () => {
-    const { completed, sessionId, testMeta, startTime } = get()
+    const { completed, sessionId, testMeta, questions, answers } = get()
     if (completed) return
 
     const score = get().calculateScore()
     const passed = score >= testMeta.pass_score
 
-    set({ completed: true, score, passed })
-
-    // Save answers to DB
-    const { questions, answers } = get()
+    // Build answer rows
     const answerRows = []
-
     for (const q of questions) {
       if (q.type === 'standard') {
         answerRows.push({
@@ -194,6 +190,7 @@ const useExamStore = create((set, get) => ({
       }
     }
 
+    // Save answers to DB first
     if (answerRows.length > 0) {
       await supabase.from('answers').insert(answerRows)
     }
@@ -207,6 +204,9 @@ const useExamStore = create((set, get) => ({
         completed_at: new Date().toISOString(),
       })
       .eq('id', sessionId)
+
+    // Set completed AFTER DB writes finish, so Results page has data
+    set({ completed: true, score, passed })
   },
 
   // ── Reset ─────────────────────────────────────────────────────
