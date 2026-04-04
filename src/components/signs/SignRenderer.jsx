@@ -87,29 +87,32 @@ function YellowLaneDivider() {
   )
 }
 
-/** 専用 dedicated bus lane sign — navy rectangle with bus icon, 専用 text, down arrow */
+/** 専用 dedicated bus lane sign — with road lanes on left and right */
 function DedicatedLane() {
   return (
     <SignFrame>
-      <div className="flex h-24 w-20 flex-col items-center justify-between rounded-lg border-[3px] border-white bg-blue-900 py-2">
-        {/* Bus icon */}
-        <svg viewBox="0 0 40 28" className="h-8 w-10">
-          {/* Bus body */}
-          <rect x="6" y="4" width="28" height="20" rx="3" fill="none" stroke="white" strokeWidth="2" />
-          {/* Windshield */}
-          <rect x="10" y="7" width="20" height="8" rx="1" fill="white" />
-          {/* Wheels */}
-          <circle cx="13" cy="24" r="2.5" fill="white" />
-          <circle cx="27" cy="24" r="2.5" fill="white" />
-          {/* Center divider on windshield */}
-          <line x1="20" y1="7" x2="20" y2="15" stroke="#1e3a8a" strokeWidth="1.5" />
-        </svg>
-        {/* 専 用 text */}
-        <span className="text-xs font-bold text-white tracking-widest">専 用</span>
-        {/* Down arrow */}
-        <svg viewBox="0 0 20 16" className="h-4 w-5">
-          <polygon points="10,16 0,6 5,6 5,0 15,0 15,6 20,6" fill="white" />
-        </svg>
+      <div className="flex items-stretch">
+        {/* Left lane */}
+        <div className="w-6 bg-gray-500 border-r border-dashed border-white" />
+        {/* Center: sign panel */}
+        <div className="flex h-28 w-20 flex-col items-center justify-between rounded border-[3px] border-white bg-blue-900 py-2">
+          {/* Bus icon */}
+          <svg viewBox="0 0 40 28" className="h-8 w-10">
+            <rect x="6" y="4" width="28" height="20" rx="3" fill="none" stroke="white" strokeWidth="2" />
+            <rect x="10" y="7" width="20" height="8" rx="1" fill="white" />
+            <circle cx="13" cy="24" r="2.5" fill="white" />
+            <circle cx="27" cy="24" r="2.5" fill="white" />
+            <line x1="20" y1="7" x2="20" y2="15" stroke="#1e3a8a" strokeWidth="1.5" />
+          </svg>
+          {/* 専 用 text */}
+          <span className="text-xs font-bold text-white tracking-widest">専 用</span>
+          {/* Down arrow */}
+          <svg viewBox="0 0 20 16" className="h-4 w-5">
+            <polygon points="10,16 0,6 5,6 5,0 15,0 15,6 20,6" fill="white" />
+          </svg>
+        </div>
+        {/* Right lane */}
+        <div className="w-6 bg-gray-500 border-l border-dashed border-white" />
       </div>
     </SignFrame>
   )
