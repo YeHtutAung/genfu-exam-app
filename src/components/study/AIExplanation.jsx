@@ -14,8 +14,7 @@ export default function AIExplanation({ questionJp, hintJp }) {
     setRequested(true)
 
     try {
-      const res = await explain(questionJp, hintJp)
-      const text = await res.text()
+      const text = await explain(questionJp, hintJp)
       setExplanation(text)
     } catch (err) {
       setError(err.message)

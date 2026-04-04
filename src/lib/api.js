@@ -6,11 +6,16 @@ export async function explain(questionJp, hintJp) {
   })
 
   if (!res.ok) {
-    const text = await res.text()
-    throw new Error(text || `explain failed: ${res.status}`)
+    let msg = `explain failed: ${res.status}`
+    try {
+      const data = await res.json()
+      if (data.error) msg = data.error
+    } catch {}
+    throw new Error(msg)
   }
 
-  return res // caller can use res.body for streaming or res.text()
+  const data = await res.json()
+  return data.explanation
 }
 
 export async function uploadBundle(formData) {
