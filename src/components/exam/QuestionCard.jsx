@@ -1,33 +1,24 @@
+import { motion } from 'framer-motion'
 import ImageRenderer from '../signs/ImageRenderer'
 
 export default function QuestionCard({ question, onAnswer, showResult, userAnswer }) {
   const isScenario = question.type === 'scenario'
 
   return (
-    <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-      {/* Question header */}
-      <div className="mb-4 flex items-start gap-3">
-        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-100 text-sm font-bold text-blue-700">
-          {question.question_number}
-        </span>
-        <div className="flex-1">
-          {isScenario && (
-            <span className="mb-1 inline-block rounded bg-purple-100 px-2 py-0.5 text-xs font-medium text-purple-700">
-              危険予測問題（{question.points}点）
-            </span>
-          )}
-          {!isScenario && (
-            <span className="mb-1 inline-block rounded bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-600">
-              {question.points}点
-            </span>
-          )}
-          <p className="text-base leading-relaxed text-gray-900">{question.question_jp}</p>
-        </div>
-      </div>
+    <div className="bg-bg border border-theme-border rounded-xl p-5 shadow-sm">
+      {/* Type label */}
+      <p className="text-xs font-semibold uppercase tracking-wide text-primary mb-2">
+        {isScenario ? `シナリオ問題 · ${question.points}点` : `標準問題 · ${question.points}点`}
+      </p>
+
+      {/* Question text */}
+      <p className="text-lg font-medium leading-relaxed text-text-primary font-jp mb-3">
+        {question.question_jp}
+      </p>
 
       {/* Image */}
       {question.image && (
-        <div className="mb-4">
+        <div className="rounded-lg overflow-hidden my-3">
           <ImageRenderer image={question.image} />
         </div>
       )}
@@ -62,7 +53,7 @@ export default function QuestionCard({ question, onAnswer, showResult, userAnswe
 
 function StandardAnswers({ questionId, onAnswer, showResult, userAnswer, correctAnswer }) {
   return (
-    <div className="flex gap-3">
+    <div className="flex gap-3 mt-4">
       <AnswerButton
         label="○"
         value={true}
@@ -92,9 +83,9 @@ function ScenarioAnswers({ subQuestions, onAnswer, showResult, userAnswer }) {
   return (
     <div className="space-y-3">
       {subQuestions.map(sq => (
-        <div key={sq.id} className="rounded border border-gray-100 bg-gray-50 p-3">
-          <p className="mb-2 text-sm text-gray-800">
-            <span className="font-medium text-gray-500">({sq.sub_number})</span>{' '}
+        <div key={sq.id} className="rounded border border-theme-border bg-surface p-3">
+          <p className="mb-2 text-sm text-text-primary">
+            <span className="font-medium text-text-secondary">({sq.sub_number})</span>{' '}
             {sq.text_jp}
           </p>
           <div className="flex gap-2">
@@ -126,29 +117,41 @@ function ScenarioAnswers({ subQuestions, onAnswer, showResult, userAnswer }) {
 }
 
 function AnswerButton({ label, selected, correct, wrong, onClick, disabled, small }) {
-  let className = small
-    ? 'flex h-8 w-12 items-center justify-center rounded text-sm font-bold transition-colors'
-    : 'flex h-12 w-20 items-center justify-center rounded-lg text-lg font-bold transition-colors'
+  let stateClasses = ''
 
   if (correct) {
-    className += ' bg-green-100 text-green-700 ring-2 ring-green-500'
+    stateClasses = 'border-correct bg-correct/5 text-correct font-semibold'
   } else if (wrong) {
-    className += ' bg-red-100 text-red-700 ring-2 ring-red-500'
+    stateClasses = 'border-wrong bg-wrong/5 text-wrong font-semibold'
   } else if (selected) {
-    className += ' bg-blue-600 text-white'
+    stateClasses = 'border-primary bg-primary/5 text-primary ring-2 ring-primary/10 font-semibold'
   } else {
-    className += ' bg-gray-100 text-gray-700 hover:bg-gray-200'
+    stateClasses = 'border-theme-border bg-bg text-text-secondary hover:bg-surface'
   }
 
-  if (disabled) {
-    className += ' cursor-default'
-  } else {
-    className += ' cursor-pointer'
+  const cursorClass = disabled ? 'cursor-default' : 'cursor-pointer'
+
+  if (small) {
+    return (
+      <motion.button
+        whileTap={disabled ? {} : { scale: 0.97 }}
+        onClick={onClick}
+        disabled={disabled}
+        className={`flex h-8 w-12 items-center justify-center rounded-xl border-[1.5px] text-sm transition-all ${stateClasses} ${cursorClass}`}
+      >
+        {label}
+      </motion.button>
+    )
   }
 
   return (
-    <button onClick={onClick} disabled={disabled} className={className}>
+    <motion.button
+      whileTap={disabled ? {} : { scale: 0.97 }}
+      onClick={onClick}
+      disabled={disabled}
+      className={`flex-1 rounded-xl border-[1.5px] py-3 text-base font-medium transition-all ${stateClasses} ${cursorClass}`}
+    >
       {label}
-    </button>
+    </motion.button>
   )
 }

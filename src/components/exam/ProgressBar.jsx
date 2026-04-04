@@ -19,13 +19,13 @@ export default function ProgressBar() {
 
   return (
     <div>
-      <div className="mb-1 flex justify-between text-xs text-gray-500">
-        <span>問 {currentIndex + 1} / {total}</span>
-        <span>回答済み {answeredCount} / {total}</span>
+      <div className="mb-1 flex justify-between">
+        <span className="text-xs text-text-secondary font-medium">問 {currentIndex + 1} / {total}</span>
+        <span className="text-xs text-text-secondary font-medium">回答済み {answeredCount} / {total}</span>
       </div>
-      <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200">
+      <div className="h-1.5 rounded-full bg-theme-border overflow-hidden">
         <div
-          className="h-full rounded-full bg-blue-600 transition-all duration-300"
+          className="h-full rounded-full bg-gradient-to-r from-primary to-blue-400 transition-all duration-300"
           style={{ width: `${pct}%` }}
         />
       </div>
