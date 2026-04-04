@@ -170,31 +170,27 @@ function SchoolZoneWarning() {
   return (
     <SignFrame>
       <div className="flex flex-col items-center">
-        <div className="relative">
-          {/* Diamond shape rotated 45deg */}
-          <div className="flex h-20 w-20 rotate-45 items-center justify-center rounded-sm bg-pink-200 ring-2 ring-pink-300">
-            <div className="-rotate-45">
-              <svg viewBox="0 0 50 40" className="h-12 w-14">
-                {/* Adult figure */}
-                <circle cx="18" cy="6" r="4" fill="#4a5568" />
-                <line x1="18" y1="10" x2="18" y2="24" stroke="#4a5568" strokeWidth="2.5" strokeLinecap="round" />
-                <line x1="18" y1="14" x2="12" y2="20" stroke="#4a5568" strokeWidth="2" strokeLinecap="round" />
-                <line x1="18" y1="16" x2="24" y2="12" stroke="#4a5568" strokeWidth="2" strokeLinecap="round" />
-                <line x1="18" y1="24" x2="13" y2="34" stroke="#4a5568" strokeWidth="2.5" strokeLinecap="round" />
-                <line x1="18" y1="24" x2="23" y2="34" stroke="#4a5568" strokeWidth="2.5" strokeLinecap="round" />
+        <svg viewBox="0 0 90 90" className="h-24 w-24">
+          {/* Diamond background */}
+          <polygon points="45,2 88,45 45,88 2,45" fill="#f8c8c8" stroke="#e8a0a0" strokeWidth="2" />
 
-                {/* Child figure */}
-                <circle cx="34" cy="10" r="3.5" fill="#4a5568" />
-                <line x1="34" y1="14" x2="34" y2="25" stroke="#4a5568" strokeWidth="2.5" strokeLinecap="round" />
-                <line x1="34" y1="17" x2="28" y2="14" stroke="#4a5568" strokeWidth="2" strokeLinecap="round" />
-                <line x1="34" y1="25" x2="30" y2="34" stroke="#4a5568" strokeWidth="2.5" strokeLinecap="round" />
-                <line x1="34" y1="25" x2="38" y2="34" stroke="#4a5568" strokeWidth="2.5" strokeLinecap="round" />
-              </svg>
-            </div>
-          </div>
-        </div>
+          {/* Adult figure (left) */}
+          <circle cx="32" cy="28" r="5" fill="#4a5568" />
+          <line x1="32" y1="33" x2="32" y2="52" stroke="#4a5568" strokeWidth="3" strokeLinecap="round" />
+          <line x1="32" y1="38" x2="25" y2="46" stroke="#4a5568" strokeWidth="2.5" strokeLinecap="round" />
+          <line x1="32" y1="40" x2="40" y2="36" stroke="#4a5568" strokeWidth="2.5" strokeLinecap="round" />
+          <line x1="32" y1="52" x2="26" y2="66" stroke="#4a5568" strokeWidth="3" strokeLinecap="round" />
+          <line x1="32" y1="52" x2="38" y2="66" stroke="#4a5568" strokeWidth="3" strokeLinecap="round" />
+
+          {/* Child figure (right) */}
+          <circle cx="54" cy="34" r="4.5" fill="#4a5568" />
+          <line x1="54" y1="39" x2="54" y2="54" stroke="#4a5568" strokeWidth="3" strokeLinecap="round" />
+          <line x1="54" y1="43" x2="46" y2="40" stroke="#4a5568" strokeWidth="2.5" strokeLinecap="round" />
+          <line x1="54" y1="54" x2="49" y2="66" stroke="#4a5568" strokeWidth="3" strokeLinecap="round" />
+          <line x1="54" y1="54" x2="59" y2="66" stroke="#4a5568" strokeWidth="3" strokeLinecap="round" />
+        </svg>
         {/* 黄 label with pointing line */}
-        <div className="flex flex-col items-center -mt-0.5">
+        <div className="flex flex-col items-center -mt-1">
           <div className="h-3 w-px bg-text-secondary" />
           <span className="text-xs text-text-secondary font-jp leading-none">黄</span>
         </div>
