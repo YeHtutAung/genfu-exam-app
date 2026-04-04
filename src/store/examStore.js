@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
 import { supabase } from '../lib/supabase'
 
 const INITIAL_STATE = {
@@ -17,201 +18,244 @@ const INITIAL_STATE = {
   error: null,
 }
 
-const useExamStore = create((set, get) => ({
-  ...INITIAL_STATE,
+const useExamStore = create(
+  persist(
+    (set, get) => ({
+      ...INITIAL_STATE,
 
-  // ── Load & start ──────────────────────────────────────────────
+      // ── Load & start ──────────────────────────────────────────────
 
-  startExam: async (testId, mode) => {
-    set({ ...INITIAL_STATE, loading: true, mode })
-
-    // Fetch test meta
-    const { data: test, error: testError } = await supabase
-      .from('tests')
-      .select('*')
-      .eq('id', testId)
-      .single()
-
-    if (testError) {
-      set({ loading: false, error: testError.message })
-      return
-    }
-
-    // Fetch questions with sub_questions
-    const { data: questions, error: qError } = await supabase
-      .from('questions')
-      .select('*, sub_questions(*)')
-      .eq('test_id', testId)
-      .order('question_number')
-
-    if (qError) {
-      set({ loading: false, error: qError.message })
-      return
-    }
-
-    // Sort sub_questions by sub_number
-    const sorted = questions.map(q => ({
-      ...q,
-      sub_questions: (q.sub_questions || []).sort((a, b) => a.sub_number - b.sub_number),
-      // Build image object from DB columns for ImageRenderer compatibility
-      image: q.image_render
-        ? {
-            render: q.image_render,
-            sign_code: q.sign_code,
-            src: q.image_url,
-            alt: q.image_alt,
+      startExam: async (testId, mode) => {
+        // If we already have an in-progress session for the same test/mode, resume it
+        const current = get()
+        if (
+          !current.completed &&
+          current.sessionId &&
+          current.testMeta?.id === testId &&
+          current.mode === mode &&
+          current.questions.length > 0
+        ) {
+          // Recalculate time remaining for exam mode based on elapsed time
+          if (mode === 'exam' && current.startTime) {
+            const elapsed = Math.floor((Date.now() - current.startTime) / 1000)
+            const remaining = Math.max(0, current.testMeta.time_limit - elapsed)
+            if (remaining <= 0) {
+              // Time expired while away — auto-complete
+              get().completeExam()
+              return
+            }
+            set({ timeRemaining: remaining, loading: false })
           }
-        : null,
-    }))
-
-    // Create exam session in DB
-    const userId = (await supabase.auth.getUser()).data.user?.id
-    const { data: session, error: sError } = await supabase
-      .from('exam_sessions')
-      .insert({
-        user_id: userId,
-        test_id: testId,
-        mode,
-      })
-      .select()
-      .single()
-
-    if (sError) {
-      set({ loading: false, error: sError.message })
-      return
-    }
-
-    set({
-      testMeta: test,
-      questions: sorted,
-      sessionId: session.id,
-      startTime: Date.now(),
-      timeRemaining: mode === 'exam' ? test.time_limit : 0,
-      loading: false,
-    })
-  },
-
-  // ── Answer actions ────────────────────────────────────────────
-
-  answerQuestion: (questionId, answer) => {
-    set(s => ({
-      answers: { ...s.answers, [questionId]: answer },
-    }))
-  },
-
-  answerSubQuestion: (subQuestionId, answer) => {
-    set(s => ({
-      answers: { ...s.answers, [subQuestionId]: answer },
-    }))
-  },
-
-  // ── Navigation ────────────────────────────────────────────────
-
-  goToQuestion: (index) => {
-    set({ currentIndex: index })
-  },
-
-  nextQuestion: () => {
-    set(s => ({
-      currentIndex: Math.min(s.currentIndex + 1, s.questions.length - 1),
-    }))
-  },
-
-  prevQuestion: () => {
-    set(s => ({
-      currentIndex: Math.max(s.currentIndex - 1, 0),
-    }))
-  },
-
-  // ── Timer ─────────────────────────────────────────────────────
-
-  tick: () => {
-    const { timeRemaining } = get()
-    if (timeRemaining <= 1) {
-      get().completeExam()
-    } else {
-      set({ timeRemaining: timeRemaining - 1 })
-    }
-  },
-
-  // ── Scoring & completion ──────────────────────────────────────
-
-  calculateScore: () => {
-    const { questions, answers } = get()
-    let score = 0
-
-    for (const q of questions) {
-      if (q.type === 'standard') {
-        if (answers[q.id] === q.answer) {
-          score += q.points
+          return // resume existing session
         }
-      } else if (q.type === 'scenario') {
-        // All 3 sub_questions must be correct for 2 points, else 0
-        const allCorrect = q.sub_questions.every(
-          sq => answers[sq.id] === sq.answer
-        )
-        if (allCorrect) {
-          score += q.points
+
+        set({ ...INITIAL_STATE, loading: true, mode })
+
+        // Fetch test meta
+        const { data: test, error: testError } = await supabase
+          .from('tests')
+          .select('*')
+          .eq('id', testId)
+          .single()
+
+        if (testError) {
+          set({ loading: false, error: testError.message })
+          return
         }
-      }
-    }
 
-    return score
-  },
+        // Fetch questions with sub_questions
+        const { data: questions, error: qError } = await supabase
+          .from('questions')
+          .select('*, sub_questions(*)')
+          .eq('test_id', testId)
+          .order('question_number')
 
-  completeExam: async () => {
-    const { completed, sessionId, testMeta, questions, answers } = get()
-    if (completed) return
+        if (qError) {
+          set({ loading: false, error: qError.message })
+          return
+        }
 
-    const score = get().calculateScore()
-    const passed = score >= testMeta.pass_score
+        // Sort sub_questions by sub_number
+        const sorted = questions.map(q => ({
+          ...q,
+          sub_questions: (q.sub_questions || []).sort((a, b) => a.sub_number - b.sub_number),
+          // Build image object from DB columns for ImageRenderer compatibility
+          image: q.image_render
+            ? {
+                render: q.image_render,
+                sign_code: q.sign_code,
+                src: q.image_url,
+                alt: q.image_alt,
+              }
+            : null,
+        }))
 
-    // Build answer rows
-    const answerRows = []
-    for (const q of questions) {
-      if (q.type === 'standard') {
-        answerRows.push({
-          session_id: sessionId,
-          question_id: q.id,
-          sub_question_id: null,
-          user_answer: answers[q.id] ?? null,
-          is_correct: answers[q.id] === q.answer,
-        })
-      } else if (q.type === 'scenario') {
-        for (const sq of q.sub_questions) {
-          answerRows.push({
-            session_id: sessionId,
-            question_id: q.id,
-            sub_question_id: sq.id,
-            user_answer: answers[sq.id] ?? null,
-            is_correct: answers[sq.id] === sq.answer,
+        // Create exam session in DB
+        const userId = (await supabase.auth.getUser()).data.user?.id
+        const { data: session, error: sError } = await supabase
+          .from('exam_sessions')
+          .insert({
+            user_id: userId,
+            test_id: testId,
+            mode,
           })
+          .select()
+          .single()
+
+        if (sError) {
+          set({ loading: false, error: sError.message })
+          return
         }
-      }
+
+        set({
+          testMeta: test,
+          questions: sorted,
+          sessionId: session.id,
+          startTime: Date.now(),
+          timeRemaining: mode === 'exam' ? test.time_limit : 0,
+          loading: false,
+        })
+      },
+
+      // ── Answer actions ────────────────────────────────────────────
+
+      answerQuestion: (questionId, answer) => {
+        set(s => ({
+          answers: { ...s.answers, [questionId]: answer },
+        }))
+      },
+
+      answerSubQuestion: (subQuestionId, answer) => {
+        set(s => ({
+          answers: { ...s.answers, [subQuestionId]: answer },
+        }))
+      },
+
+      // ── Navigation ────────────────────────────────────────────────
+
+      goToQuestion: (index) => {
+        set({ currentIndex: index })
+      },
+
+      nextQuestion: () => {
+        set(s => ({
+          currentIndex: Math.min(s.currentIndex + 1, s.questions.length - 1),
+        }))
+      },
+
+      prevQuestion: () => {
+        set(s => ({
+          currentIndex: Math.max(s.currentIndex - 1, 0),
+        }))
+      },
+
+      // ── Timer ─────────────────────────────────────────────────────
+
+      tick: () => {
+        const { timeRemaining } = get()
+        if (timeRemaining <= 1) {
+          get().completeExam()
+        } else {
+          set({ timeRemaining: timeRemaining - 1 })
+        }
+      },
+
+      // ── Scoring & completion ──────────────────────────────────────
+
+      calculateScore: () => {
+        const { questions, answers } = get()
+        let score = 0
+
+        for (const q of questions) {
+          if (q.type === 'standard') {
+            if (answers[q.id] === q.answer) {
+              score += q.points
+            }
+          } else if (q.type === 'scenario') {
+            // All 3 sub_questions must be correct for 2 points, else 0
+            const allCorrect = q.sub_questions.every(
+              sq => answers[sq.id] === sq.answer
+            )
+            if (allCorrect) {
+              score += q.points
+            }
+          }
+        }
+
+        return score
+      },
+
+      completeExam: async () => {
+        const { completed, sessionId, testMeta, questions, answers } = get()
+        if (completed) return
+
+        const score = get().calculateScore()
+        const passed = score >= testMeta.pass_score
+
+        // Build answer rows
+        const answerRows = []
+        for (const q of questions) {
+          if (q.type === 'standard') {
+            answerRows.push({
+              session_id: sessionId,
+              question_id: q.id,
+              sub_question_id: null,
+              user_answer: answers[q.id] ?? null,
+              is_correct: answers[q.id] === q.answer,
+            })
+          } else if (q.type === 'scenario') {
+            for (const sq of q.sub_questions) {
+              answerRows.push({
+                session_id: sessionId,
+                question_id: q.id,
+                sub_question_id: sq.id,
+                user_answer: answers[sq.id] ?? null,
+                is_correct: answers[sq.id] === sq.answer,
+              })
+            }
+          }
+        }
+
+        // Save answers to DB first
+        if (answerRows.length > 0) {
+          await supabase.from('answers').insert(answerRows)
+        }
+
+        // Update session with score and completion time
+        await supabase
+          .from('exam_sessions')
+          .update({
+            score,
+            passed,
+            completed_at: new Date().toISOString(),
+          })
+          .eq('id', sessionId)
+
+        // Set completed AFTER DB writes finish, so Results page has data
+        set({ completed: true, score, passed })
+      },
+
+      // ── Reset ─────────────────────────────────────────────────────
+
+      reset: () => set(INITIAL_STATE),
+    }),
+    {
+      name: 'genfu-exam-session',
+      partialize: (state) => ({
+        testMeta: state.testMeta,
+        questions: state.questions,
+        currentIndex: state.currentIndex,
+        answers: state.answers,
+        mode: state.mode,
+        sessionId: state.sessionId,
+        startTime: state.startTime,
+        timeRemaining: state.timeRemaining,
+        completed: state.completed,
+        score: state.score,
+        passed: state.passed,
+      }),
     }
-
-    // Save answers to DB first
-    if (answerRows.length > 0) {
-      await supabase.from('answers').insert(answerRows)
-    }
-
-    // Update session with score and completion time
-    await supabase
-      .from('exam_sessions')
-      .update({
-        score,
-        passed,
-        completed_at: new Date().toISOString(),
-      })
-      .eq('id', sessionId)
-
-    // Set completed AFTER DB writes finish, so Results page has data
-    set({ completed: true, score, passed })
-  },
-
-  // ── Reset ─────────────────────────────────────────────────────
-
-  reset: () => set(INITIAL_STATE),
-}))
+  )
+)
 
 export default useExamStore
