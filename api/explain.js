@@ -10,7 +10,7 @@ export default async function handler(req) {
     return new Response('Method not allowed', { status: 405 })
   }
 
-  const apiKey = process.env.ANTHROPIC_API_KEY
+  const apiKey = process.env.GEMINI_API_KEY
   if (!apiKey) {
     return new Response(JSON.stringify({ error: 'Server misconfigured' }), {
       status: 500,
@@ -53,24 +53,22 @@ export default async function handler(req) {
   }
 
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
+    const res = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          system_instruction: { parts: [{ text: SYSTEM_PROMPT }] },
+          contents: [{ role: 'user', parts: [{ text: userMessage }] }],
+          generationConfig: { maxOutputTokens: 512 },
+        }),
       },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-5-20241022',
-        max_tokens: 512,
-        system: SYSTEM_PROMPT,
-        messages: [{ role: 'user', content: userMessage }],
-      }),
-    })
+    )
 
     if (!res.ok) {
       const text = await res.text()
-      console.error('Anthropic API error:', res.status, text)
+      console.error('Gemini API error:', res.status, text)
       return new Response(JSON.stringify({ error: 'AI service unavailable' }), {
         status: 502,
         headers: { 'Content-Type': 'application/json' },
@@ -78,7 +76,8 @@ export default async function handler(req) {
     }
 
     const data = await res.json()
-    const explanation = data.content?.[0]?.text || 'No explanation available.'
+    const explanation =
+      data.candidates?.[0]?.content?.parts?.[0]?.text || 'No explanation available.'
 
     return new Response(JSON.stringify({ explanation }), {
       status: 200,
