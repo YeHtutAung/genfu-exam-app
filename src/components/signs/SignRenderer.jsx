@@ -165,18 +165,38 @@ function SpeedMax20() {
   )
 }
 
-/** Yellow diamond school zone warning sign */
+/** Yellow diamond school zone warning sign — adult and child figures with 黄 label */
 function SchoolZoneWarning() {
   return (
     <SignFrame>
-      <div className="flex h-16 w-16 rotate-45 items-center justify-center rounded-sm bg-yellow-400 ring-2 ring-yellow-600">
-        <div className="-rotate-45 flex flex-col items-center">
-          <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none">
-            {/* Simplified child figure */}
-            <circle cx="12" cy="5" r="3" fill="black" />
-            <path d="M12 8V16M8 11H16M9 16L12 22L15 16" stroke="black" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-          <span className="text-[8px] font-bold text-black leading-none">学校あり</span>
+      <div className="flex flex-col items-center">
+        <div className="relative">
+          {/* Diamond shape rotated 45deg */}
+          <div className="flex h-20 w-20 rotate-45 items-center justify-center rounded-sm bg-pink-200 ring-2 ring-pink-300">
+            <div className="-rotate-45">
+              <svg viewBox="0 0 50 40" className="h-12 w-14">
+                {/* Adult figure */}
+                <circle cx="18" cy="6" r="4" fill="#4a5568" />
+                <line x1="18" y1="10" x2="18" y2="24" stroke="#4a5568" strokeWidth="2.5" strokeLinecap="round" />
+                <line x1="18" y1="14" x2="12" y2="20" stroke="#4a5568" strokeWidth="2" strokeLinecap="round" />
+                <line x1="18" y1="16" x2="24" y2="12" stroke="#4a5568" strokeWidth="2" strokeLinecap="round" />
+                <line x1="18" y1="24" x2="13" y2="34" stroke="#4a5568" strokeWidth="2.5" strokeLinecap="round" />
+                <line x1="18" y1="24" x2="23" y2="34" stroke="#4a5568" strokeWidth="2.5" strokeLinecap="round" />
+
+                {/* Child figure */}
+                <circle cx="34" cy="10" r="3.5" fill="#4a5568" />
+                <line x1="34" y1="14" x2="34" y2="25" stroke="#4a5568" strokeWidth="2.5" strokeLinecap="round" />
+                <line x1="34" y1="17" x2="28" y2="14" stroke="#4a5568" strokeWidth="2" strokeLinecap="round" />
+                <line x1="34" y1="25" x2="30" y2="34" stroke="#4a5568" strokeWidth="2.5" strokeLinecap="round" />
+                <line x1="34" y1="25" x2="38" y2="34" stroke="#4a5568" strokeWidth="2.5" strokeLinecap="round" />
+              </svg>
+            </div>
+          </div>
+        </div>
+        {/* 黄 label with pointing line */}
+        <div className="flex flex-col items-center -mt-0.5">
+          <div className="h-3 w-px bg-text-secondary" />
+          <span className="text-xs text-text-secondary font-jp leading-none">黄</span>
         </div>
       </div>
     </SignFrame>
