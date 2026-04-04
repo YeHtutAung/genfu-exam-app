@@ -8,14 +8,20 @@ function SignFrame({ children, className = '' }) {
   )
 }
 
-/** Yellow traffic light — horizontal (Japanese style) */
+/** Yellow traffic light — horizontal (Japanese style) with 黄 label */
 function SignalYellow() {
   return (
     <SignFrame>
-      <div className="flex items-center gap-2 rounded-full bg-gray-800 px-3 py-2">
-        <div className="h-6 w-6 rounded-full bg-gray-600" />
-        <div className="h-6 w-6 rounded-full bg-orange-400 shadow-[0_0_10px_rgba(251,146,60,0.8)]" />
-        <div className="h-6 w-6 rounded-full bg-gray-600" />
+      <div className="flex flex-col items-center">
+        <div className="flex items-center gap-2 rounded-full bg-gray-800 px-3 py-2">
+          <div className="h-6 w-6 rounded-full bg-gray-600" />
+          <div className="h-6 w-6 rounded-full bg-orange-400 shadow-[0_0_10px_rgba(251,146,60,0.8)]" />
+          <div className="h-6 w-6 rounded-full bg-gray-600" />
+        </div>
+        <div className="flex flex-col items-center -mt-0.5">
+          <div className="h-3 w-px bg-text-secondary" />
+          <span className="text-xs text-text-secondary font-jp leading-none">黄</span>
+        </div>
       </div>
     </SignFrame>
   )
