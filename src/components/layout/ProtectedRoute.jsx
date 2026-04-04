@@ -8,7 +8,7 @@ import useAuthStore from '../../store/authStore'
  */
 export default function ProtectedRoute({ adminOnly = false, children }) {
   const user    = useAuthStore(s => s.user)
-  const isAdmin = useAuthStore(s => s.isAdmin)
+  const isAdmin = useAuthStore(s => s.role === 'admin')
 
   if (!user) return <Navigate to="/login" replace />
   if (adminOnly && !isAdmin) return <Navigate to="/" replace />
