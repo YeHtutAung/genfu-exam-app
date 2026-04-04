@@ -27,13 +27,14 @@ function SignalYellow() {
   )
 }
 
-/** Blue rectangle with white left arrow — 左折可 */
+/** Blue rectangle with white solid left arrow — 左折可 */
 function LeftTurnPermitted() {
   return (
     <SignFrame>
-      <div className="flex h-14 w-20 items-center justify-center rounded bg-blue-600">
-        <svg viewBox="0 0 40 24" className="h-8 w-12">
-          <path d="M30 12H14M14 12L20 6M14 12L20 18" stroke="white" strokeWidth="3" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+      <div className="flex h-14 w-24 items-center justify-center rounded-lg border-[3px] border-blue-900 bg-blue-900">
+        <svg viewBox="0 0 60 30" className="h-9 w-16">
+          {/* Solid filled arrow pointing left */}
+          <polygon points="0,15 18,3 18,10 58,10 58,20 18,20 18,27" fill="white" />
         </svg>
       </div>
     </SignFrame>
