@@ -14,7 +14,7 @@ function SignalYellow() {
     <SignFrame>
       <div className="flex items-center gap-2 rounded-full bg-gray-800 px-3 py-2">
         <div className="h-6 w-6 rounded-full bg-gray-600" />
-        <div className="h-6 w-6 rounded-full bg-amber-400 shadow-[0_0_10px_rgba(251,191,36,0.8)]" />
+        <div className="h-6 w-6 rounded-full bg-orange-400 shadow-[0_0_10px_rgba(251,146,60,0.8)]" />
         <div className="h-6 w-6 rounded-full bg-gray-600" />
       </div>
     </SignFrame>
