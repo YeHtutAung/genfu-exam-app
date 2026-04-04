@@ -178,7 +178,7 @@ export default function Exam() {
             </button>
 
             {/* Question number grid */}
-            <div className="hidden sm:grid flex-wrap justify-center gap-1" style={{ gridTemplateColumns: 'repeat(auto-fill, 2rem)' }}>
+            <div className="hidden sm:flex flex-wrap justify-center gap-1 flex-1 mx-4">
               {questions.map((q, i) => {
                 const answered = q.type === 'standard'
                   ? answers[q.id] !== undefined
