@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { explain } from '../../lib/api'
-import Spinner from '../ui/Spinner'
+import Skeleton from '../ui/Skeleton'
 
 export default function AIExplanation({ questionJp, hintJp }) {
   const [explanation, setExplanation] = useState('')
@@ -24,40 +24,48 @@ export default function AIExplanation({ questionJp, hintJp }) {
     }
   }
 
-  if (!requested) {
-    return (
-      <button
-        onClick={handleRequest}
-        className="mt-3 rounded-md bg-purple-50 px-4 py-2 text-sm font-medium text-purple-700 hover:bg-purple-100"
-      >
-        AIに解説を聞く
-      </button>
-    )
-  }
-
-  if (loading) {
-    return (
-      <div className="mt-3 flex items-center gap-2 rounded-md bg-purple-50 p-4">
-        <Spinner size="h-5 w-5" />
-        <span className="text-sm text-purple-700">解説を生成中…</span>
-      </div>
-    )
-  }
-
-  if (error) {
-    return (
-      <div className="mt-3 rounded-md bg-red-50 p-3 text-sm text-red-700">
-        解説の取得に失敗しました: {error}
-      </div>
-    )
-  }
-
   return (
-    <div className="mt-3 rounded-md bg-purple-50 p-4">
-      <p className="mb-1 text-xs font-medium text-purple-600">AI解説</p>
-      <p className="whitespace-pre-wrap text-sm leading-relaxed text-gray-800">
-        {explanation}
-      </p>
+    <div className="bg-gradient-to-br from-purple-50 to-violet-50 dark:from-purple-900/20 dark:to-violet-900/20 border border-purple-200 dark:border-purple-700 rounded-xl p-4 shadow-sm mt-3">
+      {/* Header row */}
+      <div className="flex items-center gap-2 mb-2">
+        <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-gradient-to-br from-ai to-purple-600 text-white text-xs">
+          ✨
+        </div>
+        <span className="text-sm font-semibold text-purple-800 dark:text-purple-300">AI解説</span>
+      </div>
+
+      {/* Not yet requested */}
+      {!requested && (
+        <button
+          onClick={handleRequest}
+          className="rounded-lg bg-ai/10 px-3 py-1.5 text-sm font-medium text-ai transition-colors hover:bg-ai/20"
+        >
+          AIに解説を聞く
+        </button>
+      )}
+
+      {/* Loading skeleton */}
+      {requested && loading && (
+        <div className="space-y-2 mt-2">
+          <Skeleton className="h-3 w-full" />
+          <Skeleton className="h-3 w-4/5" />
+          <Skeleton className="h-3 w-3/5" />
+        </div>
+      )}
+
+      {/* Error */}
+      {requested && !loading && error && (
+        <p className="text-sm text-red-600 mt-2">
+          解説の取得に失敗しました: {error}
+        </p>
+      )}
+
+      {/* Explanation text */}
+      {requested && !loading && !error && explanation && (
+        <p className="text-sm text-purple-900 dark:text-purple-200 leading-relaxed whitespace-pre-wrap mt-2">
+          {explanation}
+        </p>
+      )}
     </div>
   )
 }
