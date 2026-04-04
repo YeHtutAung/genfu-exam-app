@@ -87,33 +87,36 @@ function YellowLaneDivider() {
   )
 }
 
-/** 専用 dedicated bus lane sign — with road lanes on left and right */
+/** 専用 dedicated bus lane sign — bus, 専用, arrow with lane lines inside */
 function DedicatedLane() {
   return (
     <SignFrame>
-      <div className="flex items-stretch">
-        {/* Left lane */}
-        <div className="w-6 bg-gray-500 border-r border-dashed border-white" />
-        {/* Center: sign panel */}
-        <div className="flex h-28 w-20 flex-col items-center justify-between rounded border-[3px] border-white bg-blue-900 py-2">
-          {/* Bus icon */}
-          <svg viewBox="0 0 40 28" className="h-8 w-10">
-            <rect x="6" y="4" width="28" height="20" rx="3" fill="none" stroke="white" strokeWidth="2" />
-            <rect x="10" y="7" width="20" height="8" rx="1" fill="white" />
-            <circle cx="13" cy="24" r="2.5" fill="white" />
-            <circle cx="27" cy="24" r="2.5" fill="white" />
-            <line x1="20" y1="7" x2="20" y2="15" stroke="#1e3a8a" strokeWidth="1.5" />
-          </svg>
-          {/* 専 用 text */}
-          <span className="text-xs font-bold text-white tracking-widest">専 用</span>
-          {/* Down arrow */}
-          <svg viewBox="0 0 20 16" className="h-4 w-5">
-            <polygon points="10,16 0,6 5,6 5,0 15,0 15,6 20,6" fill="white" />
-          </svg>
-        </div>
-        {/* Right lane */}
-        <div className="w-6 bg-gray-500 border-l border-dashed border-white" />
-      </div>
+      <svg viewBox="0 0 80 90" className="h-28 w-24">
+        {/* Sign background */}
+        <rect x="2" y="2" width="76" height="86" rx="6" fill="#1e3a5f" stroke="#9ca3af" strokeWidth="2" />
+        {/* Inner border */}
+        <rect x="6" y="6" width="68" height="78" rx="4" fill="none" stroke="white" strokeWidth="1.5" opacity="0.4" />
+
+        {/* Bus body */}
+        <rect x="22" y="8" width="36" height="22" rx="4" fill="none" stroke="white" strokeWidth="2" />
+        {/* Windshield */}
+        <rect x="26" y="11" width="28" height="9" rx="1.5" fill="white" />
+        {/* Windshield divider */}
+        <line x1="40" y1="11" x2="40" y2="20" stroke="#1e3a5f" strokeWidth="1.5" />
+        {/* Wheels */}
+        <circle cx="30" cy="30" r="2.5" fill="white" />
+        <circle cx="50" cy="30" r="2.5" fill="white" />
+
+        {/* 専 用 text */}
+        <text x="40" y="44" textAnchor="middle" fill="white" fontSize="11" fontWeight="bold" fontFamily="sans-serif">専 用</text>
+
+        {/* Lane lines (left and right) */}
+        <line x1="18" y1="48" x2="18" y2="82" stroke="white" strokeWidth="2" />
+        <line x1="62" y1="48" x2="62" y2="82" stroke="white" strokeWidth="2" />
+
+        {/* Down arrow */}
+        <polygon points="40,82 24,64 32,64 32,50 48,50 48,64 56,64" fill="white" />
+      </svg>
     </SignFrame>
   )
 }
