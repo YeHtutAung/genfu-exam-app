@@ -8,14 +8,14 @@ function SignFrame({ children, className = '' }) {
   )
 }
 
-/** Yellow traffic light */
+/** Yellow traffic light — horizontal (Japanese style) */
 function SignalYellow() {
   return (
-    <SignFrame className="w-20">
-      <div className="flex flex-col items-center gap-1.5 rounded-lg bg-gray-800 p-2">
-        <div className="h-5 w-5 rounded-full bg-gray-600" />
-        <div className="h-5 w-5 rounded-full bg-yellow-400 shadow-[0_0_8px_rgba(250,204,21,0.7)]" />
-        <div className="h-5 w-5 rounded-full bg-gray-600" />
+    <SignFrame>
+      <div className="flex items-center gap-2 rounded-full bg-gray-800 px-3 py-2">
+        <div className="h-6 w-6 rounded-full bg-gray-600" />
+        <div className="h-6 w-6 rounded-full bg-amber-400 shadow-[0_0_10px_rgba(251,191,36,0.8)]" />
+        <div className="h-6 w-6 rounded-full bg-gray-600" />
       </div>
     </SignFrame>
   )
@@ -34,15 +34,17 @@ function LeftTurnPermitted() {
   )
 }
 
-/** Red light with blue right turn arrow */
+/** Red light with blue right turn arrow — horizontal (Japanese style) */
 function SignalArrowRight() {
   return (
-    <SignFrame className="w-20">
-      <div className="flex flex-col items-center gap-1.5 rounded-lg bg-gray-800 p-2">
-        <div className="h-5 w-5 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.7)]" />
-        <div className="h-5 w-5 rounded-full bg-gray-600" />
-        <div className="h-5 w-5 rounded-full bg-gray-600" />
-        <div className="mt-0.5 flex h-6 w-12 items-center justify-center rounded bg-blue-700">
+    <SignFrame>
+      <div className="flex flex-col items-center gap-1">
+        <div className="flex items-center gap-2 rounded-full bg-gray-800 px-3 py-2">
+          <div className="h-6 w-6 rounded-full bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.8)]" />
+          <div className="h-6 w-6 rounded-full bg-gray-600" />
+          <div className="h-6 w-6 rounded-full bg-gray-600" />
+        </div>
+        <div className="flex h-6 w-14 items-center justify-center rounded bg-blue-700">
           <svg viewBox="0 0 30 16" className="h-4 w-8">
             <path d="M6 8H22M22 8L17 3M22 8L17 13" stroke="white" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
