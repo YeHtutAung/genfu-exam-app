@@ -4,6 +4,8 @@ import { supabase } from '../lib/supabase'
 import ScoreCard from '../components/exam/ScoreCard'
 import ImageRenderer from '../components/signs/ImageRenderer'
 import Spinner from '../components/ui/Spinner'
+import PageTransition from '../components/ui/PageTransition'
+import StaggerList from '../components/ui/StaggerList'
 
 export default function Results() {
   const { sessionId } = useParams()
@@ -90,6 +92,36 @@ export default function Results() {
     ? Math.round((new Date(session.completed_at) - new Date(session.started_at)) / 1000)
     : 0
 
+  // Compute stat counts from answer data
+  let correctCount = 0
+  let wrongCount = 0
+  let unansweredCount = 0
+
+  for (const q of questions) {
+    if (q.type === 'standard') {
+      const a = answerMap[q.id]
+      if (!a || a.user_answer === null || a.user_answer === undefined) {
+        unansweredCount++
+      } else if (a.is_correct) {
+        correctCount++
+      } else {
+        wrongCount++
+      }
+    } else {
+      // Scenario: count each sub_question individually
+      for (const sq of q.sub_questions) {
+        const a = answerMap[sq.id]
+        if (!a || a.user_answer === null || a.user_answer === undefined) {
+          unansweredCount++
+        } else if (a.is_correct) {
+          correctCount++
+        } else {
+          wrongCount++
+        }
+      }
+    }
+  }
+
   // Filter questions for review
   const isQuestionWrong = (q) => {
     if (q.type === 'standard') {
@@ -108,64 +140,72 @@ export default function Results() {
     : questions
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-6">
-      <ScoreCard
-        score={session.score ?? 0}
-        totalPoints={test?.total_points ?? 50}
-        passScore={test?.pass_score ?? 45}
-        passed={session.passed ?? false}
-        timeTaken={timeTaken}
-      />
+    <PageTransition>
+      <div className="min-h-screen bg-bg px-4 py-6">
+        <div className="mx-auto max-w-3xl">
+          <ScoreCard
+            score={session.score ?? 0}
+            totalPoints={test?.total_points ?? 50}
+            passScore={test?.pass_score ?? 45}
+            passed={session.passed ?? false}
+            timeTaken={timeTaken}
+            testId={session.test_id}
+            correctCount={correctCount}
+            wrongCount={wrongCount}
+            unansweredCount={unansweredCount}
+          />
 
-      {/* Actions */}
-      <div className="mt-6 flex flex-wrap justify-center gap-3">
-        <Link
-          to={`/exam/${session.test_id}`}
-          className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
-        >
-          もう一度受験
-        </Link>
-        <Link
-          to={`/study/${session.test_id}`}
-          className="rounded-md bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200"
-        >
-          学習モードで復習
-        </Link>
-        <Link
-          to="/"
-          className="rounded-md bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200"
-        >
-          ホームに戻る
-        </Link>
-      </div>
+          {/* Actions */}
+          <div className="mt-6 flex flex-wrap justify-center gap-3">
+            <Link
+              to={`/exam/${session.test_id}`}
+              className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+            >
+              もう一度受験
+            </Link>
+            <Link
+              to={`/study/${session.test_id}`}
+              className="rounded-md bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200"
+            >
+              学習モードで復習
+            </Link>
+            <Link
+              to="/"
+              className="rounded-md bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200"
+            >
+              ホームに戻る
+            </Link>
+          </div>
 
-      {/* Review section */}
-      <div className="mt-8">
-        <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-lg font-bold text-gray-900">問題一覧</h2>
-          <button
-            onClick={() => setWrongOnly(!wrongOnly)}
-            className={`rounded-full px-3 py-1 text-xs font-medium ${
-              wrongOnly
-                ? 'bg-red-100 text-red-700'
-                : 'bg-gray-100 text-gray-600'
-            }`}
-          >
-            {wrongOnly ? '不正解のみ表示中' : '不正解のみ表示'}
-          </button>
+          {/* Review section */}
+          <div className="mt-8">
+            <div className="mb-4 flex items-center justify-between">
+              <h2 className="text-lg font-semibold text-text-primary">問題の振り返り</h2>
+              <button
+                onClick={() => setWrongOnly(!wrongOnly)}
+                className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
+                  wrongOnly
+                    ? 'bg-primary text-white'
+                    : 'bg-surface text-text-secondary'
+                }`}
+              >
+                {wrongOnly ? '不正解のみ表示中' : '不正解のみ表示'}
+              </button>
+            </div>
+
+            <StaggerList className="space-y-3">
+              {displayQuestions.map(q => (
+                <ReviewItem key={q.id} question={q} answerMap={answerMap} />
+              ))}
+            </StaggerList>
+
+            {wrongOnly && displayQuestions.length === 0 && (
+              <p className="py-8 text-center text-text-secondary">全問正解です！</p>
+            )}
+          </div>
         </div>
-
-        <div className="space-y-3">
-          {displayQuestions.map(q => (
-            <ReviewItem key={q.id} question={q} answerMap={answerMap} />
-          ))}
-        </div>
-
-        {wrongOnly && displayQuestions.length === 0 && (
-          <p className="py-8 text-center text-gray-500">全問正解です！</p>
-        )}
       </div>
-    </div>
+    </PageTransition>
   )
 }
 
@@ -175,14 +215,14 @@ function ReviewItem({ question, answerMap }) {
   if (isScenario) {
     const allCorrect = question.sub_questions.every(sq => answerMap[sq.id]?.is_correct)
     return (
-      <div className={`rounded-lg border p-4 ${allCorrect ? 'border-green-200 bg-green-50' : 'border-red-200 bg-red-50'}`}>
+      <div className="bg-bg border border-theme-border rounded-xl p-4">
         <div className="flex items-start gap-3">
           <ResultBadge correct={allCorrect} />
           <div className="flex-1">
             <span className="mb-1 inline-block rounded bg-purple-100 px-2 py-0.5 text-xs font-medium text-purple-700">
               危険予測問題（{question.points}点）
             </span>
-            <p className="text-sm text-gray-900">{question.question_jp}</p>
+            <p className="text-sm text-text-primary mt-1 font-jp">{question.question_jp}</p>
 
             {question.image && (
               <div className="my-2">
@@ -195,12 +235,12 @@ function ReviewItem({ question, answerMap }) {
                 const a = answerMap[sq.id]
                 return (
                   <div key={sq.id} className="flex items-center gap-2 text-xs">
-                    <span className={a?.is_correct ? 'text-green-600' : 'text-red-600'}>
+                    <span className={a?.is_correct ? 'text-correct font-semibold' : 'text-wrong font-semibold'}>
                       {a?.is_correct ? '○' : '×'}
                     </span>
-                    <span className="text-gray-600">({sq.sub_number})</span>
-                    <span className="text-gray-700">{sq.text_jp}</span>
-                    <span className="ml-auto text-gray-400">
+                    <span className="text-text-secondary">({sq.sub_number})</span>
+                    <span className="text-text-primary">{sq.text_jp}</span>
+                    <span className="ml-auto text-text-secondary">
                       あなた: {a?.user_answer === true ? '○' : a?.user_answer === false ? '×' : '—'}
                       {' '}/ 正解: {sq.answer ? '○' : '×'}
                     </span>
@@ -219,12 +259,12 @@ function ReviewItem({ question, answerMap }) {
   const correct = a?.is_correct
 
   return (
-    <div className={`rounded-lg border p-4 ${correct ? 'border-green-200 bg-green-50' : 'border-red-200 bg-red-50'}`}>
+    <div className="bg-bg border border-theme-border rounded-xl p-4">
       <div className="flex items-start gap-3">
         <ResultBadge correct={correct} />
         <div className="flex-1">
-          <p className="text-sm text-gray-900">
-            <span className="font-medium text-gray-500">問{question.question_number}.</span>{' '}
+          <p className="text-sm text-text-primary font-jp">
+            <span className="font-medium text-text-secondary">問{question.question_number}.</span>{' '}
             {question.question_jp}
           </p>
 
@@ -235,10 +275,10 @@ function ReviewItem({ question, answerMap }) {
           )}
 
           <div className="mt-1 flex gap-4 text-xs">
-            <span className={a?.user_answer === question.answer ? 'text-green-600' : 'text-red-600'}>
+            <span className={a?.user_answer === question.answer ? 'text-correct font-semibold' : 'text-wrong font-semibold'}>
               あなたの回答: {a?.user_answer === true ? '○' : a?.user_answer === false ? '×' : '未回答'}
             </span>
-            <span className="text-gray-500">
+            <span className="text-text-secondary">
               正解: {question.answer ? '○' : '×'}
             </span>
           </div>
