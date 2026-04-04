@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import useExamStore from '../store/examStore'
 import StudyCard from '../components/study/StudyCard'
@@ -14,6 +14,7 @@ const slideVariants = {
 
 export default function Study() {
   const { testId } = useParams()
+  const navigate = useNavigate()
 
   const loading = useExamStore(s => s.loading)
   const error = useExamStore(s => s.error)
@@ -138,13 +139,21 @@ export default function Study() {
             >
               ← 前へ
             </button>
-            <button
-              onClick={handleNext}
-              disabled={currentIndex === questions.length - 1}
-              className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-hover disabled:opacity-30"
-            >
-              次へ →
-            </button>
+            {currentIndex === questions.length - 1 ? (
+              <button
+                onClick={() => navigate('/')}
+                className="rounded-xl bg-primary px-6 py-2.5 text-sm font-semibold text-white shadow-sm shadow-primary/25 transition-colors hover:bg-primary-hover"
+              >
+                ホームに戻る
+              </button>
+            ) : (
+              <button
+                onClick={handleNext}
+                className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-hover"
+              >
+                次へ →
+              </button>
+            )}
           </div>
         </div>
       </div>
