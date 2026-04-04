@@ -96,42 +96,47 @@ export default function Study() {
 
   return (
     <PageTransition>
-      <div className="min-h-screen bg-bg px-4 py-6">
-        <div className="mx-auto max-w-3xl">
-          {/* Top bar */}
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-baseline">
-              <span className="text-xs text-text-secondary">学習モード</span>
-              <span className="text-xl font-bold text-text-primary ml-1">問 {current}</span>
-              <span className="text-sm text-text-secondary ml-0.5">/ {total}</span>
+      <div className="flex flex-col h-[calc(100vh-3.5rem)] bg-bg">
+        {/* Scrollable content area */}
+        <div className="flex-1 overflow-y-auto px-4 py-6">
+          <div className="mx-auto max-w-3xl">
+            {/* Top bar */}
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-baseline">
+                <span className="text-xs text-text-secondary">学習モード</span>
+                <span className="text-xl font-bold text-text-primary ml-1">問 {current}</span>
+                <span className="text-sm text-text-secondary ml-0.5">/ {total}</span>
+              </div>
+              <span className="bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-xs font-semibold px-2.5 py-1 rounded-full">
+                📖 学習中
+              </span>
             </div>
-            <span className="bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-xs font-semibold px-2.5 py-1 rounded-full">
-              📖 学習中
-            </span>
+
+            {/* Animated question card */}
+            <AnimatePresence mode="wait" custom={direction}>
+              <motion.div
+                key={currentIndex}
+                custom={direction}
+                variants={slideVariants}
+                initial="initial"
+                animate="animate"
+                exit="exit"
+                transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+              >
+                <StudyCard
+                  key={cardKey}
+                  question={question}
+                  onAnswer={handleAnswer}
+                  userAnswer={userAnswer}
+                />
+              </motion.div>
+            </AnimatePresence>
           </div>
+        </div>
 
-          {/* Animated question card */}
-          <AnimatePresence mode="wait" custom={direction}>
-            <motion.div
-              key={currentIndex}
-              custom={direction}
-              variants={slideVariants}
-              initial="initial"
-              animate="animate"
-              exit="exit"
-              transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-            >
-              <StudyCard
-                key={cardKey}
-                question={question}
-                onAnswer={handleAnswer}
-                userAnswer={userAnswer}
-              />
-            </motion.div>
-          </AnimatePresence>
-
-          {/* Navigation */}
-          <div className="flex items-center justify-between mt-4">
+        {/* Fixed bottom navigation */}
+        <div className="shrink-0 border-t border-theme-border bg-bg/95 backdrop-blur-sm px-4 py-3">
+          <div className="mx-auto max-w-3xl flex items-center justify-between">
             <button
               onClick={handlePrev}
               disabled={currentIndex === 0}

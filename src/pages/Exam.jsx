@@ -130,45 +130,50 @@ export default function Exam() {
 
   return (
     <PageTransition>
-      <div className="min-h-screen bg-bg px-4 py-6">
-        <div className="mx-auto max-w-3xl">
-          {/* Top bar */}
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-baseline">
-              <span className="text-xs text-text-secondary">問題</span>
-              <span className="text-xl font-bold text-text-primary ml-1">{current}</span>
-              <span className="text-sm text-text-secondary ml-0.5">/ {total}</span>
+      <div className="flex flex-col h-[calc(100vh-3.5rem)] bg-bg">
+        {/* Scrollable content area */}
+        <div className="flex-1 overflow-y-auto px-4 py-6">
+          <div className="mx-auto max-w-3xl">
+            {/* Top bar */}
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-baseline">
+                <span className="text-xs text-text-secondary">問題</span>
+                <span className="text-xl font-bold text-text-primary ml-1">{current}</span>
+                <span className="text-sm text-text-secondary ml-0.5">/ {total}</span>
+              </div>
+              <Timer />
             </div>
-            <Timer />
+
+            {/* Progress bar */}
+            <div className="mb-4">
+              <ProgressBar />
+            </div>
+
+            {/* Question with slide animation */}
+            <AnimatePresence mode="wait" custom={direction}>
+              <motion.div
+                key={currentIndex}
+                custom={direction}
+                variants={slideVariants}
+                initial="initial"
+                animate="animate"
+                exit="exit"
+                transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+              >
+                <QuestionCard
+                  question={question}
+                  onAnswer={handleAnswer}
+                  showResult={false}
+                  userAnswer={userAnswer}
+                />
+              </motion.div>
+            </AnimatePresence>
           </div>
+        </div>
 
-          {/* Progress bar */}
-          <div className="mb-4">
-            <ProgressBar />
-          </div>
-
-          {/* Question with slide animation */}
-          <AnimatePresence mode="wait" custom={direction}>
-            <motion.div
-              key={currentIndex}
-              custom={direction}
-              variants={slideVariants}
-              initial="initial"
-              animate="animate"
-              exit="exit"
-              transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-            >
-              <QuestionCard
-                question={question}
-                onAnswer={handleAnswer}
-                showResult={false}
-                userAnswer={userAnswer}
-              />
-            </motion.div>
-          </AnimatePresence>
-
-          {/* Navigation */}
-          <div className="flex items-center justify-between mt-4">
+        {/* Fixed bottom navigation */}
+        <div className="shrink-0 border-t border-theme-border bg-bg/95 backdrop-blur-sm px-4 py-3">
+          <div className="mx-auto max-w-3xl flex items-center justify-between">
             <button
               onClick={handlePrev}
               disabled={currentIndex === 0}
@@ -178,7 +183,7 @@ export default function Exam() {
             </button>
 
             {/* Question number grid */}
-            <div className="hidden sm:flex flex-wrap justify-center gap-1 flex-1 mx-4">
+            <div className="hidden sm:flex flex-wrap justify-center gap-1 flex-1 mx-4 max-h-10 overflow-hidden">
               {questions.map((q, i) => {
                 const answered = q.type === 'standard'
                   ? answers[q.id] !== undefined
