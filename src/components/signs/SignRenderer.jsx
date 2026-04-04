@@ -40,22 +40,29 @@ function LeftTurnPermitted() {
   )
 }
 
-/** Red light with blue right turn arrow — horizontal (Japanese style) */
+/** Red light (rightmost) with blue right arrow below — horizontal (Japanese style) */
 function SignalArrowRight() {
   return (
     <SignFrame>
-      <div className="flex flex-col items-center gap-1">
+      <div className="relative">
+        {/* Traffic light housing */}
         <div className="flex items-center gap-2 rounded-full bg-gray-800 px-3 py-2">
+          <div className="h-6 w-6 rounded-full bg-gray-600" />
+          <div className="h-6 w-6 rounded-full bg-gray-600" />
           <div className="h-6 w-6 rounded-full bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.8)]" />
-          <div className="h-6 w-6 rounded-full bg-gray-600" />
-          <div className="h-6 w-6 rounded-full bg-gray-600" />
         </div>
-        <div className="flex h-6 w-14 items-center justify-center rounded bg-blue-700">
-          <svg viewBox="0 0 30 16" className="h-4 w-8">
-            <path d="M6 8H22M22 8L17 3M22 8L17 13" stroke="white" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
+        {/* Arrow box under the right light with 青 label */}
+        <div className="absolute -bottom-9 right-1.5 flex flex-col items-center">
+          <div className="flex h-7 w-7 items-center justify-center rounded border-2 border-gray-700 bg-gray-800">
+            <svg viewBox="0 0 20 16" className="h-3.5 w-3.5">
+              <polygon points="20,8 12,2 12,5.5 2,5.5 2,10.5 12,10.5 12,14" fill="white" />
+            </svg>
+          </div>
+          <span className="text-xs text-text-secondary font-jp leading-none mt-0.5">青</span>
         </div>
       </div>
+      {/* Spacer for the arrow + label below */}
+      <div className="h-8" />
     </SignFrame>
   )
 }
