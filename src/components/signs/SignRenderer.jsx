@@ -148,14 +148,17 @@ function PedestrianCrossingMarking() {
   )
 }
 
-/** Maximum speed 20km/h road marking */
+/** Maximum speed 20km/h road marking with 黄 label */
 function SpeedMax20() {
   return (
     <SignFrame>
-      <div className="relative h-20 w-28 rounded bg-gray-500">
-        <div className="flex h-full flex-col items-center justify-center">
-          <span className="text-2xl font-bold text-white leading-none">20</span>
-          <span className="text-[10px] text-white">km/h</span>
+      <div className="flex flex-col items-center">
+        <div className="flex h-32 w-20 flex-col items-center justify-center rounded bg-gray-300">
+          <span className="text-5xl font-bold text-red-300 leading-none">20</span>
+        </div>
+        <div className="flex flex-col items-center -mt-0.5">
+          <div className="h-3 w-px bg-text-secondary" />
+          <span className="text-xs text-text-secondary font-jp leading-none">黄</span>
         </div>
       </div>
     </SignFrame>
