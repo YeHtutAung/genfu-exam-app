@@ -111,8 +111,8 @@ function DedicatedLane() {
         <text x="40" y="44" textAnchor="middle" fill="white" fontSize="11" fontWeight="bold" fontFamily="sans-serif">専 用</text>
 
         {/* Lane lines (left and right) */}
-        <line x1="18" y1="48" x2="18" y2="82" stroke="white" strokeWidth="2" />
-        <line x1="62" y1="48" x2="62" y2="82" stroke="white" strokeWidth="2" />
+        <line x1="15" y1="10" x2="15" y2="80" stroke="white" strokeWidth="5" />
+        <line x1="65" y1="10" x2="65" y2="82" stroke="white" strokeWidth="5" />
 
         {/* Down arrow */}
         <polygon points="40,82 24,64 32,64 32,50 48,50 48,64 56,64" fill="white" />
