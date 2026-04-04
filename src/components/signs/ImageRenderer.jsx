@@ -9,7 +9,7 @@ export default function ImageRenderer({ image }) {
 
   if (image.render === 'static') {
     return (
-      <div className="mx-auto max-w-sm">
+      <div className="mx-auto max-w-sm rounded-lg bg-white p-2">
         <img
           src={image.src}
           alt={image.alt || ''}
