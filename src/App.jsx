@@ -17,6 +17,7 @@ import Upload          from './pages/admin/Upload'
 import UploadPreview   from './pages/admin/UploadPreview'
 import Tests           from './pages/admin/Tests'
 import Users           from './pages/admin/Users'
+import QuestionImages  from './pages/admin/QuestionImages'
 
 function AppRoutes({ theme, toggleTheme }) {
   const location = useLocation()
@@ -58,6 +59,9 @@ function AppRoutes({ theme, toggleTheme }) {
           } />
           <Route path="/admin/users" element={
             <ProtectedRoute adminOnly><Users /></ProtectedRoute>
+          } />
+          <Route path="/admin/images" element={
+            <ProtectedRoute adminOnly><QuestionImages /></ProtectedRoute>
           } />
         </Routes>
       </AnimatePresence>

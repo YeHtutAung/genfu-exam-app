@@ -48,6 +48,7 @@ export default function AdminDashboard() {
         <QuickLink to="/admin/tests" title="テスト管理" desc="テストの有効化・無効化・削除" />
         <QuickLink to="/admin/users" title="ユーザー管理" desc="ユーザー一覧と成績確認" />
         <QuickLink to="/admin/upload" title="テストアップロード" desc="ZIPバンドルで新規テスト追加" />
+        <QuickLink to="/admin/images" title="問題画像" desc="既存の問題に画像をアップロード" />
       </div>
     </div>
   )
