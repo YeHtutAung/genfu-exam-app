@@ -8,17 +8,17 @@ export default {
   theme: {
     extend: {
       colors: {
-        bg: 'var(--color-bg)',
-        surface: 'var(--color-surface)',
-        primary: 'var(--color-primary)',
-        'primary-hover': 'var(--color-primary-hover)',
-        'text-primary': 'var(--color-text-primary)',
-        'text-secondary': 'var(--color-text-secondary)',
-        correct: 'var(--color-correct)',
-        wrong: 'var(--color-wrong)',
-        ai: 'var(--color-ai)',
-        warning: 'var(--color-warning)',
-        'theme-border': 'var(--color-border)',
+        bg: 'rgb(var(--color-bg) / <alpha-value>)',
+        surface: 'rgb(var(--color-surface) / <alpha-value>)',
+        primary: 'rgb(var(--color-primary) / <alpha-value>)',
+        'primary-hover': 'rgb(var(--color-primary-hover) / <alpha-value>)',
+        'text-primary': 'rgb(var(--color-text-primary) / <alpha-value>)',
+        'text-secondary': 'rgb(var(--color-text-secondary) / <alpha-value>)',
+        correct: 'rgb(var(--color-correct) / <alpha-value>)',
+        wrong: 'rgb(var(--color-wrong) / <alpha-value>)',
+        ai: 'rgb(var(--color-ai) / <alpha-value>)',
+        warning: 'rgb(var(--color-warning) / <alpha-value>)',
+        'theme-border': 'rgb(var(--color-border) / <alpha-value>)',
       },
       fontFamily: {
         sans: ['Inter', 'Noto Sans JP', 'system-ui', 'sans-serif'],
