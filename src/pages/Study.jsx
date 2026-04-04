@@ -1,9 +1,16 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
+import { motion, AnimatePresence } from 'framer-motion'
 import useExamStore from '../store/examStore'
 import StudyCard from '../components/study/StudyCard'
-import ProgressBar from '../components/exam/ProgressBar'
 import Spinner from '../components/ui/Spinner'
+import PageTransition from '../components/ui/PageTransition'
+
+const slideVariants = {
+  initial: (dir) => ({ x: dir > 0 ? 100 : -100, opacity: 0 }),
+  animate: { x: 0, opacity: 1 },
+  exit: (dir) => ({ x: dir > 0 ? -100 : 100, opacity: 0 }),
+}
 
 export default function Study() {
   const { testId } = useParams()
@@ -23,6 +30,7 @@ export default function Study() {
 
   // Key to force StudyCard remount when question changes
   const [cardKey, setCardKey] = useState(0)
+  const [direction, setDirection] = useState(0)
 
   useEffect(() => {
     startExam(testId, 'study')
@@ -36,7 +44,7 @@ export default function Study() {
 
   if (loading) {
     return (
-      <div className="flex justify-center py-20">
+      <div className="flex min-h-screen items-center justify-center bg-bg">
         <Spinner />
       </div>
     )
@@ -54,6 +62,8 @@ export default function Study() {
 
   const question = questions[currentIndex]
   const isScenario = question.type === 'scenario'
+  const current = currentIndex + 1
+  const total = questions.length
 
   // Build userAnswer for current question
   const userAnswer = isScenario
@@ -73,48 +83,71 @@ export default function Study() {
     }
   }
 
+  const handlePrev = () => {
+    setDirection(-1)
+    prevQuestion()
+  }
+
+  const handleNext = () => {
+    setDirection(1)
+    nextQuestion()
+  }
+
   return (
-    <div className="mx-auto max-w-3xl px-4 py-6">
-      <div className="mb-4">
-        <h1 className="text-lg font-bold text-gray-900">
-          {testMeta?.title_jp || '学習モード'}
-          <span className="ml-2 text-sm font-normal text-gray-500">学習</span>
-        </h1>
+    <PageTransition>
+      <div className="min-h-screen bg-bg px-4 py-6">
+        <div className="mx-auto max-w-3xl">
+          {/* Top bar */}
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-baseline">
+              <span className="text-xs text-text-secondary">学習モード</span>
+              <span className="text-xl font-bold text-text-primary ml-1">問 {current}</span>
+              <span className="text-sm text-text-secondary ml-0.5">/ {total}</span>
+            </div>
+            <span className="bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-xs font-semibold px-2.5 py-1 rounded-full">
+              📖 学習中
+            </span>
+          </div>
+
+          {/* Animated question card */}
+          <AnimatePresence mode="wait" custom={direction}>
+            <motion.div
+              key={currentIndex}
+              custom={direction}
+              variants={slideVariants}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+            >
+              <StudyCard
+                key={cardKey}
+                question={question}
+                onAnswer={handleAnswer}
+                userAnswer={userAnswer}
+              />
+            </motion.div>
+          </AnimatePresence>
+
+          {/* Navigation */}
+          <div className="flex items-center justify-between mt-4">
+            <button
+              onClick={handlePrev}
+              disabled={currentIndex === 0}
+              className="rounded-lg bg-surface px-4 py-2 text-sm font-medium text-text-secondary transition-colors hover:bg-theme-border disabled:opacity-30"
+            >
+              ← 前へ
+            </button>
+            <button
+              onClick={handleNext}
+              disabled={currentIndex === questions.length - 1}
+              className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-hover disabled:opacity-30"
+            >
+              次へ →
+            </button>
+          </div>
+        </div>
       </div>
-
-      <div className="mb-4">
-        <ProgressBar />
-      </div>
-
-      <StudyCard
-        key={cardKey}
-        question={question}
-        onAnswer={handleAnswer}
-        userAnswer={userAnswer}
-      />
-
-      {/* Navigation */}
-      <div className="mt-4 flex items-center justify-between">
-        <button
-          onClick={prevQuestion}
-          disabled={currentIndex === 0}
-          className="rounded-md bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200 disabled:opacity-40"
-        >
-          前の問題
-        </button>
-
-        <span className="text-sm text-gray-500">
-          {currentIndex + 1} / {questions.length}
-        </span>
-
-        <button
-          onClick={nextQuestion}
-          disabled={currentIndex === questions.length - 1}
-          className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-40"
-        >
-          次の問題
-        </button>
-      </div>
-    </div>
+    </PageTransition>
   )
 }
