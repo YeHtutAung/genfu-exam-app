@@ -3,6 +3,15 @@ import { Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import useAuthStore from '../store/authStore'
 import Spinner from '../components/ui/Spinner'
+import PageTransition from '../components/ui/PageTransition'
+import StaggerList from '../components/ui/StaggerList'
+
+const CATEGORY_EMOJI = {
+  genfu: '🛵',
+  futsu_bike: '🏍️',
+  daigata_bike: '🏍️',
+  futsu_car: '🚗',
+}
 
 export default function Home() {
   const user = useAuthStore(s => s.user)
@@ -63,81 +72,95 @@ export default function Home() {
   }
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-8">
-      <div className="mb-8 text-center">
-        <h1 className="text-3xl font-bold text-gray-900">原付免許 模擬試験</h1>
-        <p className="mt-2 text-gray-500">
-          ようこそ{user?.email ? `、${user.email}` : ''} さん
-        </p>
-      </div>
+    <PageTransition>
+      <div className="min-h-screen bg-bg px-4 py-8">
+        <div className="mx-auto max-w-3xl">
 
-      {error && (
-        <div className="mb-6 rounded-md bg-red-50 p-3 text-sm text-red-700">{error}</div>
-      )}
-
-      {/* Category selector */}
-      {categories.length > 0 ? (
-        <>
-          <div className="mb-6 flex flex-wrap justify-center gap-2">
-            {categories.map(cat => (
-              <button
-                key={cat.id}
-                onClick={() => setSelectedCategory(cat.id)}
-                className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
-                  selectedCategory === cat.id
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-              >
-                {cat.name_jp}
-              </button>
-            ))}
+          {/* Header */}
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-wide text-primary text-center">Practice Tests</p>
+            <h1 className="text-3xl font-bold text-text-primary tracking-tight text-center mt-1">カテゴリを選択</h1>
+            <p className="text-sm text-text-secondary text-center mt-1">Choose your license category to start</p>
           </div>
 
-          {/* Test list */}
-          {tests.length > 0 ? (
-            <div className="space-y-3">
-              {tests.map(test => (
-                <div
-                  key={test.id}
-                  className="flex items-center justify-between rounded-lg border border-gray-200 bg-white p-4 shadow-sm"
-                >
-                  <div>
-                    <h3 className="font-medium text-gray-900">
-                      {test.title_jp || `模擬テスト 第${test.test_number}回`}
-                    </h3>
-                    <p className="mt-0.5 text-sm text-gray-500">
-                      {test.total_points}点満点 / 合格{test.pass_score}点以上 / 制限時間{test.time_limit / 60}分
-                    </p>
-                  </div>
-                  <div className="flex gap-2">
-                    <Link
-                      to={`/exam/${test.id}`}
-                      className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
-                    >
-                      試験
-                    </Link>
-                    <Link
-                      to={`/study/${test.id}`}
-                      className="rounded-md bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200"
-                    >
-                      学習
-                    </Link>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="rounded-lg border border-gray-200 bg-white p-8 text-center shadow-sm">
-              <p className="text-gray-500">このカテゴリーにはまだテストがありません</p>
+          {/* Error */}
+          {error && (
+            <div className="rounded-xl bg-wrong/10 border border-wrong/20 text-wrong text-sm p-4 text-center mt-6">
+              {error}
             </div>
           )}
-        </>
-      ) : (
-        <div className="rounded-lg border border-gray-200 bg-white p-8 text-center shadow-sm">
-          <p className="text-gray-600">試験カテゴリーは近日公開予定です</p>
+
+          {/* Category buttons */}
+          {categories.length > 0 && (
+            <>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-6">
+                {categories.map(cat => (
+                  <button
+                    key={cat.id}
+                    onClick={() => setSelectedCategory(cat.id)}
+                    className={
+                      selectedCategory === cat.id
+                        ? 'bg-gradient-to-br from-primary to-primary-hover text-white shadow-md shadow-primary/25 font-semibold rounded-xl px-4 py-3 text-sm transition-all'
+                        : 'bg-bg border-[1.5px] border-theme-border text-text-secondary font-medium rounded-xl px-4 py-3 text-sm transition-all hover:bg-surface'
+                    }
+                  >
+                    <span className="mr-1.5">{CATEGORY_EMOJI[cat.code] ?? ''}</span>
+                    {cat.name_jp}
+                  </button>
+                ))}
+              </div>
+
+              {/* Test cards */}
+              {tests.length > 0 ? (
+                <StaggerList className="mt-6 space-y-3">
+                  {tests.map(test => (
+                    <div
+                      key={test.id}
+                      className="bg-bg border border-theme-border rounded-xl p-4 shadow-sm"
+                    >
+                      {/* Top row */}
+                      <div className="flex items-start justify-between">
+                        <div>
+                          <h3 className="text-base font-semibold text-text-primary">
+                            {test.title_jp || `模擬テスト 第${test.test_number}回`}
+                          </h3>
+                          <p className="text-xs text-text-secondary mt-0.5">
+                            48問 · 30分 · 合格: {test.pass_score}点
+                          </p>
+                        </div>
+                        <span className="bg-surface text-text-secondary text-xs px-2 py-0.5 rounded-full shrink-0 ml-3">
+                          未受験
+                        </span>
+                      </div>
+
+                      {/* Bottom row */}
+                      <div className="flex gap-2 mt-3">
+                        <Link
+                          to={`/exam/${test.id}`}
+                          className="flex-1 bg-primary text-white rounded-lg py-2 text-sm font-semibold text-center transition-colors hover:bg-primary-hover"
+                        >
+                          試験モード
+                        </Link>
+                        <Link
+                          to={`/study/${test.id}`}
+                          className="flex-1 bg-surface text-text-secondary rounded-lg py-2 text-sm font-medium text-center transition-colors hover:bg-theme-border"
+                        >
+                          学習モード
+                        </Link>
+                      </div>
+                    </div>
+                  ))}
+                </StaggerList>
+              ) : (
+                <p className="text-center text-text-secondary text-sm mt-8">
+                  このカテゴリにはまだテストがありません
+                </p>
+              )}
+            </>
+          )}
+
         </div>
-      )}
-    </div>
+      </div>
+    </PageTransition>
   )
 }
