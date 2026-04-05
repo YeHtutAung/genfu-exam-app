@@ -70,7 +70,7 @@ function AppRoutes({ theme, toggleTheme }) {
           } />
         </Routes>
       </AnimatePresence>
-      <Footer theme={theme} onToggle={toggleTheme} />
+      <Footer theme={theme} toggleTheme={toggleTheme} />
     </>
   )
 }
