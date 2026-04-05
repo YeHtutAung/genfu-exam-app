@@ -69,11 +69,15 @@ const useAdminStore = create((set, get) => ({
       set({ usersError: 'データの取得に失敗しました', usersLoading: false })
       return
     }
-    const { data: sessions } = await supabase
+    const { data: sessions, error: sErr } = await supabase
       .from('exam_sessions')
       .select('user_id, score')
       .eq('mode', 'exam')
       .not('score', 'is', null)
+    if (sErr) {
+      set({ usersError: 'セッションデータの取得に失敗しました', usersLoading: false })
+      return
+    }
     const statsMap = {}
     for (const s of sessions || []) {
       if (!statsMap[s.user_id]) statsMap[s.user_id] = { count: 0, best: null }
@@ -91,12 +95,20 @@ const useAdminStore = create((set, get) => ({
   },
 
   toggleTestActive: async (testId, active) => {
-    await supabase.from('tests').update({ active }).eq('id', testId)
+    const { error } = await supabase.from('tests').update({ active }).eq('id', testId)
+    if (error) {
+      set({ testsError: 'テストの更新に失敗しました' })
+      return
+    }
     await get().fetchTests()
   },
 
   deleteTest: async (testId) => {
-    await supabase.from('tests').delete().eq('id', testId)
+    const { error } = await supabase.from('tests').delete().eq('id', testId)
+    if (error) {
+      set({ testsError: 'テストの削除に失敗しました' })
+      return
+    }
     await get().fetchTests()
   },
 
