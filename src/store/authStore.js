@@ -44,6 +44,23 @@ const useAuthStore = create((set, get) => ({
     return { error: null }
   },
 
+  signUp: async (email, password) => {
+    set({ error: null })
+    const { data, error } = await supabase.auth.signUp({ email, password })
+    if (error) {
+      set({ error: error.message })
+      return { error }
+    }
+    // If email confirmation is enabled, session will be null
+    if (data.session) {
+      await get().fetchProfile(data.user.id)
+      set({ user: data.user, loading: false })
+      return { error: null, confirmationNeeded: false }
+    }
+    // Email confirmation required — don't navigate or fetch profile
+    return { error: null, confirmationNeeded: true }
+  },
+
   signInWithGoogle: async () => {
     set({ error: null })
     const { error } = await supabase.auth.signInWithOAuth({
