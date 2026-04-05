@@ -13,6 +13,48 @@ const CATEGORY_EMOJI = {
   futsu_car: '🚗',
 }
 
+function ProgressBadge({ progress }) {
+  if (!progress) {
+    return (
+      <span className="bg-surface text-text-secondary text-xs px-2 py-0.5 rounded-full shrink-0 ml-3">
+        未受験
+      </span>
+    )
+  }
+
+  const { examBest, examAttempts, examPassed, studyBest, studyAttempts } = progress
+
+  if (examPassed) {
+    return (
+      <span className="bg-green-600 text-white text-xs font-medium px-2 py-0.5 rounded-full shrink-0 ml-3">
+        合格 {examBest}点 ✓
+      </span>
+    )
+  }
+
+  if (examAttempts > 0) {
+    return (
+      <span className="bg-red-100 dark:bg-red-900/20 text-red-700 dark:text-red-400 text-xs font-medium px-2 py-0.5 rounded-full shrink-0 ml-3">
+        不合格 {examBest}点（{examAttempts}回）
+      </span>
+    )
+  }
+
+  if (studyAttempts > 0) {
+    return (
+      <span className="bg-purple-100 dark:bg-purple-900/20 text-purple-700 dark:text-purple-400 text-xs font-medium px-2 py-0.5 rounded-full shrink-0 ml-3">
+        学習 {studyBest}点（{studyAttempts}回）
+      </span>
+    )
+  }
+
+  return (
+    <span className="bg-surface text-text-secondary text-xs px-2 py-0.5 rounded-full shrink-0 ml-3">
+      未受験
+    </span>
+  )
+}
+
 export default function Home() {
   const user = useAuthStore(s => s.user)
   const [categories, setCategories] = useState([])
@@ -20,6 +62,7 @@ export default function Home() {
   const [selectedCategory, setSelectedCategory] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [progress, setProgress] = useState({})
 
   // Fetch active categories on mount
   useEffect(() => {
@@ -41,6 +84,39 @@ export default function Home() {
     }
     fetchCategories()
   }, [])
+
+  // Fetch user progress across all tests (once on mount)
+  useEffect(() => {
+    if (!user) return
+
+    async function fetchProgress() {
+      const { data, error } = await supabase
+        .from('exam_sessions')
+        .select('test_id, mode, score, passed')
+        .eq('user_id', user.id)
+        .not('completed_at', 'is', null)
+
+      if (error || !data) return
+
+      const map = {}
+      for (const s of data) {
+        if (!map[s.test_id]) {
+          map[s.test_id] = { examBest: null, examAttempts: 0, examPassed: false, studyBest: null, studyAttempts: 0 }
+        }
+        const entry = map[s.test_id]
+        if (s.mode === 'exam') {
+          entry.examAttempts++
+          if (s.passed) entry.examPassed = true
+          if (entry.examBest === null || s.score > entry.examBest) entry.examBest = s.score
+        } else if (s.mode === 'study') {
+          entry.studyAttempts++
+          if (entry.studyBest === null || s.score > entry.studyBest) entry.studyBest = s.score
+        }
+      }
+      setProgress(map)
+    }
+    fetchProgress()
+  }, [user])
 
   // Fetch tests when category changes
   useEffect(() => {
@@ -128,9 +204,7 @@ export default function Home() {
                             48問 · 30分 · 合格: {test.pass_score}点
                           </p>
                         </div>
-                        <span className="bg-surface text-text-secondary text-xs px-2 py-0.5 rounded-full shrink-0 ml-3">
-                          未受験
-                        </span>
+                        <ProgressBadge progress={progress[test.id]} />
                       </div>
 
                       {/* Bottom row */}
