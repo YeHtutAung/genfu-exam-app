@@ -1,31 +1,33 @@
 import { useEffect, useState } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { confirmUpload } from '../../lib/api'
+import useAdminStore from '../../store/adminStore'
 import UploadPreviewPanel from '../../components/admin/UploadPreview'
 
 export default function UploadPreview() {
-  const { state } = useLocation()
   const navigate = useNavigate()
+  const preview = useAdminStore(s => s.uploadPreview)
+  const clearUploadPreview = useAdminStore(s => s.clearUploadPreview)
   const [confirming, setConfirming] = useState(false)
   const [error, setError] = useState(null)
   const [categoryId, setCategoryId] = useState(null)
 
   // Resolve category code → UUID
   useEffect(() => {
-    if (!state?.preview?.meta?.category) return
+    if (!preview?.meta?.category) return
     supabase
       .from('categories')
       .select('id')
-      .eq('code', state.preview.meta.category)
+      .eq('code', preview.meta.category)
       .single()
       .then(({ data }) => {
         if (data) setCategoryId(data.id)
       })
-  }, [state?.preview?.meta?.category])
+  }, [preview?.meta?.category])
 
   // If no preview data (e.g. direct navigation), redirect back
-  if (!state?.preview) {
+  if (!preview) {
     return (
       <div className="mx-auto max-w-2xl px-4 py-8 text-center">
         <p className="text-gray-500">プレビューデータがありません。</p>
@@ -41,13 +43,14 @@ export default function UploadPreview() {
 
   const handleConfirm = async () => {
     if (!categoryId) {
-      setError(`カテゴリ "${state.preview.meta.category}" が見つかりません`)
+      setError(`カテゴリ "${preview.meta.category}" が見つかりません`)
       return
     }
     setConfirming(true)
     setError(null)
     try {
-      await confirmUpload({ ...state.preview, categoryId })
+      await confirmUpload({ ...preview, categoryId })
+      clearUploadPreview()
       navigate('/admin/tests')
     } catch (err) {
       setError(err.message)
@@ -56,14 +59,19 @@ export default function UploadPreview() {
     }
   }
 
+  const handleCancel = () => {
+    clearUploadPreview()
+    navigate('/admin/upload')
+  }
+
   return (
     <div className="mx-auto max-w-3xl px-4 py-8">
       <h1 className="mb-6 text-2xl font-bold text-gray-900">アップロードプレビュー</h1>
 
       <UploadPreviewPanel
-        preview={state.preview}
+        preview={preview}
         onConfirm={handleConfirm}
-        onCancel={() => navigate('/admin/upload')}
+        onCancel={handleCancel}
         confirming={confirming}
       />
 

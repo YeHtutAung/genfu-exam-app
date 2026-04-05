@@ -1,20 +1,22 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { uploadBundle } from '../../lib/api'
+import useAdminStore from '../../store/adminStore'
 import UploadForm from '../../components/admin/UploadForm'
 
 export default function Upload() {
   const [uploading, setUploading] = useState(false)
   const [error, setError] = useState(null)
   const navigate = useNavigate()
+  const setUploadPreview = useAdminStore(s => s.setUploadPreview)
 
   const handleUpload = async (formData) => {
     setUploading(true)
     setError(null)
     try {
       const preview = await uploadBundle(formData)
-      // Pass preview data to UploadPreview page via state
-      navigate('/admin/upload/preview', { state: { preview } })
+      setUploadPreview(preview)
+      navigate('/admin/upload/preview')
     } catch (err) {
       setError(err.message)
     } finally {
