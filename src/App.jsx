@@ -5,6 +5,7 @@ import useAuthStore from './store/authStore'
 import useTheme from './hooks/useTheme'
 import ProtectedRoute from './components/layout/ProtectedRoute'
 import Header from './components/layout/Header'
+import Footer from './components/layout/Footer'
 import Spinner from './components/ui/Spinner'
 
 import Home            from './pages/Home'
@@ -69,6 +70,7 @@ function AppRoutes({ theme, toggleTheme }) {
           } />
         </Routes>
       </AnimatePresence>
+      <Footer theme={theme} onToggle={toggleTheme} />
     </>
   )
 }
