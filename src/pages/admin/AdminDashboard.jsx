@@ -1,28 +1,9 @@
-import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { supabase } from '../../lib/supabase'
+import useAdmin from '../../hooks/useAdmin'
 import Spinner from '../../components/ui/Spinner'
 
 export default function AdminDashboard() {
-  const [stats, setStats] = useState(null)
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    async function fetchStats() {
-      const [users, tests, sessions] = await Promise.all([
-        supabase.from('profiles').select('id', { count: 'exact', head: true }),
-        supabase.from('tests').select('id', { count: 'exact', head: true }),
-        supabase.from('exam_sessions').select('id', { count: 'exact', head: true }),
-      ])
-      setStats({
-        users: users.count ?? 0,
-        tests: tests.count ?? 0,
-        sessions: sessions.count ?? 0,
-      })
-      setLoading(false)
-    }
-    fetchStats()
-  }, [])
+  const { data: stats, loading, error } = useAdmin('stats')
 
   if (loading) {
     return (
@@ -36,20 +17,24 @@ export default function AdminDashboard() {
     <div className="mx-auto max-w-4xl px-4 py-8">
       <h1 className="mb-6 text-2xl font-bold text-gray-900">管理ダッシュボード</h1>
 
-      {/* Summary cards */}
-      <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <StatCard label="ユーザー数" value={stats.users} />
-        <StatCard label="テスト数" value={stats.tests} />
-        <StatCard label="受験回数" value={stats.sessions} />
-      </div>
+      {error && <p className="mb-4 text-sm text-wrong">{error}</p>}
 
-      {/* Quick links */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <QuickLink to="/admin/tests" title="テスト管理" desc="テストの有効化・無効化・削除" />
-        <QuickLink to="/admin/users" title="ユーザー管理" desc="ユーザー一覧と成績確認" />
-        <QuickLink to="/admin/upload" title="テストアップロード" desc="ZIPバンドルで新規テスト追加" />
-        <QuickLink to="/admin/images" title="問題画像" desc="既存の問題に画像をアップロード" />
-      </div>
+      {stats && (
+        <>
+          <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
+            <StatCard label="ユーザー数" value={stats.users} />
+            <StatCard label="テスト数" value={stats.tests} />
+            <StatCard label="受験回数" value={stats.sessions} />
+          </div>
+
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+            <QuickLink to="/admin/tests" title="テスト管理" desc="テストの有効化・無効化・削除" />
+            <QuickLink to="/admin/users" title="ユーザー管理" desc="ユーザー一覧と成績確認" />
+            <QuickLink to="/admin/upload" title="テストアップロード" desc="ZIPバンドルで新規テスト追加" />
+            <QuickLink to="/admin/images" title="問題画像" desc="既存の問題に画像をアップロード" />
+          </div>
+        </>
+      )}
     </div>
   )
 }
