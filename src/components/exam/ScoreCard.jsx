@@ -3,23 +3,29 @@ import { Link } from 'react-router-dom'
 import confetti from 'canvas-confetti'
 import CountUp from '../ui/CountUp'
 
-export default function ScoreCard({ score, totalPoints, passScore, passed, timeTaken, testId, correctCount, wrongCount, unansweredCount }) {
+export default function ScoreCard({ score, totalPoints, passScore, passed, timeTaken, testId, correctCount, wrongCount, unansweredCount, hideTimeTaken = false, hideCtas = false, mode = 'exam' }) {
   // Format time taken
   const minutes = Math.floor(timeTaken / 60)
   const seconds = timeTaken % 60
 
   useEffect(() => {
-    if (passed) {
+    if (passed && mode !== 'study') {
       const timer = setTimeout(() => {
         confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } })
       }, 1600)
       return () => clearTimeout(timer)
     }
-  }, [passed])
+  }, [passed, mode])
 
   return (
     <div className="bg-bg border border-theme-border rounded-2xl p-6 shadow-sm text-center">
-      {passed ? (
+      {mode === 'study' ? (
+        <>
+          <div className="text-4xl mb-2">📖</div>
+          <h2 className="text-2xl font-bold text-primary">学習完了！</h2>
+          <p className="text-sm text-text-secondary mt-1">お疲れさまでした</p>
+        </>
+      ) : passed ? (
         <>
           <div className="text-4xl mb-2">🎉</div>
           <h2 className="text-2xl font-bold text-green-700 dark:text-green-400">合格！</h2>
@@ -38,7 +44,11 @@ export default function ScoreCard({ score, totalPoints, passScore, passed, timeT
         <CountUp
           target={score}
           className={`text-5xl font-extrabold tracking-tight ${
-            passed ? 'text-green-700 dark:text-green-400' : 'text-red-700 dark:text-red-400'
+            mode === 'study'
+              ? 'text-primary'
+              : passed
+                ? 'text-green-700 dark:text-green-400'
+                : 'text-red-700 dark:text-red-400'
           }`}
         />
         <p className="text-sm text-text-secondary mt-1">/ {totalPoints}点</p>
@@ -49,16 +59,18 @@ export default function ScoreCard({ score, totalPoints, passScore, passed, timeT
         <div className="h-1.5 rounded-full bg-theme-border overflow-hidden">
           <div
             className={`h-full rounded-full transition-all duration-1000 ${
-              passed
-                ? 'bg-gradient-to-r from-green-500 to-green-400'
-                : 'bg-gradient-to-r from-red-500 to-red-400'
+              mode === 'study'
+                ? 'bg-gradient-to-r from-primary to-blue-400'
+                : passed
+                  ? 'bg-gradient-to-r from-green-500 to-green-400'
+                  : 'bg-gradient-to-r from-red-500 to-red-400'
             }`}
             style={{ width: `${(score / totalPoints) * 100}%` }}
           />
         </div>
         <div className="flex justify-between mt-1 text-[10px] text-text-secondary">
           <span>0</span>
-          <span>合格ライン {passScore}</span>
+          <span>{mode === 'study' ? `合格ラインは ${passScore}点` : `合格ライン ${passScore}`}</span>
           <span>{totalPoints}</span>
         </div>
       </div>
@@ -80,12 +92,14 @@ export default function ScoreCard({ score, totalPoints, passScore, passed, timeT
       </div>
 
       {/* Time taken */}
-      <p className="mt-4 text-sm text-text-secondary">
-        所要時間: {minutes}分{seconds > 0 ? `${seconds}秒` : ''}
-      </p>
+      {!hideTimeTaken && (
+        <p className="mt-4 text-sm text-text-secondary">
+          所要時間: {minutes}分{seconds > 0 ? `${seconds}秒` : ''}
+        </p>
+      )}
 
       {/* Fail CTA */}
-      {!passed && testId && (
+      {!hideCtas && !passed && testId && (
         <div className="mt-4 flex flex-col items-center gap-2">
           <Link
             to={`/exam/${testId}`}
