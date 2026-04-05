@@ -70,6 +70,7 @@ Supabase
 /login               → Login (email + social)
 /exam/:testId        → Exam mode
 /study/:testId       → Study mode
+/study/:testId/summary/:sessionId → Study summary (score + CTAs)
 /results/:sessionId  → Results + review
 /admin               → Admin dashboard (role: admin only)
 /admin/upload        → ZIP bundle upload
@@ -369,6 +370,7 @@ genfu-exam-app/
 │   │   ├── Login.jsx           /login — Email + Google + Facebook auth via Supabase
 │   │   ├── Exam.jsx            /exam/:testId — Timed exam mode (30 min, 48 questions)
 │   │   ├── Study.jsx           /study/:testId — Study mode (question by question, AI explanation on demand)
+│   │   ├── StudySummary.jsx    /study/:testId/summary/:sessionId — Study completion score + CTAs
 │   │   ├── Results.jsx         /results/:sessionId — Score summary + question review
 │   │   └── admin/
 │   │       ├── AdminDashboard.jsx  /admin — Admin dashboard (role: admin only)
@@ -404,7 +406,7 @@ genfu-exam-app/
 │   │       └── Spinner.jsx         Loading spinner
 │   │
 │   ├── store/
-│   │   ├── authStore.js        Zustand — auth state (user, role, session)
+│   │   ├── authStore.js        Zustand — auth state (user, role, session, signUp with email confirmation)
 │   │   ├── examStore.js        Zustand — active exam session state (questions, answers, timer, mode)
 │   │   └── adminStore.js       Zustand — admin state (upload bundle preview, test list)
 │   │
@@ -484,6 +486,7 @@ genfu-exam-app/
 | `src/pages/Home.jsx` | complete |
 | `src/pages/Exam.jsx` | complete |
 | `src/pages/Study.jsx` | complete |
+| `src/pages/StudySummary.jsx` | complete |
 | `src/pages/Results.jsx` | complete |
 | `src/components/exam/QuestionCard.jsx` | complete |
 | `src/components/exam/Timer.jsx` | complete |
