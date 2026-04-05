@@ -30,8 +30,8 @@ export default function StudySummary() {
         return
       }
 
-      // Validate: must be a study session belonging to current user
-      if (sess.mode !== 'study' || sess.user_id !== user?.id) {
+      // Validate: must be a study session belonging to current user, matching the URL testId
+      if (sess.mode !== 'study' || sess.user_id !== user?.id || sess.test_id !== testId) {
         setError('データが見つかりません')
         setLoading(false)
         return

@@ -25,19 +25,23 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     setSubmitting(true)
-    if (mode === 'login') {
-      const { error } = await signInWithEmail(email, password)
-      setSubmitting(false)
-      if (!error) navigate('/')
-    } else {
-      const { error, confirmationNeeded } = await signUp(email, password)
-      setSubmitting(false)
-      if (error) return
-      if (confirmationNeeded) {
-        setConfirmationSent(true)
+    try {
+      if (mode === 'login') {
+        const { error } = await signInWithEmail(email, password)
+        if (!error) navigate('/')
       } else {
-        navigate('/')
+        const { error, confirmationNeeded } = await signUp(email, password)
+        if (error) return
+        if (confirmationNeeded) {
+          setConfirmationSent(true)
+        } else {
+          navigate('/')
+        }
       }
+    } catch {
+      // signUp/signIn already set error in the store
+    } finally {
+      setSubmitting(false)
     }
   }
 
