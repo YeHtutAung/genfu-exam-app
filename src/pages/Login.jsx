@@ -10,21 +10,35 @@ export default function Login() {
   const signInWithEmail = useAuthStore(s => s.signInWithEmail)
   const signInWithGoogle = useAuthStore(s => s.signInWithGoogle)
   const signInWithFacebook = useAuthStore(s => s.signInWithFacebook)
+  const signUp = useAuthStore(s => s.signUp)
   const navigate = useNavigate()
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [submitting, setSubmitting] = useState(false)
+  const [mode, setMode] = useState('login')
+  const [confirmationSent, setConfirmationSent] = useState(false)
 
   // Already logged in — redirect to home
   if (user) return <Navigate to="/" replace />
 
-  const handleEmailLogin = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     setSubmitting(true)
-    const { error } = await signInWithEmail(email, password)
-    setSubmitting(false)
-    if (!error) navigate('/')
+    if (mode === 'login') {
+      const { error } = await signInWithEmail(email, password)
+      setSubmitting(false)
+      if (!error) navigate('/')
+    } else {
+      const { error, confirmationNeeded } = await signUp(email, password)
+      setSubmitting(false)
+      if (error) return
+      if (confirmationNeeded) {
+        setConfirmationSent(true)
+      } else {
+        navigate('/')
+      }
+    }
   }
 
   return (
@@ -37,12 +51,42 @@ export default function Login() {
             <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-primary-hover text-white text-2xl font-bold">
               G
             </div>
-            <h1 className="mt-4 text-2xl font-bold text-text-primary text-center">おかえりなさい</h1>
-            <p className="mt-1 text-sm text-text-secondary text-center">ログインして学習を続けましょう</p>
+            <h1 className="mt-4 text-2xl font-bold text-text-primary text-center">
+              {mode === 'login' ? 'おかえりなさい' : 'はじめまして'}
+            </h1>
+            <p className="mt-1 text-sm text-text-secondary text-center">
+              {mode === 'login' ? 'ログインして学習を続けましょう' : 'アカウントを作成して学習を始めましょう'}
+            </p>
           </div>
 
           {/* Form card */}
           <div className="mt-6 bg-bg rounded-2xl p-6 shadow-lg border border-theme-border">
+
+            {/* Mode toggle */}
+            <div className="flex rounded-xl bg-surface p-1 mb-4">
+              <button
+                type="button"
+                onClick={() => { setMode('login'); setConfirmationSent(false) }}
+                className={`flex-1 rounded-lg py-2 text-sm font-medium transition-colors ${
+                  mode === 'login'
+                    ? 'bg-primary text-white shadow-sm'
+                    : 'text-text-secondary hover:text-text-primary'
+                }`}
+              >
+                ログイン
+              </button>
+              <button
+                type="button"
+                onClick={() => { setMode('register'); setConfirmationSent(false) }}
+                className={`flex-1 rounded-lg py-2 text-sm font-medium transition-colors ${
+                  mode === 'register'
+                    ? 'bg-primary text-white shadow-sm'
+                    : 'text-text-secondary hover:text-text-primary'
+                }`}
+              >
+                新規登録
+              </button>
+            </div>
 
             {authError && (
               <div className="rounded-xl bg-wrong/10 border border-wrong/20 text-wrong text-sm p-3 mb-4">
@@ -50,7 +94,13 @@ export default function Login() {
               </div>
             )}
 
-            <form onSubmit={handleEmailLogin} className="space-y-4">
+            {confirmationSent && (
+              <div className="rounded-xl bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-300 text-sm p-3 mb-4">
+                確認メールを送信しました。メール内のリンクをクリックしてください。
+              </div>
+            )}
+
+            <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label htmlFor="email" className="block text-sm font-medium text-text-primary mb-1.5">
                   メールアドレス
@@ -84,7 +134,7 @@ export default function Login() {
                 disabled={submitting}
                 className="w-full rounded-xl bg-primary py-2.5 text-sm font-semibold text-white shadow-sm shadow-primary/30 transition-colors hover:bg-primary-hover disabled:opacity-50 flex items-center justify-center"
               >
-                {submitting ? <Spinner size="h-5 w-5" /> : 'ログイン'}
+                {submitting ? <Spinner size="h-5 w-5" /> : (mode === 'login' ? 'ログイン' : 'アカウント作成')}
               </button>
             </form>
 
@@ -114,12 +164,23 @@ export default function Login() {
             </div>
           </div>
 
-          {/* Sign up link */}
+          {/* Sign up / sign in toggle link */}
           <p className="text-center text-sm text-text-secondary mt-4">
-            アカウントをお持ちでない方は{' '}
-            <a href="/register" className="text-primary hover:text-primary-hover font-medium">
-              新規登録
-            </a>
+            {mode === 'login' ? (
+              <>
+                アカウントをお持ちでない方は{' '}
+                <button onClick={() => { setMode('register'); setConfirmationSent(false) }} className="text-primary hover:text-primary-hover font-medium">
+                  新規登録
+                </button>
+              </>
+            ) : (
+              <>
+                すでにアカウントをお持ちの方は{' '}
+                <button onClick={() => { setMode('login'); setConfirmationSent(false) }} className="text-primary hover:text-primary-hover font-medium">
+                  ログイン
+                </button>
+              </>
+            )}
           </p>
 
         </div>
