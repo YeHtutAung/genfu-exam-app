@@ -7,17 +7,17 @@ export default function Users() {
   const { data: users, loading, error } = useAdmin('users')
   const [roleFilter, setRoleFilter] = useState('all')
 
-  const filtered = roleFilter === 'all'
-    ? (users || [])
-    : (users || []).filter(u => u.role === roleFilter)
-
-  if (loading) {
+  if (loading || !users) {
     return (
       <div className="flex justify-center py-20">
         <Spinner />
       </div>
     )
   }
+
+  const filtered = roleFilter === 'all'
+    ? users
+    : users.filter(u => u.role === roleFilter)
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-8">

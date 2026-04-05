@@ -18,7 +18,7 @@ export default function Tests() {
     setDeleteTarget(null)
   }
 
-  if (loading) {
+  if (loading || !tests) {
     return (
       <div className="flex justify-center py-20">
         <Spinner />

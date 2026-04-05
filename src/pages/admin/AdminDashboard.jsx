@@ -5,7 +5,7 @@ import Spinner from '../../components/ui/Spinner'
 export default function AdminDashboard() {
   const { data: stats, loading, error } = useAdmin('stats')
 
-  if (loading) {
+  if (loading || !stats) {
     return (
       <div className="flex justify-center py-20">
         <Spinner />

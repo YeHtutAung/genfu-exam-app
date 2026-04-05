@@ -21,7 +21,8 @@ export default function UploadPreview() {
       .select('id')
       .eq('code', preview.meta.category)
       .single()
-      .then(({ data }) => {
+      .then(({ data, error: catErr }) => {
+        if (catErr) console.error('Category lookup failed:', catErr)
         if (data) setCategoryId(data.id)
       })
   }, [preview?.meta?.category])

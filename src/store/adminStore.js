@@ -8,13 +8,13 @@ const useAdminStore = create((set, get) => ({
   statsError: null,
 
   // Tests management
-  tests: [],
+  tests: null,
   categories: [],
   testsLoading: false,
   testsError: null,
 
   // Users management
-  users: [],
+  users: null,
   usersLoading: false,
   usersError: null,
 
