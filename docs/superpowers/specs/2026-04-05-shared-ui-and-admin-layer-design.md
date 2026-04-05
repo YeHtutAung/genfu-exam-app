@@ -57,9 +57,21 @@ export default function Footer() {
 }
 ```
 
-**Rationale:** This is a focused exam-prep utility app, not a marketing site. A multi-column footer adds visual weight without value. The theme toggle is surfaced here as a secondary access point (Header also has it).
+**Visibility rule:** Footer hides itself on routes where UI focus is critical. Uses `useLocation` (same pattern as Header):
 
-**App.jsx:** Footer is rendered in the root layout, below all routes, alongside the existing Header.
+```jsx
+const location = useLocation()
+const hidden = ['/login'].includes(location.pathname)
+  || location.pathname.startsWith('/exam/')
+  || (location.pathname.startsWith('/study/') && !location.pathname.includes('/summary/'))
+if (hidden) return null
+```
+
+This hides the footer on `/login`, `/exam/:testId`, and `/study/:testId` (active session). It remains visible on `/study/:testId/summary/:sessionId`, `/results/:sessionId`, and all admin pages.
+
+**Rationale:** This is a focused exam-prep utility app, not a marketing site. A multi-column footer adds visual weight without value. During active exam/study sessions, the footer adds noise below the question and timer. The theme toggle is surfaced here as a secondary access point (Header also has it) for long pages like Results and Users list.
+
+**App.jsx:** Footer is rendered in `AppRoutes` below `<AnimatePresence>`, alongside the existing Header.
 
 ---
 
@@ -188,6 +200,8 @@ const deleteTest = useAdminStore(s => s.deleteTest)
 ## Implementation Notes
 
 - Before refactoring `Upload.jsx` and `UploadPreview.jsx`, read both files to confirm how bundle data is currently passed between them (may be `location.state`, a prop, or already partial store usage).
+- Admin pages must render an error state when `xxxError` is non-null. Pattern: inline banner below the page heading — `<p className="text-wrong text-sm">{error}</p>` — so the admin knows the fetch failed rather than seeing an empty table silently.
+- `useAdmin` initial render: `data` is `null` and `loading` is `false` for one cycle before `useEffect` fires. Admin pages should treat `!data && !loading` as the loading state (show `<Spinner>`) to avoid a blank flash.
 
 ---
 
