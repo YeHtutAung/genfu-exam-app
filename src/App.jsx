@@ -11,6 +11,7 @@ import Home            from './pages/Home'
 import Login           from './pages/Login'
 import Exam            from './pages/Exam'
 import Study           from './pages/Study'
+import StudySummary    from './pages/StudySummary'
 import Results         from './pages/Results'
 import AdminDashboard  from './pages/admin/AdminDashboard'
 import Upload          from './pages/admin/Upload'
@@ -39,6 +40,9 @@ function AppRoutes({ theme, toggleTheme }) {
           } />
           <Route path="/study/:testId" element={
             <ProtectedRoute><Study /></ProtectedRoute>
+          } />
+          <Route path="/study/:testId/summary/:sessionId" element={
+            <ProtectedRoute><StudySummary /></ProtectedRoute>
           } />
           <Route path="/results/:sessionId" element={
             <ProtectedRoute><Results /></ProtectedRoute>
