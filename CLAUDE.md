@@ -462,12 +462,12 @@ genfu-exam-app/
 | File | Status |
 |---|---|
 | `src/components/layout/Header.jsx` | complete |
-| `src/components/layout/Footer.jsx` | pending |
+| `src/components/layout/Footer.jsx` | complete |
 
 ### Shared UI
 | File | Status |
 |---|---|
-| `src/components/ui/Button.jsx` | pending |
+| `src/components/ui/Button.jsx` | complete |
 | `src/components/ui/Modal.jsx` | complete |
 | `src/components/ui/Spinner.jsx` | complete |
 
@@ -505,8 +505,8 @@ genfu-exam-app/
 ### Admin
 | File | Status |
 |---|---|
-| `src/store/adminStore.js` | pending |
-| `src/hooks/useAdmin.js` | pending |
+| `src/store/adminStore.js` | complete |
+| `src/hooks/useAdmin.js` | complete |
 | `src/pages/admin/AdminDashboard.jsx` | complete |
 | `src/pages/admin/Upload.jsx` | complete |
 | `src/pages/admin/UploadPreview.jsx` | complete |
