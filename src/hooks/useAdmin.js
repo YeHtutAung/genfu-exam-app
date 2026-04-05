@@ -24,12 +24,13 @@ const sectionMap = {
 
 export default function useAdmin(section) {
   const map = sectionMap[section]
+  if (!map) throw new Error(`useAdmin: unknown section "${section}"`)
   const data    = useAdminStore(map.data)
   const loading = useAdminStore(map.loading)
   const error   = useAdminStore(map.error)
   const action  = useAdminStore(s => s[map.fetch])
 
-  useEffect(() => { action() }, [])
+  useEffect(() => { action() }, [action])
 
   return { data, loading, error, refetch: action }
 }
