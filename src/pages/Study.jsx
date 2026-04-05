@@ -28,10 +28,13 @@ export default function Study() {
   const nextQuestion = useExamStore(s => s.nextQuestion)
   const prevQuestion = useExamStore(s => s.prevQuestion)
   const reset = useExamStore(s => s.reset)
+  const completeExam = useExamStore(s => s.completeExam)
+  const sessionId = useExamStore(s => s.sessionId)
 
   // Key to force StudyCard remount when question changes
   const [cardKey, setCardKey] = useState(0)
   const [direction, setDirection] = useState(0)
+  const [completing, setCompleting] = useState(false)
 
   useEffect(() => {
     startExam(testId, 'study')
@@ -82,6 +85,23 @@ export default function Study() {
     } else {
       answerQuestion(id, answer)
     }
+  }
+
+  // Check if all questions have been answered
+  const allAnswered = questions.length > 0 && questions.every(q => {
+    if (q.type === 'standard') {
+      return answers[q.id] !== undefined
+    }
+    // Scenario: all sub_questions must be answered
+    return q.sub_questions.every(sq => answers[sq.id] !== undefined)
+  })
+
+  const handleComplete = async () => {
+    // Capture sessionId before unmount triggers reset(); testId is from useParams() so it's stable
+    const capturedSessionId = sessionId
+    setCompleting(true)
+    await completeExam()
+    navigate(`/study/${testId}/summary/${capturedSessionId}`)
   }
 
   const handlePrev = () => {
@@ -145,12 +165,32 @@ export default function Study() {
               ← 前へ
             </button>
             {currentIndex === questions.length - 1 ? (
-              <button
-                onClick={() => navigate('/')}
-                className="rounded-xl bg-primary px-6 py-2.5 text-sm font-semibold text-white shadow-sm shadow-primary/25 transition-colors hover:bg-primary-hover"
-              >
-                ホームに戻る
-              </button>
+              <div className="flex items-center gap-2">
+                {allAnswered ? (
+                  <button
+                    onClick={handleComplete}
+                    disabled={completing}
+                    className="rounded-xl bg-primary px-6 py-2.5 text-sm font-semibold text-white shadow-sm shadow-primary/25 transition-colors hover:bg-primary-hover disabled:opacity-50"
+                  >
+                    {completing ? '保存中...' : '学習を完了する'}
+                  </button>
+                ) : (
+                  <>
+                    <button
+                      disabled
+                      className="rounded-xl bg-primary/50 px-6 py-2.5 text-sm font-semibold text-white/70 cursor-not-allowed"
+                    >
+                      学習を完了する
+                    </button>
+                    <button
+                      onClick={() => navigate('/')}
+                      className="text-text-secondary text-sm font-medium hover:text-text-primary"
+                    >
+                      ホームに戻る
+                    </button>
+                  </>
+                )}
+              </div>
             ) : (
               <button
                 onClick={handleNext}
