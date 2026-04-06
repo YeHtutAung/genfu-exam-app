@@ -200,6 +200,8 @@ function StudyAnswerButton({ label, value, userAnswer, correctAnswer, showResult
     } else {
       stateClasses = 'border-theme-border bg-bg text-text-secondary'
     }
+  } else if (isUserAnswer) {
+    stateClasses = 'border-primary bg-primary/5 text-primary ring-2 ring-primary/10 font-semibold'
   } else {
     stateClasses = 'border-theme-border bg-bg text-text-secondary hover:bg-surface'
   }

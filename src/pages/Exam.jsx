@@ -183,7 +183,7 @@ export default function Exam() {
             </button>
 
             {/* Question number grid */}
-            <div className="hidden sm:flex flex-wrap justify-center gap-1 flex-1 mx-4 max-h-10 overflow-hidden">
+            <div className="hidden sm:flex flex-wrap justify-center gap-1 flex-1 mx-4 max-h-28 overflow-y-auto">
               {questions.map((q, i) => {
                 const answered = q.type === 'standard'
                   ? answers[q.id] !== undefined
