@@ -1,14 +1,19 @@
+import { useI18n } from '../../lib/i18n'
+
 export default function UserList({ users }) {
+  const { language, t } = useI18n()
+  const locale = language === 'ja' ? 'ja-JP' : language === 'my' ? 'my-MM' : 'en-US'
+
   return (
     <div className="overflow-x-auto">
       <table className="w-full text-left text-sm">
         <thead>
           <tr className="border-b border-gray-200 text-xs font-medium text-gray-500">
-            <th className="pb-2 pr-4">メール</th>
-            <th className="pb-2 pr-4">ロール</th>
-            <th className="pb-2 pr-4">登録日</th>
-            <th className="pb-2 pr-4 text-right">受験回数</th>
-            <th className="pb-2 text-right">最高点</th>
+            <th className="pb-2 pr-4">{t('admin.email')}</th>
+            <th className="pb-2 pr-4">{t('admin.role')}</th>
+            <th className="pb-2 pr-4">{t('admin.createdAt')}</th>
+            <th className="pb-2 pr-4 text-right">{t('admin.examCount')}</th>
+            <th className="pb-2 text-right">{t('admin.bestScore')}</th>
           </tr>
         </thead>
         <tbody>
@@ -25,7 +30,7 @@ export default function UserList({ users }) {
                 </span>
               </td>
               <td className="py-3 pr-4 text-gray-500">
-                {new Date(user.created_at).toLocaleDateString('ja-JP')}
+                {new Date(user.created_at).toLocaleDateString(locale)}
               </td>
               <td className="py-3 pr-4 text-right text-gray-700">{user.exam_count}</td>
               <td className="py-3 text-right text-gray-700">

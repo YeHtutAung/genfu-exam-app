@@ -2,8 +2,10 @@ import { useState } from 'react'
 import useAdmin from '../../hooks/useAdmin'
 import UserList from '../../components/admin/UserList'
 import Spinner from '../../components/ui/Spinner'
+import { useI18n } from '../../lib/i18n'
 
 export default function Users() {
+  const { t } = useI18n()
   const { data: users, loading, error } = useAdmin('users')
   const [roleFilter, setRoleFilter] = useState('all')
 
@@ -21,7 +23,7 @@ export default function Users() {
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-8">
-      <h1 className="mb-6 text-2xl font-bold text-gray-900">ユーザー管理</h1>
+      <h1 className="mb-6 text-2xl font-bold text-gray-900">{t('admin.usersManagement')}</h1>
 
       {error && <p className="mb-4 text-sm text-wrong">{error}</p>}
 
@@ -36,16 +38,16 @@ export default function Users() {
                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
             }`}
           >
-            {r === 'all' ? 'すべて' : r === 'admin' ? '管理者' : '一般'}
+            {r === 'all' ? t('admin.allRoles') : r === 'admin' ? t('admin.adminRole') : t('admin.userRole')}
           </button>
         ))}
         <span className="ml-2 self-center text-sm text-gray-400">
-          {filtered.length}件
+          {t('admin.itemsCount', { count: filtered.length })}
         </span>
       </div>
 
       {filtered.length === 0 ? (
-        <p className="py-12 text-center text-gray-500">ユーザーがいません</p>
+        <p className="py-12 text-center text-gray-500">{t('admin.noUsers')}</p>
       ) : (
         <UserList users={filtered} />
       )}

@@ -1,6 +1,8 @@
 import { useRef, useState } from 'react'
+import { useI18n } from '../../lib/i18n'
 
 export default function UploadForm({ onUpload, uploading }) {
+  const { t } = useI18n()
   const [file, setFile] = useState(null)
   const [dragOver, setDragOver] = useState(false)
   const inputRef = useRef(null)
@@ -52,10 +54,10 @@ export default function UploadForm({ onUpload, uploading }) {
         ) : (
           <div>
             <p className="text-lg text-gray-500">
-              ZIPファイルをドラッグ＆ドロップ
+              {t('admin.dropZip')}
             </p>
             <p className="mt-1 text-sm text-gray-400">
-              またはクリックして選択
+              {t('admin.clickToSelect')}
             </p>
           </div>
         )}
@@ -67,7 +69,7 @@ export default function UploadForm({ onUpload, uploading }) {
           disabled={uploading}
           className="mt-4 w-full rounded-md bg-blue-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
         >
-          {uploading ? 'アップロード中...' : 'アップロード'}
+          {uploading ? t('admin.uploading') : t('admin.upload')}
         </button>
       )}
     </form>

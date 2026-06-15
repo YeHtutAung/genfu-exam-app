@@ -1,5 +1,13 @@
 import SignRenderer from './SignRenderer'
 
+const imageCacheVersion = Date.now()
+
+function withCacheVersion(src) {
+  if (!src) return src
+  const separator = src.includes('?') ? '&' : '?'
+  return `${src}${separator}v=${imageCacheVersion}`
+}
+
 export default function ImageRenderer({ image }) {
   if (!image) return null
 
@@ -11,7 +19,7 @@ export default function ImageRenderer({ image }) {
     return (
       <div className="mx-auto max-w-sm rounded-lg bg-white p-2">
         <img
-          src={image.src}
+          src={withCacheVersion(image.src)}
           alt={image.alt || ''}
           className="h-auto w-full rounded"
           loading="lazy"

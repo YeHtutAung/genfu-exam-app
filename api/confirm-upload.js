@@ -1,4 +1,4 @@
-import { createClient } from '@supabase/supabase-js'
+import { createServiceClient, requireAdmin } from './_admin-auth.js'
 
 export const config = { runtime: 'edge' }
 
@@ -7,14 +7,15 @@ export default async function handler(req) {
     return new Response('Method not allowed', { status: 405 })
   }
 
-  const supabaseUrl = process.env.SUPABASE_URL
-  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
-
-  if (!supabaseUrl || !serviceRoleKey) {
-    return json(500, { success: false, error: 'Server misconfigured' })
+  const { supabase, error: configError } = createServiceClient()
+  if (configError) {
+    return json(500, { success: false, error: configError })
   }
 
-  const supabase = createClient(supabaseUrl, serviceRoleKey)
+  const admin = await requireAdmin(req, supabase)
+  if (!admin.ok) {
+    return json(admin.status, { success: false, error: admin.error })
+  }
 
   let body
   try {
@@ -53,6 +54,7 @@ export default async function handler(req) {
     const testId = testRow.id
     const category = meta.category
     let imagesUploaded = 0
+    const uploadedPaths = []
 
     // 2. Upload images to Supabase Storage
     const imageUrlMap = {} // filename → public URL
@@ -78,6 +80,7 @@ export default async function handler(req) {
           .getPublicUrl(storagePath)
 
         imageUrlMap[filename] = urlData.publicUrl
+        uploadedPaths.push(storagePath)
         imagesUploaded++
       }
     }
@@ -138,8 +141,7 @@ export default async function handler(req) {
 
     if (qErr) {
       console.error('Insert questions error:', qErr)
-      // Rollback: delete the test (cascades to questions)
-      await supabase.from('tests').delete().eq('id', testId)
+      await rollbackUpload(supabase, testId, uploadedPaths)
       return json(500, { success: false, error: `Failed to insert questions: ${qErr.message}` })
     }
 
@@ -171,8 +173,7 @@ export default async function handler(req) {
 
       if (sqErr) {
         console.error('Insert sub_questions error:', sqErr)
-        // Rollback
-        await supabase.from('tests').delete().eq('id', testId)
+        await rollbackUpload(supabase, testId, uploadedPaths)
         return json(500, { success: false, error: `Failed to insert sub_questions: ${sqErr.message}` })
       }
     }
@@ -203,4 +204,12 @@ function base64ToUint8(base64) {
     bytes[i] = binary.charCodeAt(i)
   }
   return bytes
+}
+
+async function rollbackUpload(supabase, testId, uploadedPaths) {
+  await supabase.from('tests').delete().eq('id', testId)
+
+  if (uploadedPaths.length > 0) {
+    await supabase.storage.from('exam-images').remove(uploadedPaths)
+  }
 }

@@ -3,13 +3,15 @@ import { Navigate, useNavigate } from 'react-router-dom'
 import useAuthStore from '../store/authStore'
 import Spinner from '../components/ui/Spinner'
 import PageTransition from '../components/ui/PageTransition'
+import LanguageSelect from '../components/ui/LanguageSelect'
+import { useI18n } from '../lib/i18n'
 
 export default function Login() {
+  const { t } = useI18n()
   const user = useAuthStore(s => s.user)
   const authError = useAuthStore(s => s.error)
   const signInWithEmail = useAuthStore(s => s.signInWithEmail)
   const signInWithGoogle = useAuthStore(s => s.signInWithGoogle)
-  const signInWithFacebook = useAuthStore(s => s.signInWithFacebook)
   const signUp = useAuthStore(s => s.signUp)
   const navigate = useNavigate()
 
@@ -49,6 +51,9 @@ export default function Login() {
     <PageTransition>
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-bg to-purple-50 dark:from-slate-900 dark:via-bg dark:to-slate-800 flex items-center justify-center px-4">
         <div className="w-full max-w-sm">
+          <div className="mb-4 flex justify-end">
+            <LanguageSelect />
+          </div>
 
           {/* Logo + welcome text */}
           <div className="text-center">
@@ -56,10 +61,10 @@ export default function Login() {
               G
             </div>
             <h1 className="mt-4 text-2xl font-bold text-text-primary text-center">
-              {mode === 'login' ? 'おかえりなさい' : 'はじめまして'}
+              {mode === 'login' ? t('login.welcomeBack') : t('login.niceToMeet')}
             </h1>
             <p className="mt-1 text-sm text-text-secondary text-center">
-              {mode === 'login' ? 'ログインして学習を続けましょう' : 'アカウントを作成して学習を始めましょう'}
+              {mode === 'login' ? t('login.loginSubtitle') : t('login.registerSubtitle')}
             </p>
           </div>
 
@@ -77,7 +82,7 @@ export default function Login() {
                     : 'text-text-secondary hover:text-text-primary'
                 }`}
               >
-                ログイン
+                {t('common.login')}
               </button>
               <button
                 type="button"
@@ -88,7 +93,7 @@ export default function Login() {
                     : 'text-text-secondary hover:text-text-primary'
                 }`}
               >
-                新規登録
+                {t('login.register')}
               </button>
             </div>
 
@@ -100,14 +105,14 @@ export default function Login() {
 
             {confirmationSent && (
               <div className="rounded-xl bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-300 text-sm p-3 mb-4">
-                確認メールを送信しました。メール内のリンクをクリックしてください。
+                {t('login.confirmationSent')}
               </div>
             )}
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label htmlFor="email" className="block text-sm font-medium text-text-primary mb-1.5">
-                  メールアドレス
+                  {t('login.email')}
                 </label>
                 <input
                   id="email"
@@ -121,7 +126,7 @@ export default function Login() {
 
               <div>
                 <label htmlFor="password" className="block text-sm font-medium text-text-primary mb-1.5">
-                  パスワード
+                  {t('login.password')}
                 </label>
                 <input
                   id="password"
@@ -138,14 +143,14 @@ export default function Login() {
                 disabled={submitting}
                 className="w-full rounded-xl bg-primary py-2.5 text-sm font-semibold text-white shadow-sm shadow-primary/30 transition-colors hover:bg-primary-hover disabled:opacity-50 flex items-center justify-center"
               >
-                {submitting ? <Spinner size="h-5 w-5" /> : (mode === 'login' ? 'ログイン' : 'アカウント作成')}
+                {submitting ? <Spinner size="h-5 w-5" /> : (mode === 'login' ? t('common.login') : t('login.createAccount'))}
               </button>
             </form>
 
             {/* Divider */}
             <div className="flex items-center gap-3 my-5">
               <div className="flex-1 h-px bg-theme-border" />
-              <span className="text-xs text-text-secondary">または</span>
+              <span className="text-xs text-text-secondary">{t('login.or')}</span>
               <div className="flex-1 h-px bg-theme-border" />
             </div>
 
@@ -161,7 +166,7 @@ export default function Login() {
                   <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
                   <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
                 </svg>
-                Googleでログイン
+                {t('login.google')}
               </button>
 
               {/* Facebook login — hidden until provider is configured */}
@@ -172,16 +177,16 @@ export default function Login() {
           <p className="text-center text-sm text-text-secondary mt-4">
             {mode === 'login' ? (
               <>
-                アカウントをお持ちでない方は{' '}
+                {t('login.noAccount')}{' '}
                 <button onClick={() => { setMode('register'); setConfirmationSent(false) }} className="text-primary hover:text-primary-hover font-medium">
-                  新規登録
+                  {t('login.register')}
                 </button>
               </>
             ) : (
               <>
-                すでにアカウントをお持ちの方は{' '}
+                {t('login.hasAccount')}{' '}
                 <button onClick={() => { setMode('login'); setConfirmationSent(false) }} className="text-primary hover:text-primary-hover font-medium">
-                  ログイン
+                  {t('common.login')}
                 </button>
               </>
             )}

@@ -1,6 +1,11 @@
 import { useEffect, useRef } from 'react'
 
+import { useI18n } from '../../lib/i18n'
+
 export default function Modal({ isOpen, title, message, onConfirm, onCancel, confirmLabel = '確認', cancelLabel = 'キャンセル', danger = false }) {
+  const { t } = useI18n()
+  const finalConfirmLabel = confirmLabel === '確認' ? t('common.confirm') : confirmLabel
+  const finalCancelLabel = cancelLabel === 'キャンセル' ? t('common.cancel') : cancelLabel
   const dialogRef = useRef(null)
 
   useEffect(() => {
@@ -26,7 +31,7 @@ export default function Modal({ isOpen, title, message, onConfirm, onCancel, con
           onClick={onCancel}
           className="rounded-xl bg-surface px-4 py-2 text-sm font-medium text-text-secondary transition-colors hover:bg-theme-border"
         >
-          {cancelLabel}
+          {finalCancelLabel}
         </button>
         <button
           onClick={onConfirm}
@@ -36,7 +41,7 @@ export default function Modal({ isOpen, title, message, onConfirm, onCancel, con
               : 'bg-primary hover:bg-primary-hover'
           }`}
         >
-          {confirmLabel}
+          {finalConfirmLabel}
         </button>
       </div>
     </dialog>

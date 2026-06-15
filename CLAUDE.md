@@ -24,7 +24,7 @@ Admins manage content by uploading ZIP bundles containing JSON + images.
 | Database | Supabase (Postgres) |
 | Auth | Supabase Auth |
 | Storage | Supabase Storage |
-| AI | Anthropic Claude Sonnet via Edge Function proxy |
+| AI | Google Gemini via Edge Function proxy |
 | Hosting | Vercel |
 
 ---
@@ -35,7 +35,7 @@ Admins manage content by uploading ZIP bundles containing JSON + images.
 Browser (React SPA)
     ↓ HTTPS
 Vercel Edge Functions
-  /api/explain          → Anthropic API (AI proxy, key never exposed to browser)
+  /api/explain          → Gemini API (AI proxy, key never exposed to browser)
   /api/upload-bundle    → unpack ZIP, validate, preview
   /api/confirm-upload   → write to Supabase DB + Storage
     ↓ HTTPS

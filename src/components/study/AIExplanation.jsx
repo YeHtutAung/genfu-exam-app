@@ -1,8 +1,10 @@
 import { useState } from 'react'
 import { explain } from '../../lib/api'
 import Skeleton from '../ui/Skeleton'
+import { useI18n } from '../../lib/i18n'
 
 export default function AIExplanation({ questionJp, hintJp }) {
+  const { t } = useI18n()
   const [explanation, setExplanation] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
@@ -30,7 +32,7 @@ export default function AIExplanation({ questionJp, hintJp }) {
         <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-gradient-to-br from-ai to-purple-600 text-white text-xs">
           ✨
         </div>
-        <span className="text-sm font-semibold text-purple-800 dark:text-purple-300">AI解説</span>
+        <span className="text-sm font-semibold text-purple-800 dark:text-purple-300">{t('ai.title')}</span>
       </div>
 
       {/* Not yet requested */}
@@ -39,7 +41,7 @@ export default function AIExplanation({ questionJp, hintJp }) {
           onClick={handleRequest}
           className="rounded-lg bg-ai/10 px-3 py-1.5 text-sm font-medium text-ai transition-colors hover:bg-ai/20"
         >
-          AIに解説を聞く
+          {t('ai.ask')}
         </button>
       )}
 
@@ -55,7 +57,7 @@ export default function AIExplanation({ questionJp, hintJp }) {
       {/* Error */}
       {requested && !loading && error && (
         <p className="text-sm text-red-600 mt-2">
-          解説の取得に失敗しました: {error}
+          {t('ai.failed', { error })}
         </p>
       )}
 

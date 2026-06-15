@@ -1,6 +1,8 @@
 import useExamStore from '../../store/examStore'
+import { useI18n } from '../../lib/i18n'
 
 export default function ProgressBar() {
+  const { t } = useI18n()
   const questions = useExamStore(s => s.questions)
   const answers = useExamStore(s => s.answers)
   const currentIndex = useExamStore(s => s.currentIndex)
@@ -20,8 +22,8 @@ export default function ProgressBar() {
   return (
     <div>
       <div className="mb-1 flex justify-between">
-        <span className="text-xs text-text-secondary font-medium">問 {currentIndex + 1} / {total}</span>
-        <span className="text-xs text-text-secondary font-medium">回答済み {answeredCount} / {total}</span>
+        <span className="text-xs text-text-secondary font-medium">{t('common.questionShort')} {currentIndex + 1} / {total}</span>
+        <span className="text-xs text-text-secondary font-medium">{t('common.answer')} {answeredCount} / {total}</span>
       </div>
       <div className="h-1.5 rounded-full bg-theme-border overflow-hidden">
         <div

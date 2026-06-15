@@ -1,19 +1,22 @@
 import { motion } from 'framer-motion'
 import ImageRenderer from '../signs/ImageRenderer'
+import { useI18n } from '../../lib/i18n'
 
 export default function QuestionCard({ question, onAnswer, showResult, userAnswer }) {
+  const { t, field } = useI18n()
   const isScenario = question.type === 'scenario'
+  const scenarioContext = field(question, 'scenario_context')
 
   return (
     <div className="bg-bg border border-theme-border rounded-xl p-5 shadow-sm">
       {/* Type label */}
       <p className="text-xs font-semibold uppercase tracking-wide text-primary mb-2">
-        {isScenario ? `シナリオ問題 · ${question.points}点` : `標準問題 · ${question.points}点`}
+        {isScenario ? t('exam.scenario') : t('exam.standard')} · {question.points}{t('common.points')}
       </p>
 
       {/* Question text */}
       <p className="text-lg font-medium leading-relaxed text-text-primary font-jp mb-3">
-        {question.question_jp}
+        {field(question, 'question')}
       </p>
 
       {/* Image */}
@@ -24,9 +27,9 @@ export default function QuestionCard({ question, onAnswer, showResult, userAnswe
       )}
 
       {/* Scenario context */}
-      {isScenario && question.scenario_context_jp && (
+      {isScenario && scenarioContext && (
         <p className="mb-4 rounded bg-amber-50 p-3 text-sm text-amber-800">
-          {question.scenario_context_jp}
+          {scenarioContext}
         </p>
       )}
 
@@ -77,6 +80,7 @@ function StandardAnswers({ questionId, onAnswer, showResult, userAnswer, correct
 }
 
 function ScenarioAnswers({ subQuestions, onAnswer, showResult, userAnswer }) {
+  const { field } = useI18n()
   // userAnswer is an object: { sub_id: boolean }
   const answers = userAnswer || {}
 
@@ -86,7 +90,7 @@ function ScenarioAnswers({ subQuestions, onAnswer, showResult, userAnswer }) {
         <div key={sq.id} className="rounded border border-theme-border bg-surface p-3">
           <p className="mb-2 text-sm text-text-primary">
             <span className="font-medium text-text-secondary">({sq.sub_number})</span>{' '}
-            {sq.text_jp}
+            {field(sq, 'text')}
           </p>
           <div className="flex gap-2">
             <AnswerButton

@@ -1,8 +1,10 @@
 import { Link } from 'react-router-dom'
 import useAdmin from '../../hooks/useAdmin'
 import Spinner from '../../components/ui/Spinner'
+import { useI18n } from '../../lib/i18n'
 
 export default function AdminDashboard() {
+  const { t } = useI18n()
   const { data: stats, loading, error } = useAdmin('stats')
 
   if (loading || !stats) {
@@ -15,23 +17,23 @@ export default function AdminDashboard() {
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-8">
-      <h1 className="mb-6 text-2xl font-bold text-gray-900">管理ダッシュボード</h1>
+      <h1 className="mb-6 text-2xl font-bold text-gray-900">{t('admin.dashboard')}</h1>
 
       {error && <p className="mb-4 text-sm text-wrong">{error}</p>}
 
       {stats && (
         <>
           <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
-            <StatCard label="ユーザー数" value={stats.users} />
-            <StatCard label="テスト数" value={stats.tests} />
-            <StatCard label="受験回数" value={stats.sessions} />
+            <StatCard label={t('admin.usersCount')} value={stats.users} />
+            <StatCard label={t('admin.testsCount')} value={stats.tests} />
+            <StatCard label={t('admin.sessionsCount')} value={stats.sessions} />
           </div>
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-            <QuickLink to="/admin/tests" title="テスト管理" desc="テストの有効化・無効化・削除" />
-            <QuickLink to="/admin/users" title="ユーザー管理" desc="ユーザー一覧と成績確認" />
-            <QuickLink to="/admin/upload" title="テストアップロード" desc="ZIPバンドルで新規テスト追加" />
-            <QuickLink to="/admin/images" title="問題画像" desc="既存の問題に画像をアップロード" />
+            <QuickLink to="/admin/tests" title={t('admin.testsManagement')} desc={t('admin.testsManagementDesc')} />
+            <QuickLink to="/admin/users" title={t('admin.usersManagement')} desc={t('admin.usersManagementDesc')} />
+            <QuickLink to="/admin/upload" title={t('admin.testUpload')} desc={t('admin.testUploadDesc')} />
+            <QuickLink to="/admin/images" title={t('admin.questionImages')} desc={t('admin.questionImagesDesc')} />
           </div>
         </>
       )}

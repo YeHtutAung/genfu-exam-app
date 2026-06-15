@@ -4,8 +4,10 @@ import useAdminStore from '../../store/adminStore'
 import TestList from '../../components/admin/TestList'
 import Modal from '../../components/ui/Modal'
 import Spinner from '../../components/ui/Spinner'
+import { useI18n } from '../../lib/i18n'
 
 export default function Tests() {
+  const { t, field } = useI18n()
   const { data: tests, loading, error } = useAdmin('tests')
   const categories = useAdminStore(s => s.categories)
   const toggleTestActive = useAdminStore(s => s.toggleTestActive)
@@ -28,12 +30,12 @@ export default function Tests() {
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-8">
-      <h1 className="mb-6 text-2xl font-bold text-gray-900">テスト管理</h1>
+      <h1 className="mb-6 text-2xl font-bold text-gray-900">{t('admin.testsManagement')}</h1>
 
       {error && <p className="mb-4 text-sm text-wrong">{error}</p>}
 
       {tests.length === 0 ? (
-        <p className="py-12 text-center text-gray-500">テストがありません</p>
+        <p className="py-12 text-center text-gray-500">{t('admin.noTestsLong')}</p>
       ) : (
         <TestList
           tests={tests}
@@ -45,9 +47,11 @@ export default function Tests() {
 
       <Modal
         isOpen={!!deleteTarget}
-        title="テストを削除"
-        message={`「${deleteTarget?.title_jp || `テスト第${deleteTarget?.test_number}回`}」を削除しますか？この操作は取り消せません。`}
-        confirmLabel="削除する"
+        title={t('admin.deleteTest')}
+        message={t('admin.deleteTestMessage', {
+          title: field(deleteTarget, 'title') || t('home.mockTest', { number: deleteTarget?.test_number }),
+        })}
+        confirmLabel={t('admin.deleteConfirm')}
         onConfirm={handleDelete}
         onCancel={() => setDeleteTarget(null)}
         danger

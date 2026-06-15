@@ -14,6 +14,8 @@ const INITIAL_STATE = {
   completed: false,
   score: null,
   passed: null,
+  submitting: false,
+  submitError: null,
   loading: false,
   error: null,
 }
@@ -191,52 +193,74 @@ const useExamStore = create(
 
       completeExam: async () => {
         const { completed, sessionId, testMeta, questions, answers } = get()
-        if (completed) return
+        if (completed || get().submitting) return { ok: true }
+
+        if (!sessionId || !testMeta) {
+          const message = 'Session is not ready. Please reload and try again.'
+          set({ submitError: message })
+          return { ok: false, error: message }
+        }
 
         const score = get().calculateScore()
         const passed = score >= testMeta.pass_score
+        set({ submitting: true, submitError: null })
 
-        // Build answer rows
-        const answerRows = []
-        for (const q of questions) {
-          if (q.type === 'standard') {
-            answerRows.push({
-              session_id: sessionId,
-              question_id: q.id,
-              sub_question_id: null,
-              user_answer: answers[q.id] ?? null,
-              is_correct: answers[q.id] === q.answer,
-            })
-          } else if (q.type === 'scenario') {
-            for (const sq of q.sub_questions) {
+        try {
+          // Build answer rows
+          const answerRows = []
+          for (const q of questions) {
+            if (q.type === 'standard') {
               answerRows.push({
                 session_id: sessionId,
                 question_id: q.id,
-                sub_question_id: sq.id,
-                user_answer: answers[sq.id] ?? null,
-                is_correct: answers[sq.id] === sq.answer,
+                sub_question_id: null,
+                user_answer: answers[q.id] ?? null,
+                is_correct: answers[q.id] === q.answer,
               })
+            } else if (q.type === 'scenario') {
+              for (const sq of q.sub_questions) {
+                answerRows.push({
+                  session_id: sessionId,
+                  question_id: q.id,
+                  sub_question_id: sq.id,
+                  user_answer: answers[sq.id] ?? null,
+                  is_correct: answers[sq.id] === sq.answer,
+                })
+              }
             }
           }
+
+          const { count: existingAnswerCount, error: existingAnswerError } = await supabase
+            .from('answers')
+            .select('id', { count: 'exact', head: true })
+            .eq('session_id', sessionId)
+
+          if (existingAnswerError) throw existingAnswerError
+
+          if (answerRows.length > 0 && (existingAnswerCount ?? 0) === 0) {
+            const { error: answerError } = await supabase.from('answers').insert(answerRows)
+            if (answerError) throw answerError
+          }
+
+          const { error: sessionError } = await supabase
+            .from('exam_sessions')
+            .update({
+              score,
+              passed,
+              completed_at: new Date().toISOString(),
+            })
+            .eq('id', sessionId)
+
+          if (sessionError) throw sessionError
+
+          // Set completed AFTER DB writes finish, so Results page has data
+          set({ completed: true, score, passed, submitting: false, submitError: null })
+          return { ok: true, score, passed }
+        } catch (err) {
+          const message = err?.message || 'Failed to submit results. Please try again.'
+          set({ submitting: false, submitError: message })
+          return { ok: false, error: message }
         }
-
-        // Save answers to DB first
-        if (answerRows.length > 0) {
-          await supabase.from('answers').insert(answerRows)
-        }
-
-        // Update session with score and completion time
-        await supabase
-          .from('exam_sessions')
-          .update({
-            score,
-            passed,
-            completed_at: new Date().toISOString(),
-          })
-          .eq('id', sessionId)
-
-        // Set completed AFTER DB writes finish, so Results page has data
-        set({ completed: true, score, passed })
       },
 
       // ── Reset ─────────────────────────────────────────────────────

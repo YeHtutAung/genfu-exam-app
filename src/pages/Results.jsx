@@ -6,8 +6,10 @@ import ImageRenderer from '../components/signs/ImageRenderer'
 import Spinner from '../components/ui/Spinner'
 import PageTransition from '../components/ui/PageTransition'
 import StaggerList from '../components/ui/StaggerList'
+import { useI18n } from '../lib/i18n'
 
 export default function Results() {
+  const { t } = useI18n()
   const { sessionId } = useParams()
   const [session, setSession] = useState(null)
   const [test, setTest] = useState(null)
@@ -161,26 +163,26 @@ export default function Results() {
               to={`/exam/${session.test_id}`}
               className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
             >
-              もう一度受験
+              {t('exam.retake')}
             </Link>
             <Link
               to={`/study/${session.test_id}`}
               className="rounded-md bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200"
             >
-              学習モードで復習
+              {t('exam.reviewStudy')}
             </Link>
             <Link
               to="/"
               className="rounded-md bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200"
             >
-              ホームに戻る
+              {t('common.backHome')}
             </Link>
           </div>
 
           {/* Review section */}
           <div className="mt-8">
             <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-text-primary">問題の振り返り</h2>
+              <h2 className="text-lg font-semibold text-text-primary">{t('exam.reviewTitle')}</h2>
               <button
                 onClick={() => setWrongOnly(!wrongOnly)}
                 className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
@@ -189,7 +191,7 @@ export default function Results() {
                     : 'bg-surface text-text-secondary'
                 }`}
               >
-                {wrongOnly ? '不正解のみ表示中' : '不正解のみ表示'}
+                {wrongOnly ? t('exam.showingWrongOnly') : t('exam.wrongOnly')}
               </button>
             </div>
 
@@ -200,7 +202,7 @@ export default function Results() {
             </StaggerList>
 
             {wrongOnly && displayQuestions.length === 0 && (
-              <p className="py-8 text-center text-text-secondary">全問正解です！</p>
+              <p className="py-8 text-center text-text-secondary">{t('exam.allCorrect')}</p>
             )}
           </div>
         </div>
@@ -210,7 +212,9 @@ export default function Results() {
 }
 
 function ReviewItem({ question, answerMap }) {
+  const { t, field } = useI18n()
   const isScenario = question.type === 'scenario'
+  const hint = field(question, 'hint')
 
   if (isScenario) {
     const allCorrect = question.sub_questions.every(sq => answerMap[sq.id]?.is_correct)
@@ -220,9 +224,9 @@ function ReviewItem({ question, answerMap }) {
           <ResultBadge correct={allCorrect} />
           <div className="flex-1">
             <span className="mb-1 inline-block rounded bg-purple-100 px-2 py-0.5 text-xs font-medium text-purple-700">
-              危険予測問題（{question.points}点）
+              {t('exam.dangerScenario')} ({question.points}{t('common.points')})
             </span>
-            <p className="text-sm text-text-primary mt-1 font-jp">{question.question_jp}</p>
+            <p className="text-sm text-text-primary mt-1 font-jp">{field(question, 'question')}</p>
 
             {question.image && (
               <div className="my-2">
@@ -239,10 +243,10 @@ function ReviewItem({ question, answerMap }) {
                       {a?.is_correct ? '○' : '×'}
                     </span>
                     <span className="text-text-secondary">({sq.sub_number})</span>
-                    <span className="text-text-primary">{sq.text_jp}</span>
+                    <span className="text-text-primary">{field(sq, 'text')}</span>
                     <span className="ml-auto text-text-secondary">
-                      あなた: {a?.user_answer === true ? '○' : a?.user_answer === false ? '×' : '—'}
-                      {' '}/ 正解: {sq.answer ? '○' : '×'}
+                      {t('common.yourAnswer')}: {a?.user_answer === true ? '○' : a?.user_answer === false ? '×' : '—'}
+                      {' '}/ {t('common.correct')}: {sq.answer ? '○' : '×'}
                     </span>
                   </div>
                 )
@@ -264,8 +268,8 @@ function ReviewItem({ question, answerMap }) {
         <ResultBadge correct={correct} />
         <div className="flex-1">
           <p className="text-sm text-text-primary font-jp">
-            <span className="font-medium text-text-secondary">問{question.question_number}.</span>{' '}
-            {question.question_jp}
+            <span className="font-medium text-text-secondary">{t('common.questionShort')}{question.question_number}.</span>{' '}
+            {field(question, 'question')}
           </p>
 
           {question.image && (
@@ -276,15 +280,15 @@ function ReviewItem({ question, answerMap }) {
 
           <div className="mt-1 flex gap-4 text-xs">
             <span className={a?.user_answer === question.answer ? 'text-correct font-semibold' : 'text-wrong font-semibold'}>
-              あなたの回答: {a?.user_answer === true ? '○' : a?.user_answer === false ? '×' : '未回答'}
+              {t('common.yourAnswer')}: {a?.user_answer === true ? '○' : a?.user_answer === false ? '×' : t('exam.unansweredAnswer')}
             </span>
             <span className="text-text-secondary">
-              正解: {question.answer ? '○' : '×'}
+              {t('common.correct')}: {question.answer ? '○' : '×'}
             </span>
           </div>
 
-          {!correct && question.hint_jp && (
-            <p className="mt-1 text-xs text-blue-600">{question.hint_jp}</p>
+          {!correct && hint && (
+            <p className="mt-1 text-xs text-blue-600">{hint}</p>
           )}
         </div>
       </div>

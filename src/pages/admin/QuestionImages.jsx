@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../../lib/supabase'
+import { uploadQuestionImage } from '../../lib/api'
 import Spinner from '../../components/ui/Spinner'
 import PageTransition from '../../components/ui/PageTransition'
 
@@ -10,6 +11,7 @@ export default function QuestionImages() {
   const [loading, setLoading] = useState(true)
   const [uploading, setUploading] = useState(null) // questionId being uploaded
   const [message, setMessage] = useState(null)
+  const [imageVersion, setImageVersion] = useState(Date.now())
 
   // Load tests
   useEffect(() => {
@@ -45,18 +47,8 @@ export default function QuestionImages() {
     setUploading(questionId)
     setMessage(null)
 
-    const formData = new FormData()
-    formData.append('questionId', questionId)
-    formData.append('image', file)
-    formData.append('imageAlt', file.name)
-
     try {
-      const res = await fetch('/api/upload-image', {
-        method: 'POST',
-        body: formData,
-      })
-      const data = await res.json()
-      if (data.success) {
+      await uploadQuestionImage({ questionId, file, imageAlt: file.name })
         setMessage({ type: 'success', text: `問${questions.find(q => q.id === questionId)?.question_number}: 画像をアップロードしました` })
         // Refresh questions
         const { data: updated } = await supabase
@@ -65,9 +57,7 @@ export default function QuestionImages() {
           .eq('test_id', selectedTest)
           .order('question_number')
         setQuestions(updated || [])
-      } else {
-        setMessage({ type: 'error', text: data.error })
-      }
+        setImageVersion(Date.now())
     } catch (err) {
       setMessage({ type: 'error', text: err.message })
     } finally {
@@ -135,7 +125,7 @@ export default function QuestionImages() {
 
                   {/* Show current image */}
                   {q.image_render === 'static' && q.image_url && (
-                    <img src={q.image_url} alt={q.image_alt} className="mt-2 h-20 rounded border border-theme-border object-contain" />
+                    <img src={`${q.image_url}?v=${imageVersion}`} alt={q.image_alt} className="mt-2 h-20 rounded border border-theme-border object-contain" />
                   )}
                 </div>
 

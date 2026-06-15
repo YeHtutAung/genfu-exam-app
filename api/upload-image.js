@@ -1,4 +1,4 @@
-import { createClient } from '@supabase/supabase-js'
+import { createServiceClient, requireAdmin } from './_admin-auth.js'
 
 export const config = { runtime: 'edge' }
 
@@ -9,14 +9,15 @@ export default async function handler(req) {
     return new Response('Method not allowed', { status: 405 })
   }
 
-  const supabaseUrl = process.env.SUPABASE_URL
-  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
-
-  if (!supabaseUrl || !serviceRoleKey) {
-    return json(500, { success: false, error: 'Server misconfigured' })
+  const { supabase, error: configError } = createServiceClient()
+  if (configError) {
+    return json(500, { success: false, error: configError })
   }
 
-  const supabase = createClient(supabaseUrl, serviceRoleKey)
+  const admin = await requireAdmin(req, supabase)
+  if (!admin.ok) {
+    return json(admin.status, { success: false, error: admin.error })
+  }
 
   let formData
   try {
@@ -67,7 +68,12 @@ export default async function handler(req) {
       .single()
 
     const categoryCode = category?.code || 'unknown'
-    const filename = file.name || 'image.png'
+    const originalFilename = file.name || 'image.png'
+    const extension = originalFilename.includes('.')
+      ? originalFilename.slice(originalFilename.lastIndexOf('.')).toLowerCase()
+      : '.png'
+    const safeQuestionId = String(questionId).replace(/[^a-zA-Z0-9_-]/g, '')
+    const filename = `${safeQuestionId}-${Date.now()}${extension}`
     const storagePath = `${categoryCode}/${test.id}/${filename}`
 
     // Upload to Supabase Storage
@@ -97,7 +103,7 @@ export default async function handler(req) {
       .update({
         image_render: 'static',
         image_url: publicUrl,
-        image_alt: formData.get('imageAlt') || filename,
+        image_alt: formData.get('imageAlt') || originalFilename,
       })
       .eq('id', questionId)
 

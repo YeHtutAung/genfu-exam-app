@@ -3,8 +3,10 @@ import { useNavigate } from 'react-router-dom'
 import { uploadBundle } from '../../lib/api'
 import useAdminStore from '../../store/adminStore'
 import UploadForm from '../../components/admin/UploadForm'
+import { useI18n } from '../../lib/i18n'
 
 export default function Upload() {
+  const { t } = useI18n()
   const [uploading, setUploading] = useState(false)
   const [error, setError] = useState(null)
   const navigate = useNavigate()
@@ -26,9 +28,9 @@ export default function Upload() {
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-8">
-      <h1 className="mb-6 text-2xl font-bold text-gray-900">テストアップロード</h1>
+      <h1 className="mb-6 text-2xl font-bold text-gray-900">{t('admin.testUpload')}</h1>
       <p className="mb-6 text-sm text-gray-500">
-        ZIPバンドル（JSON + 画像）をアップロードして新しいテストを追加します。
+        {t('admin.uploadDescription')}
       </p>
 
       <UploadForm onUpload={handleUpload} uploading={uploading} />

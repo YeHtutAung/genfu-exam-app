@@ -5,8 +5,10 @@ import useAuthStore from '../store/authStore'
 import ScoreCard from '../components/exam/ScoreCard'
 import Spinner from '../components/ui/Spinner'
 import PageTransition from '../components/ui/PageTransition'
+import { useI18n } from '../lib/i18n'
 
 export default function StudySummary() {
+  const { t } = useI18n()
   const { testId, sessionId } = useParams()
   const user = useAuthStore(s => s.user)
   const [session, setSession] = useState(null)
@@ -25,14 +27,14 @@ export default function StudySummary() {
         .single()
 
       if (sErr || !sess) {
-        setError('データが見つかりません')
+        setError(t('common.noData'))
         setLoading(false)
         return
       }
 
       // Validate: must be a study session belonging to current user, matching the URL testId
       if (sess.mode !== 'study' || sess.user_id !== user?.id || sess.test_id !== testId) {
-        setError('データが見つかりません')
+        setError(t('common.noData'))
         setLoading(false)
         return
       }
@@ -45,20 +47,33 @@ export default function StudySummary() {
         .select('*')
         .eq('id', sess.test_id)
         .single()
+
+      if (!t) {
+        setError('Study summary could not load the test data.')
+        setLoading(false)
+        return
+      }
+
       setTest(t)
 
       // Fetch questions to compute stats
-      const { data: qs } = await supabase
+      const { data: qs, error: qErr } = await supabase
         .from('questions')
         .select('*, sub_questions(*)')
         .eq('test_id', sess.test_id)
         .order('question_number')
 
       // Fetch answers
-      const { data: ans } = await supabase
+      const { data: ans, error: aErr } = await supabase
         .from('answers')
         .select('*')
         .eq('session_id', sessionId)
+
+      if (qErr || aErr) {
+        setError('Study summary could not load answer data.')
+        setLoading(false)
+        return
+      }
 
       const answerMap = {}
       for (const a of ans || []) {
@@ -91,7 +106,7 @@ export default function StudySummary() {
       setLoading(false)
     }
     load()
-  }, [sessionId, user?.id])
+  }, [sessionId, testId, user?.id, t])
 
   if (loading) {
     return (
@@ -106,9 +121,9 @@ export default function StudySummary() {
       <PageTransition>
         <div className="min-h-screen bg-bg px-4 py-12">
           <div className="mx-auto max-w-3xl text-center">
-            <p className="text-text-secondary">{error || 'データが見つかりません'}</p>
+            <p className="text-text-secondary">{error || t('common.noData')}</p>
             <Link to="/" className="mt-4 inline-block text-primary hover:text-primary-hover text-sm font-medium">
-              ホームに戻る
+              {t('common.backHome')}
             </Link>
           </div>
         </div>
@@ -126,9 +141,9 @@ export default function StudySummary() {
             passScore={test.pass_score ?? 45}
             passed={session.passed ?? false}
             timeTaken={0}
-            correctCount={stats.correctCount}
-            wrongCount={stats.wrongCount}
-            unansweredCount={stats.unansweredCount}
+            correctCount={stats?.correctCount}
+            wrongCount={stats?.wrongCount}
+            unansweredCount={stats?.unansweredCount}
             hideTimeTaken
             hideCtas
             mode="study"
@@ -140,19 +155,19 @@ export default function StudySummary() {
               to={`/exam/${testId}`}
               className="w-full max-w-xs rounded-xl bg-primary py-2.5 text-sm font-semibold text-white text-center shadow-sm shadow-primary/25 transition-colors hover:bg-primary-hover"
             >
-              試験モードに挑戦
+              {t('study.challengeExam')}
             </Link>
             <Link
               to={`/study/${testId}`}
               className="w-full max-w-xs rounded-xl bg-surface border border-theme-border py-2.5 text-sm font-medium text-text-secondary text-center transition-colors hover:bg-theme-border"
             >
-              もう一度学習
+              {t('study.studyAgain')}
             </Link>
             <Link
               to="/"
               className="text-primary text-sm font-medium hover:text-primary-hover mt-1"
             >
-              ホームに戻る
+              {t('common.backHome')}
             </Link>
           </div>
         </div>

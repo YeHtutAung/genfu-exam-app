@@ -3,11 +3,15 @@ import { motion } from 'framer-motion'
 import ImageRenderer from '../signs/ImageRenderer'
 import AIExplanation from './AIExplanation'
 import useReducedMotion from '../../hooks/useReducedMotion'
+import { useI18n } from '../../lib/i18n'
 
 export default function StudyCard({ question, onAnswer, userAnswer }) {
+  const { t, field } = useI18n()
   const [revealed, setRevealed] = useState(false)
   const reduced = useReducedMotion()
   const isScenario = question.type === 'scenario'
+  const scenarioContext = field(question, 'scenario_context')
+  const hint = field(question, 'hint')
 
   const handleAnswer = (id, answer) => {
     onAnswer(id, answer)
@@ -33,12 +37,12 @@ export default function StudyCard({ question, onAnswer, userAnswer }) {
     <div className="bg-bg border border-theme-border rounded-xl p-5 shadow-sm">
       {/* Type label */}
       <p className="text-xs font-semibold uppercase tracking-wide text-primary mb-2">
-        {isScenario ? `シナリオ問題 · ${question.points}点` : `標準問題 · ${question.points}点`}
+        {isScenario ? t('exam.scenario') : t('exam.standard')} · {question.points}{t('common.points')}
       </p>
 
       {/* Question text */}
       <p className="text-lg font-medium leading-relaxed text-text-primary font-jp mb-3">
-        {question.question_jp}
+        {field(question, 'question')}
       </p>
 
       {/* Image */}
@@ -49,9 +53,9 @@ export default function StudyCard({ question, onAnswer, userAnswer }) {
       )}
 
       {/* Scenario context */}
-      {isScenario && question.scenario_context_jp && (
+      {isScenario && scenarioContext && (
         <p className="mb-4 rounded bg-amber-50 p-3 text-sm text-amber-800">
-          {question.scenario_context_jp}
+          {scenarioContext}
         </p>
       )}
 
@@ -76,7 +80,7 @@ export default function StudyCard({ question, onAnswer, userAnswer }) {
       )}
 
       {/* Hint card — shown after answering */}
-      {showResult && question.hint_jp && (
+      {showResult && hint && (
         <motion.div
           initial={{ height: 0, opacity: 0 }}
           animate={{ height: 'auto', opacity: 1 }}
@@ -85,10 +89,10 @@ export default function StudyCard({ question, onAnswer, userAnswer }) {
         >
           <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-xl p-3 mt-3">
             <p className="mb-1 text-xs">
-              <span className="font-medium text-amber-800 dark:text-amber-300">💡 ヒント:</span>
+              <span className="font-medium text-amber-800 dark:text-amber-300">💡 {t('study.hint')}</span>
             </p>
             <p className="text-sm text-amber-900 dark:text-amber-200 leading-relaxed">
-              {question.hint_jp}
+              {hint}
             </p>
           </div>
         </motion.div>
@@ -103,8 +107,8 @@ export default function StudyCard({ question, onAnswer, userAnswer }) {
           style={{ overflow: 'hidden' }}
         >
           <AIExplanation
-            questionJp={question.question_jp}
-            hintJp={question.hint_jp}
+            questionJp={field(question, 'question')}
+            hintJp={hint}
           />
         </motion.div>
       )}
@@ -138,13 +142,15 @@ function StandardAnswers({ questionId, onAnswer, showResult, userAnswer, correct
 }
 
 function ScenarioAnswers({ subQuestions, onAnswer, showResult, userAnswer, reduced }) {
+  const { field } = useI18n()
+
   return (
     <div className="space-y-3">
       {subQuestions.map(sq => (
         <div key={sq.id} className="rounded border border-theme-border bg-surface p-3">
           <p className="mb-2 text-sm text-text-primary">
             <span className="font-medium text-text-secondary">({sq.sub_number})</span>{' '}
-            {sq.text_jp}
+            {field(sq, 'text')}
           </p>
           <div className="flex gap-2">
             <StudyAnswerButton
@@ -175,6 +181,7 @@ function ScenarioAnswers({ subQuestions, onAnswer, showResult, userAnswer, reduc
 }
 
 function StudyAnswerButton({ label, value, userAnswer, correctAnswer, showResult, onClick, reduced, small }) {
+  const { t } = useI18n()
   const isUserAnswer = userAnswer === value
   const isCorrect = correctAnswer === value
   const isUserCorrect = isUserAnswer && isCorrect
@@ -193,7 +200,7 @@ function StudyAnswerButton({ label, value, userAnswer, correctAnswer, showResult
     } else if (isUserWrong) {
       stateClasses = 'border-wrong bg-wrong/5 text-wrong font-semibold'
       animateProps = reduced ? {} : { x: [-8, 8, -8, 8, 0] }
-      label_suffix = <span className="text-xs ml-1">← あなたの回答</span>
+      label_suffix = <span className="text-xs ml-1">{t('study.yourAnswer')}</span>
     } else if (isCorrectNotSelected) {
       stateClasses = 'border-correct bg-correct/5 text-correct font-semibold'
       label_suffix = <span className="text-xs ml-1">✓</span>

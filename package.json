@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "lint": "eslint src --ext js,jsx --report-unused-disable-directives --max-warnings 0"
+    "lint": "eslint src --ext js,jsx --report-unused-disable-directives --max-warnings 0",
+    "smoke:admin-auth": "node scripts/smoke-admin-auth.js"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.43.4",

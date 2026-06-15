@@ -1,4 +1,5 @@
 import { unzipSync } from 'fflate'
+import { createServiceClient, requireAdmin } from './_admin-auth.js'
 
 export const config = { runtime: 'edge' }
 
@@ -14,6 +15,16 @@ export default async function handler(req) {
   }
 
   try {
+    const { supabase, error: configError } = createServiceClient()
+    if (configError) {
+      return json(500, { valid: false, errors: [configError] })
+    }
+
+    const admin = await requireAdmin(req, supabase)
+    if (!admin.ok) {
+      return json(admin.status, { valid: false, errors: [admin.error] })
+    }
+
     const formData = await req.formData()
     const file = formData.get('bundle')
 
@@ -34,16 +45,30 @@ export default async function handler(req) {
       return json(400, { valid: false, errors: ['Invalid or corrupted ZIP file'] })
     }
 
-    // Find JSON file at root level
-    const jsonFiles = Object.keys(entries).filter(
-      name => !name.includes('/') && name.endsWith('.json')
-    )
+    // Normalize paths and detect common prefix (e.g., "test_01/")
+    const allPaths = Object.keys(entries).map(p => p.replace(/\\/g, '/'))
+    let prefix = ''
+    const topDirs = new Set(allPaths.filter(p => p.includes('/')).map(p => p.split('/')[0]))
+    if (topDirs.size === 1) {
+      // All files share a single top-level directory — treat it as prefix
+      const dir = [...topDirs][0]
+      const hasRootFiles = allPaths.some(p => !p.includes('/') && !p.endsWith('/'))
+      if (!hasRootFiles) {
+        prefix = dir + '/'
+      }
+    }
+
+    // Find JSON file (at root or inside prefix)
+    const jsonFiles = allPaths.filter(name => {
+      const relative = prefix && name.startsWith(prefix) ? name.slice(prefix.length) : name
+      return !relative.includes('/') && relative.endsWith('.json')
+    })
 
     if (jsonFiles.length === 0) {
-      return json(400, { valid: false, errors: ['No JSON file found at ZIP root'] })
+      return json(400, { valid: false, errors: ['No JSON file found in ZIP'] })
     }
     if (jsonFiles.length > 1) {
-      return json(400, { valid: false, errors: ['ZIP must contain exactly one JSON file at root'] })
+      return json(400, { valid: false, errors: ['ZIP must contain exactly one JSON file'] })
     }
 
     // Parse JSON
@@ -55,11 +80,12 @@ export default async function handler(req) {
       return json(400, { valid: false, errors: ['JSON file is not valid JSON'] })
     }
 
-    // Collect PNG images from /images/ subfolder
+    // Collect PNG images from images/ subfolder (with or without prefix)
+    const imagesPrefix = prefix + 'images/'
     const images = {}
     for (const [path, data] of Object.entries(entries)) {
       const normalized = path.replace(/\\/g, '/')
-      if (normalized.startsWith('images/') && normalized.endsWith('.png')) {
+      if ((normalized.startsWith('images/') || normalized.startsWith(imagesPrefix)) && normalized.endsWith('.png')) {
         const filename = normalized.split('/').pop()
         if (data.length > MAX_IMAGE_SIZE) {
           return json(400, { valid: false, errors: [`Image ${filename} exceeds ${MAX_IMAGE_SIZE / 1024 / 1024}MB limit`] })

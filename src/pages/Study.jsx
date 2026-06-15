@@ -5,6 +5,7 @@ import useExamStore from '../store/examStore'
 import StudyCard from '../components/study/StudyCard'
 import Spinner from '../components/ui/Spinner'
 import PageTransition from '../components/ui/PageTransition'
+import { useI18n } from '../lib/i18n'
 
 const slideVariants = {
   initial: (dir) => ({ x: dir > 0 ? 100 : -100, opacity: 0 }),
@@ -13,6 +14,7 @@ const slideVariants = {
 }
 
 export default function Study() {
+  const { t } = useI18n()
   const { testId } = useParams()
   const navigate = useNavigate()
 
@@ -21,7 +23,6 @@ export default function Study() {
   const questions = useExamStore(s => s.questions)
   const currentIndex = useExamStore(s => s.currentIndex)
   const answers = useExamStore(s => s.answers)
-  const testMeta = useExamStore(s => s.testMeta)
   const startExam = useExamStore(s => s.startExam)
   const answerQuestion = useExamStore(s => s.answerQuestion)
   const answerSubQuestion = useExamStore(s => s.answerSubQuestion)
@@ -123,12 +124,12 @@ export default function Study() {
             {/* Top bar */}
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-baseline">
-                <span className="text-xs text-text-secondary">学習モード</span>
-                <span className="text-xl font-bold text-text-primary ml-1">問 {current}</span>
+                <span className="text-xs text-text-secondary">{t('study.mode')}</span>
+                <span className="text-xl font-bold text-text-primary ml-1">{t('common.questionShort')} {current}</span>
                 <span className="text-sm text-text-secondary ml-0.5">/ {total}</span>
               </div>
               <span className="bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-xs font-semibold px-2.5 py-1 rounded-full">
-                📖 学習中
+                📖 {t('study.studying')}
               </span>
             </div>
 
@@ -162,7 +163,7 @@ export default function Study() {
               disabled={currentIndex === 0}
               className="rounded-lg bg-surface px-4 py-2 text-sm font-medium text-text-secondary transition-colors hover:bg-theme-border disabled:opacity-30"
             >
-              ← 前へ
+              {t('study.previous')}
             </button>
             {currentIndex === questions.length - 1 ? (
               <div className="flex items-center gap-2">
@@ -172,7 +173,7 @@ export default function Study() {
                     disabled={completing}
                     className="rounded-xl bg-primary px-6 py-2.5 text-sm font-semibold text-white shadow-sm shadow-primary/25 transition-colors hover:bg-primary-hover disabled:opacity-50"
                   >
-                    {completing ? '保存中...' : '学習を完了する'}
+                    {completing ? t('common.saving') : t('study.complete')}
                   </button>
                 ) : (
                   <>
@@ -180,13 +181,13 @@ export default function Study() {
                       disabled
                       className="rounded-xl bg-primary/50 px-6 py-2.5 text-sm font-semibold text-white/70 cursor-not-allowed"
                     >
-                      学習を完了する
+                      {t('study.complete')}
                     </button>
                     <button
                       onClick={() => navigate('/')}
                       className="text-text-secondary text-sm font-medium hover:text-text-primary"
                     >
-                      ホームに戻る
+                      {t('common.backHome')}
                     </button>
                   </>
                 )}
@@ -196,7 +197,7 @@ export default function Study() {
                 onClick={handleNext}
                 className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-hover"
               >
-                次へ →
+                {t('study.next')}
               </button>
             )}
           </div>

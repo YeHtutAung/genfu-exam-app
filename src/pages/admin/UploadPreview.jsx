@@ -4,8 +4,10 @@ import { supabase } from '../../lib/supabase'
 import { confirmUpload } from '../../lib/api'
 import useAdminStore from '../../store/adminStore'
 import UploadPreviewPanel from '../../components/admin/UploadPreview'
+import { useI18n } from '../../lib/i18n'
 
 export default function UploadPreview() {
+  const { t } = useI18n()
   const navigate = useNavigate()
   const preview = useAdminStore(s => s.uploadPreview)
   const clearUploadPreview = useAdminStore(s => s.clearUploadPreview)
@@ -31,12 +33,12 @@ export default function UploadPreview() {
   if (!preview) {
     return (
       <div className="mx-auto max-w-2xl px-4 py-8 text-center">
-        <p className="text-gray-500">プレビューデータがありません。</p>
+        <p className="text-gray-500">{t('admin.noPreviewData')}</p>
         <button
           onClick={() => navigate('/admin/upload')}
           className="mt-4 rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
         >
-          アップロードに戻る
+          {t('admin.backToUpload')}
         </button>
       </div>
     )
@@ -44,7 +46,7 @@ export default function UploadPreview() {
 
   const handleConfirm = async () => {
     if (!categoryId) {
-      setError(`カテゴリ "${preview.meta.category}" が見つかりません`)
+      setError(t('admin.categoryNotFound', { category: preview.meta.category }))
       return
     }
     setConfirming(true)
@@ -67,7 +69,7 @@ export default function UploadPreview() {
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-8">
-      <h1 className="mb-6 text-2xl font-bold text-gray-900">アップロードプレビュー</h1>
+      <h1 className="mb-6 text-2xl font-bold text-gray-900">{t('admin.uploadPreview')}</h1>
 
       <UploadPreviewPanel
         preview={preview}

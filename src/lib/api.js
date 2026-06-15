@@ -1,3 +1,12 @@
+import { supabase } from './supabase'
+
+async function authHeaders() {
+  const { data } = await supabase.auth.getSession()
+  const token = data.session?.access_token
+
+  return token ? { Authorization: `Bearer ${token}` } : {}
+}
+
 export async function explain(questionJp, hintJp) {
   const res = await fetch('/api/explain', {
     method: 'POST',
@@ -21,6 +30,7 @@ export async function explain(questionJp, hintJp) {
 export async function uploadBundle(formData) {
   const res = await fetch('/api/upload-bundle', {
     method: 'POST',
+    headers: await authHeaders(),
     body: formData,
   })
 
@@ -35,7 +45,10 @@ export async function uploadBundle(formData) {
 export async function confirmUpload(payload) {
   const res = await fetch('/api/confirm-upload', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      ...await authHeaders(),
+    },
     body: JSON.stringify(payload),
   })
 
@@ -45,4 +58,44 @@ export async function confirmUpload(payload) {
   }
 
   return res.json()
+}
+
+export async function uploadQuestionImage({ questionId, file, imageAlt }) {
+  const formData = new FormData()
+  formData.append('questionId', questionId)
+  formData.append('image', file)
+  formData.append('imageAlt', imageAlt || file.name)
+
+  const res = await fetch('/api/upload-image', {
+    method: 'POST',
+    headers: await authHeaders(),
+    body: formData,
+  })
+
+  const data = await res.json().catch(() => null)
+
+  if (!res.ok || !data?.success) {
+    throw new Error(data?.error || `upload-image failed: ${res.status}`)
+  }
+
+  return data
+}
+
+export async function deleteTest(testId) {
+  const res = await fetch('/api/delete-test', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      ...await authHeaders(),
+    },
+    body: JSON.stringify({ testId }),
+  })
+
+  const data = await res.json().catch(() => null)
+
+  if (!res.ok || !data?.success) {
+    throw new Error(data?.error || `delete-test failed: ${res.status}`)
+  }
+
+  return data
 }

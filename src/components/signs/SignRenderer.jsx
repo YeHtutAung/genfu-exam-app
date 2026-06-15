@@ -203,17 +203,129 @@ function SchoolZoneWarning() {
   )
 }
 
+/** Round regulatory speed limit sign — red border, white bg, number inside */
+function SpeedMax50() {
+  return (
+    <SignFrame>
+      <svg viewBox="0 0 80 80" className="h-20 w-20">
+        <circle cx="40" cy="40" r="38" fill="white" stroke="#f97316" strokeWidth="5" />
+        <circle cx="40" cy="40" r="33" fill="none" stroke="#f97316" strokeWidth="1" />
+        <text x="40" y="48" textAnchor="middle" fill="#1e3a5f" fontSize="30" fontWeight="bold" fontFamily="Arial, sans-serif">50</text>
+      </svg>
+    </SignFrame>
+  )
+}
+
+/** Bus dedicated lane — road surface top-down view with バス専用 7-9 marking */
+function BusDedicatedLane() {
+  return (
+    <SignFrame>
+      <svg viewBox="0 0 80 110" className="h-32 w-24">
+        {/* Road surface */}
+        <rect x="0" y="0" width="80" height="110" rx="4" fill="#4b5563" />
+
+        {/* Left edge line (solid white) */}
+        <line x1="8" y1="0" x2="8" y2="110" stroke="white" strokeWidth="3" />
+        {/* Right edge line (solid white) */}
+        <line x1="72" y1="0" x2="72" y2="110" stroke="white" strokeWidth="3" />
+
+        {/* Left lane dashes */}
+        <rect x="24" y="4" width="5" height="16" rx="1" fill="white" />
+        <rect x="24" y="46" width="5" height="16" rx="1" fill="white" />
+        <rect x="24" y="88" width="5" height="16" rx="1" fill="white" />
+
+        {/* Right lane dashes */}
+        <rect x="51" y="4" width="5" height="16" rx="1" fill="white" />
+        <rect x="51" y="46" width="5" height="16" rx="1" fill="white" />
+        <rect x="51" y="88" width="5" height="16" rx="1" fill="white" />
+
+        {/* Vertical text — one character per line, left side */}
+        <text x="16" y="16" textAnchor="middle" fill="white" fontSize="11" fontWeight="bold" fontFamily="sans-serif">バ</text>
+        <text x="16" y="30" textAnchor="middle" fill="white" fontSize="11" fontWeight="bold" fontFamily="sans-serif">ス</text>
+        <text x="16" y="44" textAnchor="middle" fill="white" fontSize="11" fontWeight="bold" fontFamily="sans-serif">専</text>
+        <text x="16" y="58" textAnchor="middle" fill="white" fontSize="11" fontWeight="bold" fontFamily="sans-serif">用</text>
+        <text x="16" y="72" textAnchor="middle" fill="white" fontSize="9" fontWeight="bold" fontFamily="sans-serif">7-9</text>
+      </svg>
+    </SignFrame>
+  )
+}
+
+/** Green traffic light — horizontal (Japanese style), no label */
+function SignalGreen() {
+  return (
+    <SignFrame>
+      <div className="flex items-center gap-2 rounded-full bg-gray-800 px-3 py-2">
+        <div className="h-6 w-6 rounded-full bg-green-400 shadow-[0_0_10px_rgba(74,222,128,0.8)]" />
+        <div className="h-6 w-6 rounded-full bg-gray-600" />
+        <div className="h-6 w-6 rounded-full bg-gray-600" />
+      </div>
+    </SignFrame>
+  )
+}
+
+/** No overtaking sign — round, orange border, curved arrows with diagonal slash */
+function NoOvertaking() {
+  return (
+    <SignFrame>
+      <svg viewBox="0 0 80 80" className="h-20 w-20">
+        {/* Orange outer circle */}
+        <circle cx="40" cy="40" r="38" fill="white" stroke="#f97316" strokeWidth="4" />
+
+        {/* Right arrow (blue, going straight up) */}
+        <path d="M44,62 L44,28" fill="none" stroke="#3b82f6" strokeWidth="4" strokeLinecap="round" />
+        <polygon points="44,22 37,32 51,32" fill="#3b82f6" />
+
+        {/* Left arrow (red, curving right to overtake then back) */}
+        <path d="M36,22 L36,38 Q36,48 44,48 Q52,48 52,38 L52,34" fill="none" stroke="#ef4444" strokeWidth="4" strokeLinecap="round" />
+        <polygon points="36,62 29,52 43,52" fill="#ef4444" />
+
+        {/* Orange diagonal slash */}
+        <line x1="14" y1="66" x2="66" y2="14" stroke="#f97316" strokeWidth="4" strokeLinecap="round" />
+      </svg>
+    </SignFrame>
+  )
+}
+
+/** Horn required sign — blue circle with white horn symbol facing left */
+function HornRequired() {
+  return (
+    <SignFrame>
+      <svg viewBox="0 0 80 80" className="h-20 w-20">
+        {/* Blue circle background */}
+        <circle cx="40" cy="40" r="38" fill="#2563eb" stroke="#1e40af" strokeWidth="2" />
+        <circle cx="40" cy="40" r="34" fill="none" stroke="white" strokeWidth="1.5" />
+
+        {/* Horn body — flared bell facing left */}
+        <path d="M52,30 L52,50 L36,46 L36,34 Z" fill="white" />
+        {/* Mouthpiece */}
+        <rect x="52" y="36" width="6" height="8" rx="1" fill="white" />
+        {/* Bell flare */}
+        <path d="M36,34 Q22,28 20,40 Q22,52 36,46" fill="white" />
+
+        {/* Sound waves */}
+        <path d="M16,30 Q10,40 16,50" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" />
+        <path d="M12,25 Q4,40 12,55" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" />
+      </svg>
+    </SignFrame>
+  )
+}
+
 // ── Sign registry ──────────────────────────────────────────────
 
 const SIGNS = {
   signal_yellow: SignalYellow,
+  signal_green: SignalGreen,
   left_turn_permitted: LeftTurnPermitted,
   signal_arrow_right: SignalArrowRight,
   yellow_lane_divider: YellowLaneDivider,
   dedicated_lane: DedicatedLane,
+  bus_dedicated_lane: BusDedicatedLane,
   pedestrian_crossing_marking: PedestrianCrossingMarking,
   speed_max_20: SpeedMax20,
+  speed_max_50: SpeedMax50,
   school_zone_warning: SchoolZoneWarning,
+  no_overtaking: NoOvertaking,
+  horn_required: HornRequired,
 }
 
 export default function SignRenderer({ signCode }) {

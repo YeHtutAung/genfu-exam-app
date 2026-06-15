@@ -5,6 +5,7 @@ import useAuthStore from '../store/authStore'
 import Spinner from '../components/ui/Spinner'
 import PageTransition from '../components/ui/PageTransition'
 import StaggerList from '../components/ui/StaggerList'
+import { useI18n } from '../lib/i18n'
 
 const CATEGORY_EMOJI = {
   genfu: '🛵',
@@ -13,11 +14,15 @@ const CATEGORY_EMOJI = {
   futsu_car: '🚗',
 }
 
+const SELECTED_CATEGORY_KEY = 'genfu-selected-category'
+
 function ProgressBadge({ progress }) {
+  const { t } = useI18n()
+
   if (!progress) {
     return (
       <span className="bg-surface text-text-secondary text-xs px-2 py-0.5 rounded-full shrink-0 ml-3">
-        未受験
+        {t('home.unattempted')}
       </span>
     )
   }
@@ -27,7 +32,7 @@ function ProgressBadge({ progress }) {
   if (examPassed) {
     return (
       <span className="bg-green-600 text-white text-xs font-medium px-2 py-0.5 rounded-full shrink-0 ml-3">
-        合格 {examBest}点 ✓
+        {t('home.passed')} {examBest}{t('common.points')} ✓
       </span>
     )
   }
@@ -35,7 +40,7 @@ function ProgressBadge({ progress }) {
   if (examAttempts > 0) {
     return (
       <span className="bg-red-100 dark:bg-red-900/20 text-red-700 dark:text-red-400 text-xs font-medium px-2 py-0.5 rounded-full shrink-0 ml-3">
-        不合格 {examBest}点（{examAttempts}回）
+        {t('home.failed')} {examBest}{t('common.points')} ({examAttempts}{t('home.attempts')})
       </span>
     )
   }
@@ -43,19 +48,20 @@ function ProgressBadge({ progress }) {
   if (studyAttempts > 0) {
     return (
       <span className="bg-purple-100 dark:bg-purple-900/20 text-purple-700 dark:text-purple-400 text-xs font-medium px-2 py-0.5 rounded-full shrink-0 ml-3">
-        学習 {studyBest}点（{studyAttempts}回）
+        {t('home.studied')} {studyBest}{t('common.points')} ({studyAttempts}{t('home.attempts')})
       </span>
     )
   }
 
   return (
     <span className="bg-surface text-text-secondary text-xs px-2 py-0.5 rounded-full shrink-0 ml-3">
-      未受験
+      {t('home.unattempted')}
     </span>
   )
 }
 
 export default function Home() {
+  const { t, field } = useI18n()
   const user = useAuthStore(s => s.user)
   const [categories, setCategories] = useState([])
   const [tests, setTests] = useState([])
@@ -77,13 +83,21 @@ export default function Home() {
         setError(error.message)
       } else {
         setCategories(data)
+        const storedCategoryId = localStorage.getItem(SELECTED_CATEGORY_KEY)
+        const storedCategory = data.find(c => c.id === storedCategoryId)
         const genfu = data.find(c => c.code === 'genfu')
-        setSelectedCategory(genfu?.id ?? data[0]?.id ?? null)
+        setSelectedCategory(storedCategory?.id ?? genfu?.id ?? data[0]?.id ?? null)
       }
       setLoading(false)
     }
     fetchCategories()
   }, [])
+
+  useEffect(() => {
+    if (selectedCategory) {
+      localStorage.setItem(SELECTED_CATEGORY_KEY, selectedCategory)
+    }
+  }, [selectedCategory])
 
   // Fetch user progress across all tests (once on mount)
   useEffect(() => {
@@ -154,9 +168,9 @@ export default function Home() {
 
           {/* Header */}
           <div>
-            <p className="text-xs font-semibold uppercase tracking-wide text-primary text-center">Practice Tests</p>
-            <h1 className="text-3xl font-bold text-text-primary tracking-tight text-center mt-1">カテゴリを選択</h1>
-            <p className="text-sm text-text-secondary text-center mt-1">Choose your license category to start</p>
+            <p className="text-xs font-semibold uppercase tracking-wide text-primary text-center">{t('home.eyebrow')}</p>
+            <h1 className="text-3xl font-bold text-text-primary tracking-tight text-center mt-1">{t('home.title')}</h1>
+            <p className="text-sm text-text-secondary text-center mt-1">{t('home.subtitle')}</p>
           </div>
 
           {/* Error */}
@@ -181,7 +195,7 @@ export default function Home() {
                     }
                   >
                     <span className="mr-1.5">{CATEGORY_EMOJI[cat.code] ?? ''}</span>
-                    {cat.name_jp}
+                    {field(cat, 'name')}
                   </button>
                 ))}
               </div>
@@ -198,10 +212,14 @@ export default function Home() {
                       <div className="flex items-start justify-between">
                         <div>
                           <h3 className="text-base font-semibold text-text-primary">
-                            {test.title_jp || `模擬テスト 第${test.test_number}回`}
+                            {field(test, 'title') || t('home.mockTest', { number: test.test_number })}
                           </h3>
                           <p className="text-xs text-text-secondary mt-0.5">
-                            48問 · 30分 · 合格: {test.pass_score}点
+                            {t('home.testMeta', {
+                              questions: test.question_count ?? 48,
+                              minutes: Math.round((test.time_limit ?? 1800) / 60),
+                              score: test.pass_score,
+                            })}
                           </p>
                         </div>
                         <ProgressBadge progress={progress[test.id]} />
@@ -213,13 +231,13 @@ export default function Home() {
                           to={`/exam/${test.id}`}
                           className="flex-1 bg-primary text-white rounded-lg py-2 text-sm font-semibold text-center transition-colors hover:bg-primary-hover"
                         >
-                          試験モード
+                          {t('home.examMode')}
                         </Link>
                         <Link
                           to={`/study/${test.id}`}
                           className="flex-1 bg-surface text-text-secondary rounded-lg py-2 text-sm font-medium text-center transition-colors hover:bg-theme-border"
                         >
-                          学習モード
+                          {t('home.studyMode')}
                         </Link>
                       </div>
                     </div>
@@ -227,7 +245,7 @@ export default function Home() {
                 </StaggerList>
               ) : (
                 <p className="text-center text-text-secondary text-sm mt-8">
-                  このカテゴリにはまだテストがありません
+                  {t('home.noTests')}
                 </p>
               )}
             </>

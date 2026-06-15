@@ -1,6 +1,8 @@
 import { Link } from 'react-router-dom'
+import { useI18n } from '../../lib/i18n'
 
 export default function TestList({ tests, categories, onToggleActive, onDelete }) {
+  const { t, field } = useI18n()
   // Group tests by category
   const grouped = {}
   for (const cat of categories) {
@@ -16,9 +18,9 @@ export default function TestList({ tests, categories, onToggleActive, onDelete }
     <div className="space-y-6">
       {Object.values(grouped).map(({ category, tests: catTests }) => (
         <div key={category.id}>
-          <h3 className="mb-2 text-sm font-medium text-gray-500">{category.name_jp}</h3>
+          <h3 className="mb-2 text-sm font-medium text-gray-500">{field(category, 'name')}</h3>
           {catTests.length === 0 ? (
-            <p className="text-sm text-gray-400">テストなし</p>
+            <p className="text-sm text-gray-400">{t('admin.noTests')}</p>
           ) : (
             <div className="space-y-2">
               {catTests.map(test => (
@@ -38,23 +40,29 @@ export default function TestList({ tests, categories, onToggleActive, onDelete }
 }
 
 function TestRow({ test, onToggleActive, onDelete }) {
+  const { t, field } = useI18n()
+
   return (
     <div className="flex items-center justify-between rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
       <div className="flex-1">
         <div className="flex items-center gap-2">
           <h4 className="font-medium text-gray-900">
-            {test.title_jp || `模擬テスト 第${test.test_number}回`}
+            {field(test, 'title') || t('home.mockTest', { number: test.test_number })}
           </h4>
           <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${
             test.active
               ? 'bg-green-100 text-green-700'
               : 'bg-gray-100 text-gray-500'
           }`}>
-            {test.active ? '有効' : '無効'}
+            {test.active ? t('admin.active') : t('admin.inactive')}
           </span>
         </div>
         <p className="mt-0.5 text-sm text-gray-500">
-          {test.question_count ?? '?'}問 / {test.total_points}点満点 / 合格{test.pass_score}点
+          {t('admin.testStats', {
+            questions: test.question_count ?? '?',
+            points: test.total_points,
+            passScore: test.pass_score,
+          })}
         </p>
       </div>
 
@@ -63,7 +71,7 @@ function TestRow({ test, onToggleActive, onDelete }) {
           to={`/study/${test.id}`}
           className="rounded-md bg-gray-100 px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-200"
         >
-          プレビュー
+          {t('admin.preview')}
         </Link>
         <button
           onClick={() => onToggleActive(test.id, !test.active)}
@@ -73,13 +81,13 @@ function TestRow({ test, onToggleActive, onDelete }) {
               : 'bg-green-100 text-green-700 hover:bg-green-200'
           }`}
         >
-          {test.active ? '無効にする' : '有効にする'}
+          {test.active ? t('admin.deactivate') : t('admin.activate')}
         </button>
         <button
           onClick={() => onDelete(test)}
           className="rounded-md bg-red-50 px-3 py-1.5 text-xs font-medium text-red-600 hover:bg-red-100"
         >
-          削除
+          {t('admin.delete')}
         </button>
       </div>
     </div>

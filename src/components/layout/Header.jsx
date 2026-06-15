@@ -1,12 +1,15 @@
 import { Link, useLocation } from 'react-router-dom'
 import useAuthStore from '../../store/authStore'
 import ThemeToggle from '../ui/ThemeToggle'
+import LanguageSelect from '../ui/LanguageSelect'
+import { useI18n } from '../../lib/i18n'
 
 export default function Header({ theme, toggleTheme }) {
   const user = useAuthStore(s => s.user)
   const role = useAuthStore(s => s.role)
   const signOut = useAuthStore(s => s.signOut)
   const location = useLocation()
+  const { t } = useI18n()
 
   if (location.pathname === '/login') return null
 
@@ -28,7 +31,7 @@ export default function Header({ theme, toggleTheme }) {
           </span>
         </Link>
 
-        <nav className="flex items-center gap-5">
+        <nav className="flex items-center gap-3 sm:gap-5">
           {user ? (
             <>
               <Link
@@ -37,7 +40,7 @@ export default function Header({ theme, toggleTheme }) {
                   isActive('/') ? 'text-primary' : 'text-text-secondary hover:text-text-primary'
                 }`}
               >
-                ホーム
+                {t('common.home')}
               </Link>
               {role === 'admin' && (
                 <Link
@@ -46,9 +49,10 @@ export default function Header({ theme, toggleTheme }) {
                     location.pathname.startsWith('/admin') ? 'text-primary' : 'text-text-secondary hover:text-text-primary'
                   }`}
                 >
-                  管理
+                  {t('common.admin')}
                 </Link>
               )}
+              <LanguageSelect compact />
               <ThemeToggle theme={theme} onToggle={toggleTheme} />
               <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-primary to-primary-hover text-white text-xs font-semibold">
                 {initials}
@@ -57,17 +61,18 @@ export default function Header({ theme, toggleTheme }) {
                 onClick={signOut}
                 className="rounded-lg bg-surface px-3 py-1.5 text-sm font-medium text-text-secondary transition-colors hover:bg-theme-border"
               >
-                ログアウト
+                {t('common.logout')}
               </button>
             </>
           ) : (
             <>
+              <LanguageSelect compact />
               <ThemeToggle theme={theme} onToggle={toggleTheme} />
               <Link
                 to="/login"
                 className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-primary-hover"
               >
-                ログイン
+                {t('common.login')}
               </Link>
             </>
           )}

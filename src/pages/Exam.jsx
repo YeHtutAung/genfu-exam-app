@@ -8,6 +8,8 @@ import ProgressBar from '../components/exam/ProgressBar'
 import QuestionCard from '../components/exam/QuestionCard'
 import Spinner from '../components/ui/Spinner'
 import PageTransition from '../components/ui/PageTransition'
+import Modal from '../components/ui/Modal'
+import { useI18n } from '../lib/i18n'
 
 const slideVariants = {
   initial: (dir) => ({ x: dir > 0 ? 100 : -100, opacity: 0 }),
@@ -16,6 +18,7 @@ const slideVariants = {
 }
 
 export default function Exam() {
+  const { t } = useI18n()
   const { testId } = useParams()
   const navigate = useNavigate()
 
@@ -25,8 +28,9 @@ export default function Exam() {
   const currentIndex = useExamStore(s => s.currentIndex)
   const answers = useExamStore(s => s.answers)
   const completed = useExamStore(s => s.completed)
+  const submitting = useExamStore(s => s.submitting)
+  const submitError = useExamStore(s => s.submitError)
   const sessionId = useExamStore(s => s.sessionId)
-  const testMeta = useExamStore(s => s.testMeta)
   const startExam = useExamStore(s => s.startExam)
   const answerQuestion = useExamStore(s => s.answerQuestion)
   const answerSubQuestion = useExamStore(s => s.answerSubQuestion)
@@ -37,6 +41,7 @@ export default function Exam() {
   const reset = useExamStore(s => s.reset)
 
   const [direction, setDirection] = useState(0)
+  const [confirmSubmit, setConfirmSubmit] = useState(false)
 
   useTimer()
 
@@ -123,10 +128,27 @@ export default function Exam() {
     goToQuestion(i)
   }
 
-  const allAnswered = questions.every(q => {
-    if (q.type === 'standard') return answers[q.id] !== undefined
-    return q.sub_questions.every(sq => answers[sq.id] !== undefined)
-  })
+  const unansweredCount = questions.reduce((count, q) => {
+    if (q.type === 'standard') {
+      return answers[q.id] === undefined ? count + 1 : count
+    }
+    return count + q.sub_questions.filter(sq => answers[sq.id] === undefined).length
+  }, 0)
+
+  const allAnswered = unansweredCount === 0
+
+  const handleSubmit = async () => {
+    if (!allAnswered) {
+      setConfirmSubmit(true)
+      return
+    }
+    await completeExam()
+  }
+
+  const handleConfirmedSubmit = async () => {
+    setConfirmSubmit(false)
+    await completeExam()
+  }
 
   return (
     <PageTransition>
@@ -137,7 +159,7 @@ export default function Exam() {
             {/* Top bar */}
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-baseline">
-                <span className="text-xs text-text-secondary">問題</span>
+                <span className="text-xs text-text-secondary">{t('common.question')}</span>
                 <span className="text-xl font-bold text-text-primary ml-1">{current}</span>
                 <span className="text-sm text-text-secondary ml-0.5">/ {total}</span>
               </div>
@@ -179,7 +201,7 @@ export default function Exam() {
               disabled={currentIndex === 0}
               className="rounded-lg bg-surface px-4 py-2 text-sm font-medium text-text-secondary transition-colors hover:bg-theme-border disabled:opacity-30"
             >
-              前の問題
+              {t('exam.previousQuestion')}
             </button>
 
             {/* Question number grid */}
@@ -209,22 +231,44 @@ export default function Exam() {
 
             {isLast ? (
               <button
-                onClick={completeExam}
-                className="rounded-xl bg-primary px-6 py-2.5 text-sm font-semibold text-white shadow-sm shadow-primary/25 transition-colors hover:bg-primary-hover"
+                onClick={handleSubmit}
+                disabled={submitting}
+                className="rounded-xl bg-primary px-6 py-2.5 text-sm font-semibold text-white shadow-sm shadow-primary/25 transition-colors hover:bg-primary-hover disabled:opacity-50"
               >
-                {allAnswered ? '提出する' : '提出する（未回答あり）'}
+                {allAnswered ? t('exam.submit') : t('exam.submitWithUnanswered')}
               </button>
             ) : (
               <button
                 onClick={isScenario ? handleScenarioCheck : handleNext}
                 className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-hover"
               >
-                次の問題
+                {t('exam.nextQuestion')}
               </button>
             )}
           </div>
+          {submitError && (
+            <div className="mx-auto mt-3 flex max-w-3xl items-center justify-between gap-3 rounded-xl border border-wrong/20 bg-wrong/10 px-3 py-2 text-sm text-wrong">
+              <span>{submitError}</span>
+              <button
+                onClick={completeExam}
+                disabled={submitting}
+                className="shrink-0 rounded-lg bg-wrong px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-50"
+              >
+                {t('common.retry')}
+              </button>
+            </div>
+          )}
         </div>
       </div>
+      <Modal
+        isOpen={confirmSubmit}
+        title={t('exam.unansweredTitle')}
+        message={t('exam.unansweredMessage', { count: unansweredCount })}
+        confirmLabel={t('exam.submit')}
+        cancelLabel={t('common.back')}
+        onConfirm={handleConfirmedSubmit}
+        onCancel={() => setConfirmSubmit(false)}
+      />
     </PageTransition>
   )
 }

@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { supabase } from '../lib/supabase'
+import { deleteTest as deleteTestApi } from '../lib/api'
 
 const useAdminStore = create((set, get) => ({
   // Dashboard stats
@@ -104,9 +105,10 @@ const useAdminStore = create((set, get) => ({
   },
 
   deleteTest: async (testId) => {
-    const { error } = await supabase.from('tests').delete().eq('id', testId)
-    if (error) {
-      set({ testsError: 'テストの削除に失敗しました' })
+    try {
+      await deleteTestApi(testId)
+    } catch (err) {
+      set({ testsError: err.message || 'テストの削除に失敗しました' })
       return
     }
     await get().fetchTests()
