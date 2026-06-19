@@ -3,6 +3,7 @@ import { Navigate, useNavigate } from 'react-router-dom'
 import useAuthStore from '../store/authStore'
 import Spinner from '../components/ui/Spinner'
 import PageTransition from '../components/ui/PageTransition'
+import Button from '../components/ui/Button'
 import LanguageSelect from '../components/ui/LanguageSelect'
 import { useI18n } from '../lib/i18n'
 
@@ -78,28 +79,24 @@ export default function Login() {
             {/* Mode toggle */}
             {mode !== 'reset' && (
             <div className="flex rounded-xl bg-surface p-1 mb-4">
-              <button
+              <Button
                 type="button"
                 onClick={() => { setMode('login'); setConfirmationSent(false) }}
-                className={`flex-1 rounded-lg py-2 text-sm font-medium transition-colors ${
-                  mode === 'login'
-                    ? 'bg-primary text-white shadow-sm'
-                    : 'text-text-secondary hover:text-text-primary'
-                }`}
+                variant={mode === 'login' ? 'primary' : 'ghost'}
+                size="sm"
+                className={`flex-1 rounded-lg py-2 shadow-none ${mode !== 'login' ? 'text-text-secondary hover:text-text-primary hover:bg-transparent' : ''}`}
               >
                 {t('common.login')}
-              </button>
-              <button
+              </Button>
+              <Button
                 type="button"
                 onClick={() => { setMode('register'); setConfirmationSent(false) }}
-                className={`flex-1 rounded-lg py-2 text-sm font-medium transition-colors ${
-                  mode === 'register'
-                    ? 'bg-primary text-white shadow-sm'
-                    : 'text-text-secondary hover:text-text-primary'
-                }`}
+                variant={mode === 'register' ? 'primary' : 'ghost'}
+                size="sm"
+                className={`flex-1 rounded-lg py-2 shadow-none ${mode !== 'register' ? 'text-text-secondary hover:text-text-primary hover:bg-transparent' : ''}`}
               >
                 {t('login.register')}
-              </button>
+              </Button>
             </div>
             )}
 
@@ -146,23 +143,25 @@ export default function Login() {
               </div>
               )}
 
-              <button
+              <Button
                 type="submit"
                 disabled={submitting}
-                className="w-full rounded-xl bg-primary py-2.5 text-sm font-semibold text-white shadow-sm shadow-primary/30 transition-colors hover:bg-primary-hover disabled:opacity-50 flex items-center justify-center"
+                className="w-full shadow-primary/30"
               >
                 {submitting ? <Spinner size="h-5 w-5" /> : (mode === 'reset' ? t('login.sendResetLink') : mode === 'login' ? t('common.login') : t('login.createAccount'))}
-              </button>
+              </Button>
             </form>
 
             {mode === 'login' && (
-              <button
+              <Button
                 type="button"
                 onClick={() => { setMode('reset'); setConfirmationSent(false) }}
-                className="mt-3 text-sm font-medium text-primary hover:text-primary-hover"
+                variant="ghost"
+                size="sm"
+                className="mt-3 px-0"
               >
                 {t('login.forgotPassword')}
-              </button>
+              </Button>
             )}
 
             {/* Divider */}
@@ -174,9 +173,10 @@ export default function Login() {
 
             {/* Social buttons */}
             {mode !== 'reset' && <div className="space-y-3">
-              <button
+              <Button
                 onClick={signInWithGoogle}
-                className="w-full rounded-xl border-[1.5px] border-theme-border bg-bg py-2.5 text-sm font-medium text-text-secondary transition-colors hover:bg-surface flex items-center justify-center gap-2"
+                variant="outline"
+                className="w-full border-[1.5px]"
               >
                 <svg className="h-5 w-5" viewBox="0 0 24 24">
                   <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" />
@@ -185,7 +185,7 @@ export default function Login() {
                   <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
                 </svg>
                 {t('login.google')}
-              </button>
+              </Button>
 
               {/* Facebook login — hidden until provider is configured */}
             </div>}
@@ -194,22 +194,22 @@ export default function Login() {
           {/* Sign up / sign in toggle link */}
           <p className="text-center text-sm text-text-secondary mt-4">
             {mode === 'reset' ? (
-              <button onClick={() => { setMode('login'); setConfirmationSent(false) }} className="text-primary hover:text-primary-hover font-medium">
+              <Button variant="ghost" size="sm" onClick={() => { setMode('login'); setConfirmationSent(false) }} className="px-0">
                 {t('login.backToLogin')}
-              </button>
+              </Button>
             ) : mode === 'login' ? (
               <>
                 {t('login.noAccount')}{' '}
-                <button onClick={() => { setMode('register'); setConfirmationSent(false) }} className="text-primary hover:text-primary-hover font-medium">
+                <Button variant="ghost" size="sm" onClick={() => { setMode('register'); setConfirmationSent(false) }} className="px-0 min-h-0">
                   {t('login.register')}
-                </button>
+                </Button>
               </>
             ) : (
               <>
                 {t('login.hasAccount')}{' '}
-                <button onClick={() => { setMode('login'); setConfirmationSent(false) }} className="text-primary hover:text-primary-hover font-medium">
+                <Button variant="ghost" size="sm" onClick={() => { setMode('login'); setConfirmationSent(false) }} className="px-0 min-h-0">
                   {t('common.login')}
-                </button>
+                </Button>
               </>
             )}
           </p>

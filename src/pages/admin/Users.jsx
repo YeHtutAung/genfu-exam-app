@@ -3,6 +3,7 @@ import useAdmin from '../../hooks/useAdmin'
 import UserList from '../../components/admin/UserList'
 import Spinner from '../../components/ui/Spinner'
 import Breadcrumbs from '../../components/ui/Breadcrumbs'
+import Button from '../../components/ui/Button'
 import { AdminTableSkeleton } from '../../components/ui/LoadingPanels'
 import { useI18n } from '../../lib/i18n'
 
@@ -35,17 +36,15 @@ export default function Users() {
 
       <div className="mb-4 flex gap-2">
         {['all', 'user', 'admin'].map(r => (
-          <button
+          <Button
             key={r}
             onClick={() => setRoleFilter(r)}
-            className={`rounded-md px-3 py-1.5 text-sm font-medium ${
-              roleFilter === r
-                ? 'bg-primary text-white'
-                : 'bg-surface text-text-secondary hover:bg-theme-border'
-            }`}
+            variant={roleFilter === r ? 'primary' : 'secondary'}
+            size="sm"
+            className="rounded-md"
           >
             {r === 'all' ? t('admin.allRoles') : r === 'admin' ? t('admin.adminRole') : t('admin.userRole')}
-          </button>
+          </Button>
         ))}
         <span className="ml-2 self-center text-sm text-text-secondary">
           {t('admin.itemsCount', { count: filtered.length })}

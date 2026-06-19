@@ -1,4 +1,5 @@
 import useBookmark from '../../hooks/useBookmark'
+import Button from './Button'
 import { useI18n } from '../../lib/i18n'
 
 export default function BookmarkButton({ questionId }) {
@@ -8,18 +9,20 @@ export default function BookmarkButton({ questionId }) {
   if (!available) return null
 
   return (
-    <button
+    <Button
       type="button"
       onClick={toggle}
       disabled={loading}
       aria-pressed={bookmarked}
-      className={`min-h-10 rounded-lg border px-3 py-2 text-xs font-semibold transition-colors disabled:opacity-50 ${
+      variant={bookmarked ? 'outline' : 'secondary'}
+      size="sm"
+      className={`rounded-lg text-xs ${
         bookmarked
           ? 'border-primary bg-primary/10 text-primary'
-          : 'border-theme-border bg-surface text-text-secondary hover:bg-theme-border'
+          : ''
       }`}
     >
       {bookmarked ? t('bookmarks.saved') : t('bookmarks.save')}
-    </button>
+    </Button>
   )
 }

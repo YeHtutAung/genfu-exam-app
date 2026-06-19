@@ -2,6 +2,7 @@ import { Link, useLocation } from 'react-router-dom'
 import useAuthStore from '../../store/authStore'
 import ThemeToggle from '../ui/ThemeToggle'
 import LanguageSelect from '../ui/LanguageSelect'
+import Button from '../ui/Button'
 import { useI18n } from '../../lib/i18n'
 
 export default function Header({ theme, toggleTheme }) {
@@ -57,23 +58,27 @@ export default function Header({ theme, toggleTheme }) {
               <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-primary to-primary-hover text-white text-xs font-semibold">
                 {initials}
               </div>
-              <button
+              <Button
                 onClick={signOut}
-                className="min-h-10 rounded-lg bg-surface px-3 py-2 text-sm font-medium text-text-secondary transition-colors hover:bg-theme-border"
+                variant="secondary"
+                size="sm"
+                className="rounded-lg"
               >
                 {t('common.logout')}
-              </button>
+              </Button>
             </>
           ) : (
             <>
               <LanguageSelect compact />
               <ThemeToggle theme={theme} onToggle={toggleTheme} />
-              <Link
+              <Button
+                as={Link}
                 to="/login"
-                className="min-h-10 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-primary-hover"
+                size="sm"
+                className="rounded-lg"
               >
                 {t('common.login')}
-              </Link>
+              </Button>
             </>
           )}
         </nav>

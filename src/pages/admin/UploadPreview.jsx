@@ -5,6 +5,7 @@ import { confirmUpload } from '../../lib/api'
 import useAdminStore from '../../store/adminStore'
 import UploadPreviewPanel from '../../components/admin/UploadPreview'
 import Breadcrumbs from '../../components/ui/Breadcrumbs'
+import Button from '../../components/ui/Button'
 import useToast from '../../components/ui/useToast'
 import { useI18n } from '../../lib/i18n'
 
@@ -37,12 +38,12 @@ export default function UploadPreview() {
     return (
       <div className="mx-auto max-w-2xl px-4 py-8 text-center">
         <p className="text-text-secondary">{t('admin.noPreviewData')}</p>
-        <button
+        <Button
           onClick={() => navigate('/admin/upload')}
-          className="mt-4 rounded-md bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary-hover"
+          className="mt-4 rounded-md"
         >
           {t('admin.backToUpload')}
-        </button>
+        </Button>
       </div>
     )
   }
