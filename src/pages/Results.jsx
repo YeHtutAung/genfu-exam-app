@@ -6,6 +6,9 @@ import ImageRenderer from '../components/signs/ImageRenderer'
 import Spinner from '../components/ui/Spinner'
 import PageTransition from '../components/ui/PageTransition'
 import StaggerList from '../components/ui/StaggerList'
+import Breadcrumbs from '../components/ui/Breadcrumbs'
+import Button from '../components/ui/Button'
+import Card from '../components/ui/Card'
 import { useI18n } from '../lib/i18n'
 
 function buildResultCoach({ session, test, wrongCount, unansweredCount, timeTaken, t }) {
@@ -106,19 +109,20 @@ function ResultCoach({ coach }) {
           <p className="mt-2 text-sm leading-relaxed text-text-primary">{coach.summary}</p>
           <p className="mt-1 text-sm leading-relaxed text-text-secondary">{coach.priority}</p>
         </div>
-        <Link
+        <Button
+          as={Link}
           to={coach.primaryTo}
-          className="min-h-11 shrink-0 rounded-lg bg-primary px-4 py-3 text-center text-sm font-semibold text-white transition-colors hover:bg-primary-hover"
+          className="shrink-0 rounded-lg"
         >
           {coach.primary}
-        </Link>
+        </Button>
       </div>
 
       <div className="mt-4 grid gap-2 sm:grid-cols-3">
         {coach.actions.map(action => (
-          <div key={action} className="rounded-lg border border-theme-border bg-bg/80 p-3 text-sm text-text-secondary">
+          <Card key={action} className="rounded-lg bg-bg/80 p-3 text-sm text-text-secondary">
             {action}
-          </div>
+          </Card>
         ))}
       </div>
     </section>
@@ -201,7 +205,7 @@ export default function Results() {
   if (error) {
     return (
       <div className="mx-auto max-w-3xl px-4 py-12">
-        <div className="rounded-md bg-red-50 p-4 text-sm text-red-700">{error}</div>
+        <div className="rounded-md bg-wrong/10 p-4 text-sm text-wrong">{error}</div>
       </div>
     )
   }
@@ -270,6 +274,7 @@ export default function Results() {
     <PageTransition>
       <div className="min-h-screen bg-bg px-3 py-6 sm:px-4">
         <div className="mx-auto max-w-3xl">
+          <Breadcrumbs items={[{ label: t('exam.reviewTitle') }]} />
           <ScoreCard
             score={session.score ?? 0}
             totalPoints={test?.total_points ?? 50}
@@ -286,40 +291,47 @@ export default function Results() {
 
           {/* Actions */}
           <div className="mt-6 grid grid-cols-1 gap-2 sm:flex sm:flex-wrap sm:justify-center sm:gap-3">
-            <Link
+            <Button
+              as={Link}
               to={`/exam/${session.test_id}`}
-              className="min-h-11 rounded-md bg-blue-600 px-4 py-3 text-center text-sm font-medium text-white hover:bg-blue-700 sm:py-2"
+              className="rounded-md sm:py-2"
             >
               {t('exam.retake')}
-            </Link>
-            <Link
+            </Button>
+            <Button
+              as={Link}
               to={`/study/${session.test_id}`}
-              className="min-h-11 rounded-md bg-gray-100 px-4 py-3 text-center text-sm font-medium text-gray-700 hover:bg-gray-200 sm:py-2"
+              variant="secondary"
+              className="rounded-md sm:py-2"
             >
               {t('exam.reviewStudy')}
-            </Link>
-            <Link
+            </Button>
+            <Button
+              as={Link}
               to="/"
-              className="min-h-11 rounded-md bg-gray-100 px-4 py-3 text-center text-sm font-medium text-gray-700 hover:bg-gray-200 sm:py-2"
+              variant="secondary"
+              className="rounded-md sm:py-2"
             >
               {t('common.backHome')}
-            </Link>
+            </Button>
           </div>
 
           {/* Review section */}
           <div className="mt-8">
             <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
               <h2 className="text-lg font-semibold text-text-primary">{t('exam.reviewTitle')}</h2>
-              <button
+              <Button
                 onClick={() => setWrongOnly(!wrongOnly)}
-                className={`min-h-10 rounded-full px-3 py-2 text-xs font-medium transition-colors ${
+                variant="secondary"
+                size="sm"
+                className={`rounded-full ${
                   wrongOnly
                     ? 'bg-primary text-white'
                     : 'bg-surface text-text-secondary'
                 }`}
               >
                 {wrongOnly ? t('exam.showingWrongOnly') : t('exam.wrongOnly')}
-              </button>
+              </Button>
             </div>
 
             <StaggerList className="space-y-3">
@@ -350,7 +362,7 @@ function ReviewItem({ question, answerMap }) {
         <div className="flex items-start gap-3">
           <ResultBadge correct={allCorrect} />
           <div className="min-w-0 flex-1">
-            <span className="mb-1 inline-block rounded bg-purple-100 px-2 py-0.5 text-xs font-medium text-purple-700">
+            <span className="mb-1 inline-block rounded bg-ai/10 px-2 py-0.5 text-xs font-medium text-ai">
               {t('exam.dangerScenario')} ({question.points}{t('common.points')})
             </span>
             <p className="text-sm text-text-primary mt-1 font-jp">{field(question, 'question')}</p>
@@ -415,7 +427,7 @@ function ReviewItem({ question, answerMap }) {
           </div>
 
           {!correct && hint && (
-            <p className="mt-1 text-xs text-blue-600">{hint}</p>
+            <p className="mt-1 text-xs text-primary">{hint}</p>
           )}
         </div>
       </div>
@@ -426,7 +438,7 @@ function ReviewItem({ question, answerMap }) {
 function ResultBadge({ correct }) {
   return (
     <span className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-sm font-bold ${
-      correct ? 'bg-green-200 text-green-700' : 'bg-red-200 text-red-700'
+      correct ? 'bg-correct/15 text-correct' : 'bg-wrong/15 text-wrong'
     }`}>
       {correct ? '○' : '×'}
     </span>

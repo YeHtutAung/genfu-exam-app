@@ -16,13 +16,18 @@ export default function ImageRenderer({ image }) {
   }
 
   if (image.render === 'static') {
+    const src = withCacheVersion(image.src)
+
     return (
       <div className="mx-auto max-w-sm rounded-lg bg-white p-2">
         <img
-          src={withCacheVersion(image.src)}
+          src={src}
+          srcSet={`${src} 1x`}
+          sizes="(max-width: 640px) calc(100vw - 3rem), 24rem"
           alt={image.alt || ''}
           className="h-auto w-full rounded"
           loading="lazy"
+          decoding="async"
         />
       </div>
     )

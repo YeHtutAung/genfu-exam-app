@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+import Button from './Button'
 
 import { useI18n } from '../../lib/i18n'
 
@@ -27,22 +28,20 @@ export default function Modal({ isOpen, title, message, onConfirm, onCancel, con
       <h2 className="text-lg font-bold text-text-primary">{title}</h2>
       <p className="mt-2 text-sm text-text-secondary">{message}</p>
       <div className="mt-6 flex justify-end gap-3">
-        <button
+        <Button
           onClick={onCancel}
-          className="rounded-xl bg-surface px-4 py-2 text-sm font-medium text-text-secondary transition-colors hover:bg-theme-border"
+          variant="secondary"
+          size="sm"
         >
           {finalCancelLabel}
-        </button>
-        <button
+        </Button>
+        <Button
           onClick={onConfirm}
-          className={`rounded-xl px-4 py-2 text-sm font-medium text-white transition-colors ${
-            danger
-              ? 'bg-wrong hover:bg-red-700'
-              : 'bg-primary hover:bg-primary-hover'
-          }`}
+          variant={danger ? 'danger' : 'primary'}
+          size="sm"
         >
           {finalConfirmLabel}
-        </button>
+        </Button>
       </div>
     </dialog>
   )

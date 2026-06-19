@@ -7,7 +7,8 @@ import ProtectedRoute from './components/layout/ProtectedRoute'
 import Header from './components/layout/Header'
 import Footer from './components/layout/Footer'
 import Spinner from './components/ui/Spinner'
-import { LANGUAGES, useLanguageStore } from './lib/i18n'
+import { ToastProvider } from './components/ui/Toast'
+import { LANGUAGES, useI18n, useLanguageStore } from './lib/i18n'
 
 const Home = lazy(() => import('./pages/Home'))
 const Login = lazy(() => import('./pages/Login'))
@@ -26,15 +27,23 @@ const QuestionImages = lazy(() => import('./pages/admin/QuestionImages'))
 
 function AppRoutes({ theme, toggleTheme }) {
   const location = useLocation()
+  const { t } = useI18n()
 
   return (
     <>
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-[90] focus:rounded-lg focus:bg-primary focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-white"
+      >
+        {t('common.skipToContent')}
+      </a>
       <Header theme={theme} toggleTheme={toggleTheme} />
-      <Suspense fallback={<RouteSpinner />}>
-        <AnimatePresence mode="wait">
-          <Routes location={location} key={location.pathname}>
-            {/* Public */}
-            <Route path="/login" element={<Login />} />
+      <div id="main-content" tabIndex={-1}>
+        <Suspense fallback={<RouteSpinner />}>
+          <AnimatePresence mode="wait">
+            <Routes location={location} key={location.pathname}>
+              {/* Public */}
+              <Route path="/login" element={<Login />} />
 
             {/* Authenticated */}
             <Route path="/" element={
@@ -81,9 +90,10 @@ function AppRoutes({ theme, toggleTheme }) {
             <Route path="/admin/images" element={
               <ProtectedRoute adminOnly><QuestionImages /></ProtectedRoute>
             } />
-          </Routes>
-        </AnimatePresence>
-      </Suspense>
+            </Routes>
+          </AnimatePresence>
+        </Suspense>
+      </div>
       <Footer theme={theme} toggleTheme={toggleTheme} />
     </>
   )
@@ -121,7 +131,9 @@ export default function App() {
 
   return (
     <BrowserRouter>
-      <AppRoutes theme={theme} toggleTheme={toggleTheme} />
+      <ToastProvider>
+        <AppRoutes theme={theme} toggleTheme={toggleTheme} />
+      </ToastProvider>
     </BrowserRouter>
   )
 }

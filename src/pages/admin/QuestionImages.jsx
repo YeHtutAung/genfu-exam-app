@@ -3,6 +3,8 @@ import { supabase } from '../../lib/supabase'
 import { uploadQuestionImage } from '../../lib/api'
 import Spinner from '../../components/ui/Spinner'
 import PageTransition from '../../components/ui/PageTransition'
+import Breadcrumbs from '../../components/ui/Breadcrumbs'
+import useToast from '../../components/ui/useToast'
 
 export default function QuestionImages() {
   const [tests, setTests] = useState([])
@@ -12,6 +14,7 @@ export default function QuestionImages() {
   const [uploading, setUploading] = useState(null) // questionId being uploaded
   const [message, setMessage] = useState(null)
   const [imageVersion, setImageVersion] = useState(Date.now())
+  const { showToast } = useToast()
 
   // Load tests
   useEffect(() => {
@@ -49,17 +52,19 @@ export default function QuestionImages() {
 
     try {
       await uploadQuestionImage({ questionId, file, imageAlt: file.name })
+      showToast('Image uploaded', 'success')
         setMessage({ type: 'success', text: `問${questions.find(q => q.id === questionId)?.question_number}: 画像をアップロードしました` })
-        // Refresh questions
-        const { data: updated } = await supabase
-          .from('questions')
-          .select('id, question_number, question_jp, image_render, image_url, sign_code, image_alt')
-          .eq('test_id', selectedTest)
-          .order('question_number')
-        setQuestions(updated || [])
-        setImageVersion(Date.now())
+      // Refresh questions
+      const { data: updated } = await supabase
+        .from('questions')
+        .select('id, question_number, question_jp, image_render, image_url, sign_code, image_alt')
+        .eq('test_id', selectedTest)
+        .order('question_number')
+      setQuestions(updated || [])
+      setImageVersion(Date.now())
     } catch (err) {
       setMessage({ type: 'error', text: err.message })
+      showToast(err.message, 'error')
     } finally {
       setUploading(null)
     }
@@ -77,6 +82,7 @@ export default function QuestionImages() {
     <PageTransition>
       <div className="mx-auto max-w-4xl px-4 py-8">
         <h1 className="mb-6 text-2xl font-bold text-text-primary">問題画像の管理</h1>
+        <Breadcrumbs items={[{ label: 'Admin', to: '/admin' }, { label: 'Question images' }]} />
 
         {/* Test selector */}
         <select
@@ -112,13 +118,13 @@ export default function QuestionImages() {
                   <div className="flex items-center gap-2 mb-1">
                     <span className="text-sm font-bold text-text-primary">問{q.question_number}</span>
                     {q.image_render === 'css' && (
-                      <span className="rounded bg-blue-100 dark:bg-blue-900/30 px-1.5 py-0.5 text-xs text-blue-700 dark:text-blue-300">CSS: {q.sign_code}</span>
+                      <span className="rounded bg-primary/10 px-1.5 py-0.5 text-xs text-primary">CSS: {q.sign_code}</span>
                     )}
                     {q.image_render === 'static' && (
-                      <span className="rounded bg-green-100 dark:bg-green-900/30 px-1.5 py-0.5 text-xs text-green-700 dark:text-green-300">画像あり</span>
+                      <span className="rounded bg-correct/10 px-1.5 py-0.5 text-xs text-correct">画像あり</span>
                     )}
                     {!q.image_render && (
-                      <span className="rounded bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 text-xs text-text-secondary">画像なし</span>
+                      <span className="rounded bg-surface px-1.5 py-0.5 text-xs text-text-secondary">画像なし</span>
                     )}
                   </div>
                   <p className="text-sm text-text-secondary font-jp line-clamp-2">{q.question_jp}</p>

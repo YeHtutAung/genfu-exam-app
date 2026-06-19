@@ -518,6 +518,15 @@ const extraTranslations = {
   ja: {
     common: {
       test: 'テスト',
+      skipToContent: '本文へスキップ',
+    },
+    login: {
+      forgotPassword: 'パスワードをお忘れですか？',
+      resetTitle: 'パスワードをリセット',
+      resetSubtitle: '登録メールにリセットリンクを送信します。',
+      sendResetLink: 'リセットリンクを送信',
+      resetSent: 'パスワードリセット用メールを送信しました。',
+      backToLogin: 'ログインに戻る',
     },
     home: {
       noPracticeYet: 'まだ練習していません',
@@ -566,6 +575,8 @@ const extraTranslations = {
     },
     exam: {
       simulationLabel: '本番試験シミュレーション',
+      simulationHelp: 'ヒントなし、提出まで復習なし、ランダム順です。本番のつもりで解きましょう。',
+      autoAdvancing: '自動で次の問題へ進みます...',
       resultCoaching: '結果アドバイス',
       strongPass: '余裕のある合格',
       strongPassSummary: '余裕を持って合格しています。準備が進んでいる良いサインです。',
@@ -688,6 +699,15 @@ const extraTranslations = {
   en: {
     common: {
       test: 'Test',
+      skipToContent: 'Skip to content',
+    },
+    login: {
+      forgotPassword: 'Forgot password?',
+      resetTitle: 'Reset your password',
+      resetSubtitle: 'Send a reset link to your registered email.',
+      sendResetLink: 'Send reset link',
+      resetSent: 'Password reset email sent.',
+      backToLogin: 'Back to log in',
     },
     home: {
       noPracticeYet: 'No practice yet',
@@ -736,6 +756,8 @@ const extraTranslations = {
     },
     exam: {
       simulationLabel: 'Real exam simulation',
+      simulationHelp: 'No hints, no review until submit, randomized order. Treat this like the real test.',
+      autoAdvancing: 'Auto-advancing...',
       resultCoaching: 'Result coaching',
       strongPass: 'Strong pass',
       strongPassSummary: 'You passed with room to spare. This is a good readiness signal.',
@@ -858,6 +880,15 @@ const extraTranslations = {
   my: {
     common: {
       test: 'စာမေးပွဲ',
+      skipToContent: 'အကြောင်းအရာသို့ ကျော်ရန်',
+    },
+    login: {
+      forgotPassword: 'စကားဝှက် မေ့နေပါသလား?',
+      resetTitle: 'စကားဝှက် ပြန်သတ်မှတ်ရန်',
+      resetSubtitle: 'မှတ်ပုံတင်ထားသော အီးမေးလ်သို့ reset link ပို့ပါမည်။',
+      sendResetLink: 'Reset link ပို့ရန်',
+      resetSent: 'စကားဝှက် reset အီးမေးလ် ပို့ပြီးပါပြီ။',
+      backToLogin: 'Login သို့ ပြန်သွားရန်',
     },
     home: {
       noPracticeYet: 'မလေ့ကျင့်ရသေးပါ',
@@ -906,6 +937,8 @@ const extraTranslations = {
     },
     exam: {
       simulationLabel: 'တကယ့်စာမေးပွဲ simulation',
+      simulationHelp: 'Hint မရှိ၊ submit မလုပ်မီ review မရှိ၊ မေးခွန်းအစီအစဉ် random ဖြစ်သည်။ တကယ့်စာမေးပွဲလို ဖြေပါ။',
+      autoAdvancing: 'နောက်မေးခွန်းသို့ အလိုအလျောက် သွားနေသည်...',
       resultCoaching: 'ရလဒ် အကြံပြုချက်',
       strongPass: 'ကောင်းမွန်စွာ အောင်မြင်သည်',
       strongPassSummary: 'သင်သည် အဆင်ပြေစွာ အောင်မြင်ခဲ့သည်။ အဆင်သင့်ဖြစ်မှုအတွက် ကောင်းသောလက္ခဏာဖြစ်သည်။',

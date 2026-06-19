@@ -2,41 +2,45 @@ import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import confetti from 'canvas-confetti'
 import CountUp from '../ui/CountUp'
+import useReducedMotion from '../../hooks/useReducedMotion'
+import Icon from '../ui/Icon'
+import Button from '../ui/Button'
 import { useI18n } from '../../lib/i18n'
 
 export default function ScoreCard({ score, totalPoints, passScore, passed, timeTaken, testId, correctCount, wrongCount, unansweredCount, hideTimeTaken = false, hideCtas = false, mode = 'exam' }) {
   const { t } = useI18n()
+  const reduced = useReducedMotion()
   // Format time taken
   const minutes = Math.floor(timeTaken / 60)
   const seconds = timeTaken % 60
 
   useEffect(() => {
-    if (passed && mode !== 'study') {
+    if (passed && mode !== 'study' && !reduced) {
       const timer = setTimeout(() => {
         confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } })
       }, 1600)
       return () => clearTimeout(timer)
     }
-  }, [passed, mode])
+  }, [passed, mode, reduced])
 
   return (
     <div className="bg-bg border border-theme-border rounded-2xl p-6 shadow-sm text-center">
       {mode === 'study' ? (
         <>
-          <div className="text-4xl mb-2">📖</div>
+          <Icon name="book" className="mx-auto mb-2 h-10 w-10 text-primary" />
           <h2 className="text-2xl font-bold text-primary">{t('study.completed')}</h2>
           <p className="text-sm text-text-secondary mt-1">{t('study.completedSubtitle')}</p>
         </>
       ) : passed ? (
         <>
-          <div className="text-4xl mb-2">🎉</div>
-          <h2 className="text-2xl font-bold text-green-700 dark:text-green-400">{t('score.passed')}</h2>
+          <Icon name="celebration" className="mx-auto mb-2 h-10 w-10 text-correct" />
+          <h2 className="text-2xl font-bold text-correct">{t('score.passed')}</h2>
           <p className="text-sm text-text-secondary mt-1">{t('score.passedSubtitle')}</p>
         </>
       ) : (
         <>
-          <div className="text-4xl mb-2">😤</div>
-          <h2 className="text-2xl font-bold text-red-700 dark:text-red-400">{t('score.failed')}</h2>
+          <Icon name="focus" className="mx-auto mb-2 h-10 w-10 text-wrong" />
+          <h2 className="text-2xl font-bold text-wrong">{t('score.failed')}</h2>
           <p className="text-sm text-text-secondary mt-1">{t('score.failedSubtitle')}</p>
         </>
       )}
@@ -49,8 +53,8 @@ export default function ScoreCard({ score, totalPoints, passScore, passed, timeT
             mode === 'study'
               ? 'text-primary'
               : passed
-                ? 'text-green-700 dark:text-green-400'
-                : 'text-red-700 dark:text-red-400'
+                ? 'text-correct'
+                : 'text-wrong'
           }`}
         />
         <p className="text-sm text-text-secondary mt-1">/ {totalPoints}{t('common.points')}</p>
@@ -62,10 +66,10 @@ export default function ScoreCard({ score, totalPoints, passScore, passed, timeT
           <div
             className={`h-full rounded-full transition-all duration-1000 ${
               mode === 'study'
-                ? 'bg-gradient-to-r from-primary to-blue-400'
+                ? 'bg-primary'
                 : passed
-                  ? 'bg-gradient-to-r from-green-500 to-green-400'
-                  : 'bg-gradient-to-r from-red-500 to-red-400'
+                  ? 'bg-correct'
+                  : 'bg-wrong'
             }`}
             style={{ width: `${(score / totalPoints) * 100}%` }}
           />
@@ -79,12 +83,12 @@ export default function ScoreCard({ score, totalPoints, passScore, passed, timeT
 
       {/* Stat grid */}
       <div className="grid grid-cols-3 gap-3 mt-6">
-        <div className="bg-green-50 dark:bg-green-900/20 rounded-xl p-3">
-          <div className="text-lg font-bold text-green-700 dark:text-green-400">{correctCount ?? '—'}</div>
+        <div className="rounded-xl bg-correct/10 p-3">
+          <div className="text-lg font-bold text-correct">{correctCount ?? '—'}</div>
           <div className="text-xs text-text-secondary">{t('common.correct')}</div>
         </div>
-        <div className="bg-red-50 dark:bg-red-900/20 rounded-xl p-3">
-          <div className="text-lg font-bold text-red-700 dark:text-red-400">{wrongCount ?? '—'}</div>
+        <div className="rounded-xl bg-wrong/10 p-3">
+          <div className="text-lg font-bold text-wrong">{wrongCount ?? '—'}</div>
           <div className="text-xs text-text-secondary">{t('common.wrong')}</div>
         </div>
         <div className="bg-surface rounded-xl p-3">
@@ -103,18 +107,21 @@ export default function ScoreCard({ score, totalPoints, passScore, passed, timeT
       {/* Fail CTA */}
       {!hideCtas && !passed && testId && (
         <div className="mt-4 flex flex-col items-center gap-2">
-          <Link
+          <Button
+            as={Link}
             to={`/exam/${testId}`}
-            className="bg-primary text-white rounded-xl px-6 py-2.5 text-sm font-semibold shadow-sm shadow-primary/25 transition-colors hover:bg-primary-hover inline-block"
+            className="px-6"
           >
             {t('exam.retake')}
-          </Link>
-          <Link
+          </Button>
+          <Button
+            as={Link}
             to={`/study/${testId}`}
-            className="text-primary text-sm font-medium hover:text-primary-hover block"
+            variant="ghost"
+            size="sm"
           >
             {t('exam.learnWrong')}
-          </Link>
+          </Button>
         </div>
       )}
     </div>

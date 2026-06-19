@@ -27,7 +27,7 @@ export default function ProgressBar() {
       </div>
       <div className="h-1.5 rounded-full bg-theme-border overflow-hidden">
         <div
-          className="h-full rounded-full bg-gradient-to-r from-primary to-blue-400 transition-all duration-300"
+          className="h-full rounded-full bg-primary transition-all duration-300"
           style={{ width: `${pct}%` }}
         />
       </div>

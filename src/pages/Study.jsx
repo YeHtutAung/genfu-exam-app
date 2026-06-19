@@ -5,6 +5,7 @@ import useExamStore from '../store/examStore'
 import StudyCard from '../components/study/StudyCard'
 import Spinner from '../components/ui/Spinner'
 import PageTransition from '../components/ui/PageTransition'
+import Icon from '../components/ui/Icon'
 import { useI18n } from '../lib/i18n'
 
 const slideVariants = {
@@ -58,7 +59,7 @@ export default function Study() {
   if (error) {
     return (
       <div className="mx-auto max-w-3xl px-4 py-12">
-        <div className="rounded-md bg-red-50 p-4 text-sm text-red-700">{error}</div>
+        <div className="rounded-md bg-wrong/10 p-4 text-sm text-wrong">{error}</div>
       </div>
     )
   }
@@ -123,13 +124,14 @@ export default function Study() {
           <div className="mx-auto max-w-3xl">
             {/* Top bar */}
             <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
-              <div className="flex items-baseline">
+              <h1 className="flex items-baseline">
                 <span className="text-xs text-text-secondary">{t('study.mode')}</span>
                 <span className="text-xl font-bold text-text-primary ml-1">{t('common.questionShort')} {current}</span>
                 <span className="text-sm text-text-secondary ml-0.5">/ {total}</span>
-              </div>
-              <span className="bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-xs font-semibold px-2.5 py-1 rounded-full">
-                📖 {t('study.studying')}
+              </h1>
+              <span className="inline-flex items-center gap-1 bg-primary/10 text-primary text-xs font-semibold px-2.5 py-1 rounded-full">
+                <Icon name="book" className="h-3.5 w-3.5" />
+                {t('study.studying')}
               </span>
             </div>
 

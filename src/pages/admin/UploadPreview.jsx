@@ -4,10 +4,13 @@ import { supabase } from '../../lib/supabase'
 import { confirmUpload } from '../../lib/api'
 import useAdminStore from '../../store/adminStore'
 import UploadPreviewPanel from '../../components/admin/UploadPreview'
+import Breadcrumbs from '../../components/ui/Breadcrumbs'
+import useToast from '../../components/ui/useToast'
 import { useI18n } from '../../lib/i18n'
 
 export default function UploadPreview() {
   const { t } = useI18n()
+  const { showToast } = useToast()
   const navigate = useNavigate()
   const preview = useAdminStore(s => s.uploadPreview)
   const clearUploadPreview = useAdminStore(s => s.clearUploadPreview)
@@ -33,10 +36,10 @@ export default function UploadPreview() {
   if (!preview) {
     return (
       <div className="mx-auto max-w-2xl px-4 py-8 text-center">
-        <p className="text-gray-500">{t('admin.noPreviewData')}</p>
+        <p className="text-text-secondary">{t('admin.noPreviewData')}</p>
         <button
           onClick={() => navigate('/admin/upload')}
-          className="mt-4 rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+          className="mt-4 rounded-md bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary-hover"
         >
           {t('admin.backToUpload')}
         </button>
@@ -54,6 +57,7 @@ export default function UploadPreview() {
     try {
       await confirmUpload({ ...preview, categoryId })
       clearUploadPreview()
+      showToast(t('admin.registerTest'), 'success')
       navigate('/admin/tests')
     } catch (err) {
       setError(err.message)
@@ -69,7 +73,8 @@ export default function UploadPreview() {
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-8">
-      <h1 className="mb-6 text-2xl font-bold text-gray-900">{t('admin.uploadPreview')}</h1>
+      <h1 className="mb-6 text-2xl font-bold text-text-primary">{t('admin.uploadPreview')}</h1>
+      <Breadcrumbs items={[{ label: t('common.admin'), to: '/admin' }, { label: t('admin.testUpload'), to: '/admin/upload' }, { label: t('admin.uploadPreview') }]} />
 
       <UploadPreviewPanel
         preview={preview}
@@ -79,7 +84,7 @@ export default function UploadPreview() {
       />
 
       {error && (
-        <div className="mt-4 rounded-md bg-red-50 p-4 text-sm text-red-700">
+        <div className="mt-4 rounded-md bg-wrong/10 p-4 text-sm text-wrong">
           {error}
         </div>
       )}

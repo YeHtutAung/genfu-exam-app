@@ -5,6 +5,8 @@ import useAuthStore from '../store/authStore'
 import ScoreCard from '../components/exam/ScoreCard'
 import Spinner from '../components/ui/Spinner'
 import PageTransition from '../components/ui/PageTransition'
+import Breadcrumbs from '../components/ui/Breadcrumbs'
+import Button from '../components/ui/Button'
 import { useI18n } from '../lib/i18n'
 
 function buildStudyCoach({ session, test, stats, t }) {
@@ -59,18 +61,21 @@ function StudyCoach({ coach }) {
       <h2 className="mt-1 text-xl font-bold text-text-primary">{coach.title}</h2>
       <p className="mt-2 text-sm leading-relaxed text-text-secondary">{coach.summary}</p>
       <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2">
-        <Link
+        <Button
+          as={Link}
           to={coach.primaryTo}
-          className="min-h-11 rounded-lg bg-primary px-4 py-3 text-center text-sm font-semibold text-white transition-colors hover:bg-primary-hover"
+          className="rounded-lg"
         >
           {coach.primary}
-        </Link>
-        <Link
+        </Button>
+        <Button
+          as={Link}
           to={coach.secondaryTo}
-          className="min-h-11 rounded-lg bg-bg px-4 py-3 text-center text-sm font-semibold text-text-secondary transition-colors hover:bg-surface"
+          variant="outline"
+          className="rounded-lg"
         >
           {coach.secondary}
-        </Link>
+        </Button>
       </div>
     </section>
   )
@@ -204,6 +209,7 @@ export default function StudySummary() {
     <PageTransition>
       <div className="min-h-screen bg-bg px-4 py-6">
         <div className="mx-auto max-w-3xl">
+          <Breadcrumbs items={[{ label: t('study.completed') }]} />
           <ScoreCard
             score={session.score ?? 0}
             totalPoints={test.total_points ?? 50}
@@ -222,24 +228,30 @@ export default function StudySummary() {
 
           {/* CTAs */}
           <div className="mt-6 flex flex-col items-center gap-3">
-            <Link
+            <Button
+              as={Link}
               to={`/exam/${testId}`}
-              className="w-full max-w-xs rounded-xl bg-primary py-2.5 text-sm font-semibold text-white text-center shadow-sm shadow-primary/25 transition-colors hover:bg-primary-hover"
+              className="w-full max-w-xs"
             >
               {t('study.challengeExam')}
-            </Link>
-            <Link
+            </Button>
+            <Button
+              as={Link}
               to={`/study/${testId}`}
-              className="w-full max-w-xs rounded-xl bg-surface border border-theme-border py-2.5 text-sm font-medium text-text-secondary text-center transition-colors hover:bg-theme-border"
+              variant="outline"
+              className="w-full max-w-xs"
             >
               {t('study.studyAgain')}
-            </Link>
-            <Link
+            </Button>
+            <Button
+              as={Link}
               to="/"
-              className="text-primary text-sm font-medium hover:text-primary-hover mt-1"
+              variant="ghost"
+              size="sm"
+              className="mt-1"
             >
               {t('common.backHome')}
-            </Link>
+            </Button>
           </div>
         </div>
       </div>

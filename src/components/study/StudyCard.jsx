@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 import ImageRenderer from '../signs/ImageRenderer'
 import AIExplanation from './AIExplanation'
 import BookmarkButton from '../ui/BookmarkButton'
+import Icon from '../ui/Icon'
 import useReducedMotion from '../../hooks/useReducedMotion'
 import { useI18n } from '../../lib/i18n'
 
@@ -58,7 +59,7 @@ export default function StudyCard({ question, onAnswer, userAnswer }) {
 
       {/* Scenario context */}
       {isScenario && scenarioContext && (
-        <p className="mb-4 rounded bg-amber-50 p-3 text-sm text-amber-800">
+        <p className="mb-4 rounded bg-warning/10 p-3 text-sm text-text-primary">
           {scenarioContext}
         </p>
       )}
@@ -91,11 +92,14 @@ export default function StudyCard({ question, onAnswer, userAnswer }) {
           transition={{ duration: 0.3, type: 'spring', stiffness: 200 }}
           style={{ overflow: 'hidden' }}
         >
-          <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-xl p-3 mt-3">
+          <div className="bg-warning/10 border border-warning/20 rounded-xl p-3 mt-3">
             <p className="mb-1 text-xs">
-              <span className="font-medium text-amber-800 dark:text-amber-300">💡 {t('study.hint')}</span>
+              <span className="inline-flex items-center gap-1 font-medium text-warning">
+                <Icon name="lightbulb" className="h-4 w-4" />
+                {t('study.hint')}
+              </span>
             </p>
-            <p className="text-sm text-amber-900 dark:text-amber-200 leading-relaxed">
+            <p className="text-sm text-text-primary leading-relaxed">
               {hint}
             </p>
           </div>

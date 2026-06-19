@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import useExamStore from '../store/examStore'
@@ -44,8 +44,44 @@ export default function Exam() {
 
   const [direction, setDirection] = useState(0)
   const [confirmSubmit, setConfirmSubmit] = useState(false)
+  const [autoAdvancing, setAutoAdvancing] = useState(false)
+  const touchStartX = useRef(null)
 
   useTimer()
+
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      const target = event.target
+      const isTyping = ['INPUT', 'TEXTAREA', 'SELECT'].includes(target?.tagName) || target?.isContentEditable
+      if (isTyping || loading || confirmSubmit || questions.length === 0) return
+
+      const lastIndex = questions.length - 1
+
+      if (event.key === 'ArrowLeft') {
+        event.preventDefault()
+        if (currentIndex > 0) {
+          setDirection(-1)
+          prevQuestion()
+        }
+      } else if (event.key === 'ArrowRight') {
+        event.preventDefault()
+        if (currentIndex < lastIndex) {
+          setDirection(1)
+          nextQuestion()
+        }
+      } else if (/^[1-9]$/.test(event.key) && !isSimulation) {
+        const index = Number(event.key) - 1
+        if (index < questions.length) {
+          event.preventDefault()
+          setDirection(index > currentIndex ? 1 : -1)
+          goToQuestion(index)
+        }
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [confirmSubmit, currentIndex, goToQuestion, isSimulation, loading, nextQuestion, prevQuestion, questions.length])
 
   // Start exam on mount
   useEffect(() => {
@@ -71,7 +107,7 @@ export default function Exam() {
   if (error) {
     return (
       <div className="mx-auto max-w-3xl px-4 py-12">
-        <div className="rounded-md bg-red-50 p-4 text-sm text-red-700">{error}</div>
+        <div className="rounded-md bg-wrong/10 p-4 text-sm text-wrong">{error}</div>
       </div>
     )
   }
@@ -97,8 +133,10 @@ export default function Exam() {
       answerSubQuestion(id, answer)
     } else {
       answerQuestion(id, answer)
+      setAutoAdvancing(!isLast)
       // Auto-advance after short delay for standard questions
       setTimeout(() => {
+        setAutoAdvancing(false)
         if (!isLast) {
           setDirection(1)
           nextQuestion()
@@ -152,27 +190,54 @@ export default function Exam() {
     await completeExam()
   }
 
+  const handleTouchStart = (event) => {
+    touchStartX.current = event.touches[0]?.clientX ?? null
+  }
+
+  const handleTouchEnd = (event) => {
+    if (touchStartX.current === null) return
+    const delta = (event.changedTouches[0]?.clientX ?? touchStartX.current) - touchStartX.current
+    touchStartX.current = null
+
+    if (Math.abs(delta) < 50) return
+    if (delta > 0 && currentIndex > 0) {
+      handlePrev()
+    } else if (delta < 0 && !isLast) {
+      handleNext()
+    }
+  }
+
   return (
     <PageTransition>
       <div className="flex min-h-[calc(100dvh-4rem)] flex-col bg-bg">
         {/* Scrollable content area */}
-        <div className="flex-1 overflow-y-auto px-3 py-4 sm:px-4 sm:py-6">
+        <div
+          className="flex-1 overflow-y-auto px-3 py-4 sm:px-4 sm:py-6"
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+        >
           <div className="mx-auto max-w-3xl">
             {/* Top bar */}
             <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
-              <div className="flex items-baseline">
+              <h1 className="flex items-baseline">
                 <span className="text-xs text-text-secondary">
                   {isSimulation ? t('exam.simulationLabel') : t('common.question')}
                 </span>
                 <span className="text-xl font-bold text-text-primary ml-1">{current}</span>
                 <span className="text-sm text-text-secondary ml-0.5">/ {total}</span>
-              </div>
+              </h1>
               <Timer />
             </div>
 
             {isSimulation && (
               <div className="mb-4 rounded-xl border border-warning/30 bg-warning/10 p-3 text-sm text-text-primary">
-                No hints, no review until submit, randomized order. Treat this like the real test.
+                {t('exam.simulationHelp')}
+              </div>
+            )}
+
+            {autoAdvancing && (
+              <div className="mb-4 rounded-xl border border-primary/20 bg-primary/10 p-3 text-sm text-primary">
+                {t('exam.autoAdvancing')}
               </div>
             )}
 

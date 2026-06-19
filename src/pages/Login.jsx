@@ -13,6 +13,7 @@ export default function Login() {
   const signInWithEmail = useAuthStore(s => s.signInWithEmail)
   const signInWithGoogle = useAuthStore(s => s.signInWithGoogle)
   const signUp = useAuthStore(s => s.signUp)
+  const resetPassword = useAuthStore(s => s.resetPassword)
   const navigate = useNavigate()
 
   const [email, setEmail] = useState('')
@@ -28,7 +29,10 @@ export default function Login() {
     e.preventDefault()
     setSubmitting(true)
     try {
-      if (mode === 'login') {
+      if (mode === 'reset') {
+        const { error } = await resetPassword(email)
+        if (!error) setConfirmationSent(true)
+      } else if (mode === 'login') {
         const { error } = await signInWithEmail(email, password)
         if (!error) navigate('/')
       } else {
@@ -49,7 +53,7 @@ export default function Login() {
 
   return (
     <PageTransition>
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-bg to-purple-50 dark:from-slate-900 dark:via-bg dark:to-slate-800 flex items-center justify-center px-4">
+      <div className="min-h-screen bg-bg flex items-center justify-center px-4">
         <div className="w-full max-w-sm">
           <div className="mb-4 flex justify-end">
             <LanguageSelect />
@@ -61,10 +65,10 @@ export default function Login() {
               G
             </div>
             <h1 className="mt-4 text-2xl font-bold text-text-primary text-center">
-              {mode === 'login' ? t('login.welcomeBack') : t('login.niceToMeet')}
+              {mode === 'reset' ? t('login.resetTitle') : mode === 'login' ? t('login.welcomeBack') : t('login.niceToMeet')}
             </h1>
             <p className="mt-1 text-sm text-text-secondary text-center">
-              {mode === 'login' ? t('login.loginSubtitle') : t('login.registerSubtitle')}
+              {mode === 'reset' ? t('login.resetSubtitle') : mode === 'login' ? t('login.loginSubtitle') : t('login.registerSubtitle')}
             </p>
           </div>
 
@@ -72,6 +76,7 @@ export default function Login() {
           <div className="mt-6 bg-bg rounded-2xl p-6 shadow-lg border border-theme-border">
 
             {/* Mode toggle */}
+            {mode !== 'reset' && (
             <div className="flex rounded-xl bg-surface p-1 mb-4">
               <button
                 type="button"
@@ -96,6 +101,7 @@ export default function Login() {
                 {t('login.register')}
               </button>
             </div>
+            )}
 
             {authError && (
               <div className="rounded-xl bg-wrong/10 border border-wrong/20 text-wrong text-sm p-3 mb-4">
@@ -104,8 +110,8 @@ export default function Login() {
             )}
 
             {confirmationSent && (
-              <div className="rounded-xl bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-300 text-sm p-3 mb-4">
-                {t('login.confirmationSent')}
+              <div className="rounded-xl bg-correct/10 border border-correct/20 text-correct text-sm p-3 mb-4">
+                {mode === 'reset' ? t('login.resetSent') : t('login.confirmationSent')}
               </div>
             )}
 
@@ -124,6 +130,7 @@ export default function Login() {
                 />
               </div>
 
+              {mode !== 'reset' && (
               <div>
                 <label htmlFor="password" className="block text-sm font-medium text-text-primary mb-1.5">
                   {t('login.password')}
@@ -137,25 +144,36 @@ export default function Login() {
                   className="w-full rounded-xl border-[1.5px] border-theme-border bg-bg px-3.5 py-2.5 text-sm text-text-primary placeholder:text-text-secondary focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10 transition-colors"
                 />
               </div>
+              )}
 
               <button
                 type="submit"
                 disabled={submitting}
                 className="w-full rounded-xl bg-primary py-2.5 text-sm font-semibold text-white shadow-sm shadow-primary/30 transition-colors hover:bg-primary-hover disabled:opacity-50 flex items-center justify-center"
               >
-                {submitting ? <Spinner size="h-5 w-5" /> : (mode === 'login' ? t('common.login') : t('login.createAccount'))}
+                {submitting ? <Spinner size="h-5 w-5" /> : (mode === 'reset' ? t('login.sendResetLink') : mode === 'login' ? t('common.login') : t('login.createAccount'))}
               </button>
             </form>
 
+            {mode === 'login' && (
+              <button
+                type="button"
+                onClick={() => { setMode('reset'); setConfirmationSent(false) }}
+                className="mt-3 text-sm font-medium text-primary hover:text-primary-hover"
+              >
+                {t('login.forgotPassword')}
+              </button>
+            )}
+
             {/* Divider */}
-            <div className="flex items-center gap-3 my-5">
+            {mode !== 'reset' && <div className="flex items-center gap-3 my-5">
               <div className="flex-1 h-px bg-theme-border" />
               <span className="text-xs text-text-secondary">{t('login.or')}</span>
               <div className="flex-1 h-px bg-theme-border" />
-            </div>
+            </div>}
 
             {/* Social buttons */}
-            <div className="space-y-3">
+            {mode !== 'reset' && <div className="space-y-3">
               <button
                 onClick={signInWithGoogle}
                 className="w-full rounded-xl border-[1.5px] border-theme-border bg-bg py-2.5 text-sm font-medium text-text-secondary transition-colors hover:bg-surface flex items-center justify-center gap-2"
@@ -170,12 +188,16 @@ export default function Login() {
               </button>
 
               {/* Facebook login — hidden until provider is configured */}
-            </div>
+            </div>}
           </div>
 
           {/* Sign up / sign in toggle link */}
           <p className="text-center text-sm text-text-secondary mt-4">
-            {mode === 'login' ? (
+            {mode === 'reset' ? (
+              <button onClick={() => { setMode('login'); setConfirmationSent(false) }} className="text-primary hover:text-primary-hover font-medium">
+                {t('login.backToLogin')}
+              </button>
+            ) : mode === 'login' ? (
               <>
                 {t('login.noAccount')}{' '}
                 <button onClick={() => { setMode('register'); setConfirmationSent(false) }} className="text-primary hover:text-primary-hover font-medium">

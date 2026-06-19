@@ -4,6 +4,9 @@ import { supabase } from '../lib/supabase'
 import useAuthStore from '../store/authStore'
 import Spinner from '../components/ui/Spinner'
 import PageTransition from '../components/ui/PageTransition'
+import Breadcrumbs from '../components/ui/Breadcrumbs'
+import Button from '../components/ui/Button'
+import Card from '../components/ui/Card'
 import { useI18n } from '../lib/i18n'
 
 export default function Bookmarks() {
@@ -62,7 +65,7 @@ export default function Bookmarks() {
     }
 
     load()
-  }, [user?.id])
+  }, [t, user?.id])
 
   const removeBookmark = async (bookmarkId) => {
     setBookmarks(current => current.filter(item => item.id !== bookmarkId))
@@ -85,6 +88,7 @@ export default function Bookmarks() {
     <PageTransition>
       <div className="min-h-screen bg-bg px-3 py-6 sm:px-4 sm:py-8">
         <main className="mx-auto max-w-3xl">
+          <Breadcrumbs items={[{ label: t('bookmarks.title') }]} />
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <p className="text-xs font-semibold uppercase tracking-wide text-primary">
@@ -97,12 +101,14 @@ export default function Bookmarks() {
                 {t('bookmarks.description')}
               </p>
             </div>
-            <Link
+            <Button
+              as={Link}
               to="/"
-              className="min-h-11 rounded-lg bg-surface px-4 py-3 text-center text-sm font-semibold text-text-secondary transition-colors hover:bg-theme-border"
+              variant="secondary"
+              className="rounded-lg"
             >
               {t('common.backHome')}
-            </Link>
+            </Button>
           </div>
 
           {error && (
@@ -112,12 +118,12 @@ export default function Bookmarks() {
           )}
 
           {!error && bookmarks.length === 0 && (
-            <div className="mt-6 rounded-xl border border-theme-border bg-surface p-6 text-center">
+            <Card className="mt-6 bg-surface p-6 text-center">
               <h2 className="text-base font-semibold text-text-primary">{t('bookmarks.emptyTitle')}</h2>
               <p className="mt-1 text-sm text-text-secondary">
                 {t('bookmarks.emptyDetail')}
               </p>
-            </div>
+            </Card>
           )}
 
           <div className="mt-6 space-y-3">
@@ -127,7 +133,7 @@ export default function Bookmarks() {
               const category = test?.categories
 
               return (
-                <article key={bookmark.id} className="rounded-xl border border-theme-border bg-bg p-4 shadow-sm">
+                <Card key={bookmark.id} as="article">
                   <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                     <div className="min-w-0">
                       <p className="text-xs font-semibold uppercase tracking-wide text-primary">
@@ -140,30 +146,35 @@ export default function Bookmarks() {
                         {question?.type === 'scenario' ? t('exam.scenario') : t('exam.standard')} · {question?.points}{t('common.points')}
                       </p>
                     </div>
-                    <button
+                    <Button
                       type="button"
                       onClick={() => removeBookmark(bookmark.id)}
-                      className="min-h-10 rounded-lg bg-surface px-3 py-2 text-sm font-semibold text-text-secondary transition-colors hover:bg-theme-border"
+                      variant="secondary"
+                      size="sm"
+                      className="rounded-lg"
                     >
                       {t('bookmarks.remove')}
-                    </button>
+                    </Button>
                   </div>
 
                   <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
-                    <Link
+                    <Button
+                      as={Link}
                       to={`/study/${question.test_id}`}
-                      className="min-h-11 rounded-lg bg-primary px-4 py-3 text-center text-sm font-semibold text-white transition-colors hover:bg-primary-hover"
+                      className="rounded-lg"
                     >
                       {t('bookmarks.reviewStudy')}
-                    </Link>
-                    <Link
+                    </Button>
+                    <Button
+                      as={Link}
                       to={`/exam/${question.test_id}`}
-                      className="min-h-11 rounded-lg bg-surface px-4 py-3 text-center text-sm font-semibold text-text-secondary transition-colors hover:bg-theme-border"
+                      variant="secondary"
+                      className="rounded-lg"
                     >
                       {t('bookmarks.retakeExam')}
-                    </Link>
+                    </Button>
                   </div>
-                </article>
+                </Card>
               )
             })}
           </div>

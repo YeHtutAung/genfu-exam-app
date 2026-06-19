@@ -1,4 +1,7 @@
 import { useI18n } from '../../lib/i18n'
+import Badge from '../ui/Badge'
+import Button from '../ui/Button'
+import Card from '../ui/Card'
 
 export default function UploadPreviewPanel({ preview, onConfirm, onCancel, confirming }) {
   const { t } = useI18n()
@@ -10,7 +13,7 @@ export default function UploadPreviewPanel({ preview, onConfirm, onCancel, confi
   return (
     <div className="space-y-6">
       {/* Meta info */}
-      <div className="rounded-lg border border-theme-border bg-surface p-5 shadow-sm">
+      <Card className="rounded-lg bg-surface p-5">
         <h3 className="mb-3 font-medium text-text-primary">{t('admin.testInfo')}</h3>
         <dl className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
           <dt className="text-text-secondary">{t('admin.testId')}</dt>
@@ -24,10 +27,10 @@ export default function UploadPreviewPanel({ preview, onConfirm, onCancel, confi
           <dt className="text-text-secondary">{t('admin.passingScore')}</dt>
           <dd className="text-text-primary">{meta.pass_score} / {meta.total_points}{t('common.points')}</dd>
         </dl>
-      </div>
+      </Card>
 
       {/* Question summary */}
-      <div className="rounded-lg border border-theme-border bg-surface p-5 shadow-sm">
+      <Card className="rounded-lg bg-surface p-5">
         <h3 className="mb-3 font-medium text-text-primary">{t('admin.questionSummary')}</h3>
         <div className="flex gap-6 text-sm">
           <div>
@@ -43,11 +46,11 @@ export default function UploadPreviewPanel({ preview, onConfirm, onCancel, confi
             <span className="font-medium text-text-primary">{scenarioCount}{t('common.questionShort')}</span>
           </div>
         </div>
-      </div>
+      </Card>
 
       {/* Images */}
       {images && images.length > 0 && (
-        <div className="rounded-lg border border-theme-border bg-surface p-5 shadow-sm">
+        <Card className="rounded-lg bg-surface p-5">
           <h3 className="mb-3 font-medium text-text-primary">{t('admin.imageFiles')}</h3>
           <ul className="space-y-1 text-sm text-text-secondary">
             {images.map((img, i) => (
@@ -58,11 +61,11 @@ export default function UploadPreviewPanel({ preview, onConfirm, onCancel, confi
               </li>
             ))}
           </ul>
-        </div>
+        </Card>
       )}
 
       {/* Question list */}
-      <div className="rounded-lg border border-theme-border bg-surface p-5 shadow-sm">
+      <Card className="rounded-lg bg-surface p-5">
         <h3 className="mb-3 font-medium text-text-primary">{t('admin.questionList')}</h3>
         <div className="max-h-64 overflow-y-auto">
           <table className="w-full text-left text-sm">
@@ -78,13 +81,9 @@ export default function UploadPreviewPanel({ preview, onConfirm, onCancel, confi
                 <tr key={q.id} className="border-b border-theme-border/50">
                   <td className="py-1.5 pr-3 text-text-primary">{q.question_number}</td>
                   <td className="py-1.5 pr-3">
-                    <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${
-                      q.type === 'scenario'
-                        ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300'
-                        : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300'
-                    }`}>
+                    <Badge tone={q.type === 'scenario' ? 'primary' : 'default'}>
                       {q.type === 'scenario' ? t('admin.scenario') : t('admin.normal')}
-                    </span>
+                    </Badge>
                   </td>
                   <td className="py-1.5 text-text-secondary">
                     {q.question_jp.slice(0, 40)}{q.question_jp.length > 40 ? '...' : ''}
@@ -94,24 +93,28 @@ export default function UploadPreviewPanel({ preview, onConfirm, onCancel, confi
             </tbody>
           </table>
         </div>
-      </div>
+      </Card>
 
       {/* Actions */}
       <div className="flex justify-end gap-3">
-        <button
+        <Button
           onClick={onCancel}
           disabled={confirming}
-          className="rounded-md bg-surface px-4 py-2 text-sm font-medium text-text-secondary border border-theme-border hover:bg-theme-border disabled:opacity-50"
+          variant="outline"
+          size="sm"
+          className="rounded-md"
         >
           {t('common.cancel')}
-        </button>
-        <button
+        </Button>
+        <Button
           onClick={onConfirm}
           disabled={confirming}
-          className="rounded-md bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700 disabled:opacity-50"
+          variant="success"
+          size="sm"
+          className="rounded-md"
         >
           {confirming ? t('admin.registering') : t('admin.registerTest')}
-        </button>
+        </Button>
       </div>
     </div>
   )

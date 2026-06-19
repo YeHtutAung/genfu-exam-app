@@ -32,7 +32,7 @@ export default function QuestionCard({ question, onAnswer, showResult, userAnswe
 
       {/* Scenario context */}
       {isScenario && scenarioContext && (
-        <p className="mb-4 rounded bg-amber-50 p-3 text-sm text-amber-800">
+        <p className="mb-4 rounded bg-warning/10 p-3 text-sm text-text-primary">
           {scenarioContext}
         </p>
       )}

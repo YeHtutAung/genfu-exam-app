@@ -1,5 +1,9 @@
 import { Link } from 'react-router-dom'
 import PageTransition from '../components/ui/PageTransition'
+import Breadcrumbs from '../components/ui/Breadcrumbs'
+import Badge from '../components/ui/Badge'
+import Button from '../components/ui/Button'
+import Card from '../components/ui/Card'
 import { useI18n } from '../lib/i18n'
 
 const readinessChecks = [
@@ -47,6 +51,7 @@ export default function Tips() {
     <PageTransition>
       <div className="min-h-screen bg-bg px-3 py-6 sm:px-4 sm:py-8">
         <main className="mx-auto max-w-3xl">
+          <Breadcrumbs items={[{ label: t('tips.title') }]} />
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <p className="text-xs font-semibold uppercase tracking-wide text-primary">
@@ -59,15 +64,17 @@ export default function Tips() {
                 {t('tips.description')}
               </p>
             </div>
-            <Link
+            <Button
+              as={Link}
               to="/"
-              className="min-h-11 rounded-lg bg-surface px-4 py-3 text-center text-sm font-semibold text-text-secondary transition-colors hover:bg-theme-border"
+              variant="secondary"
+              className="rounded-lg"
             >
               {t('tips.backToPractice')}
-            </Link>
+            </Button>
           </div>
 
-          <section className="mt-6 rounded-xl border border-theme-border bg-surface/70 p-4 shadow-sm sm:p-5">
+          <Card as="section" className="mt-6 bg-surface/70 sm:p-5">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <h2 className="text-lg font-bold text-text-primary">{t('tips.checklistTitle')}</h2>
@@ -75,14 +82,14 @@ export default function Tips() {
                   {t('tips.checklistDescription')}
                 </p>
               </div>
-              <span className="rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+              <Badge tone="primary" className="border border-primary/20 px-3 py-1 font-semibold">
                 {t('tips.beforeExamDay')}
-              </span>
+              </Badge>
             </div>
 
             <div className="mt-4 grid gap-3">
               {readinessChecks.map((check, index) => (
-                <div key={check.titleKey} className="rounded-lg border border-theme-border bg-bg p-3">
+                <Card key={check.titleKey} className="rounded-lg p-3">
                   <div className="flex gap-3">
                     <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary text-sm font-bold text-white">
                       {index + 1}
@@ -92,10 +99,10 @@ export default function Tips() {
                       <p className="mt-1 text-sm leading-relaxed text-text-secondary">{t(check.detailKey)}</p>
                     </div>
                   </div>
-                </div>
+                </Card>
               ))}
             </div>
-          </section>
+          </Card>
 
           <section className="mt-6">
             <div className="mb-3">
@@ -107,7 +114,7 @@ export default function Tips() {
 
             <div className="grid gap-3 sm:grid-cols-2">
               {tips.map(group => (
-                <article key={group.labelKey} className="rounded-xl border border-theme-border bg-bg p-4 shadow-sm">
+                <Card key={group.labelKey} as="article">
                   <h3 className="text-sm font-semibold text-text-primary">{t(group.labelKey)}</h3>
                   <ul className="mt-3 space-y-2">
                     {group.itemKeys.map(itemKey => (
@@ -117,7 +124,7 @@ export default function Tips() {
                       </li>
                     ))}
                   </ul>
-                </article>
+                </Card>
               ))}
             </div>
           </section>

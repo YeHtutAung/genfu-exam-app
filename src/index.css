@@ -10,8 +10,8 @@
     --color-primary-hover: 37 99 235;
     --color-text-primary: 15 23 42;
     --color-text-secondary: 100 116 139;
-    --color-correct: 34 197 94;
-    --color-wrong: 239 68 68;
+    --color-correct: 21 128 61;
+    --color-wrong: 185 28 28;
     --color-ai: 139 92 246;
     --color-warning: 245 158 11;
     --color-border: 226 232 240;
@@ -24,8 +24,8 @@
     --color-primary-hover: 147 187 253;
     --color-text-primary: 241 245 249;
     --color-text-secondary: 148 163 184;
-    --color-correct: 74 222 128;
-    --color-wrong: 248 113 113;
+    --color-correct: 134 239 172;
+    --color-wrong: 252 165 165;
     --color-ai: 167 139 250;
     --color-warning: 251 191 36;
     --color-border: 51 65 85;
@@ -34,6 +34,17 @@
   body {
     @apply bg-bg text-text-primary font-sans antialiased;
     transition: background-color 200ms ease-out, color 200ms ease-out;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background:
+      linear-gradient(135deg, rgb(var(--color-primary) / 0.035) 0 1px, transparent 1px 16px),
+      linear-gradient(45deg, rgb(var(--color-warning) / 0.04) 0 1px, transparent 1px 22px);
   }
 
   html {
@@ -58,5 +69,9 @@
   select,
   textarea {
     -webkit-tap-highlight-color: transparent;
+  }
+
+  :where(a, button, input, select, textarea, summary, [tabindex]:not([tabindex="-1"])):focus-visible {
+    @apply outline-none ring-2 ring-primary ring-offset-2 ring-offset-bg;
   }
 }

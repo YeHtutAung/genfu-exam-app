@@ -5,16 +5,21 @@ import useAuthStore from '../store/authStore'
 import Spinner from '../components/ui/Spinner'
 import PageTransition from '../components/ui/PageTransition'
 import StaggerList from '../components/ui/StaggerList'
+import { TestListSkeleton } from '../components/ui/LoadingPanels'
+import Icon from '../components/ui/Icon'
+import Badge from '../components/ui/Badge'
+import Button from '../components/ui/Button'
+import Card from '../components/ui/Card'
 import { useI18n } from '../lib/i18n'
 
-const CATEGORY_EMOJI = {
-  genfu: '🛵',
-  futsu_bike: '🏍️',
-  daigata_bike: '🏍️',
-  futsu_car: '🚗',
-}
-
 const SELECTED_CATEGORY_KEY = 'genfu-selected-category'
+
+const CATEGORY_ICON = {
+  genfu: 'moped',
+  futsu_bike: 'motorcycle',
+  daigata_bike: 'motorcycle',
+  futsu_car: 'car',
+}
 
 function clamp(value, min, max) {
   return Math.min(max, Math.max(min, value))
@@ -172,7 +177,7 @@ function LearnerDashboard({ tests, progress, field }) {
     : null
 
   return (
-    <section className="mt-6 rounded-xl border border-theme-border bg-surface/70 p-4 shadow-sm sm:p-5">
+    <Card as="section" className="mt-6 bg-surface/70 sm:p-5">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <p className="text-xs font-semibold uppercase tracking-wide text-primary">
@@ -212,12 +217,13 @@ function LearnerDashboard({ tests, progress, field }) {
                 {dashboard.actionHint}
               </p>
             </div>
-            <Link
+            <Button
+              as={Link}
               to={actionHref}
-              className="min-h-11 shrink-0 rounded-lg bg-primary px-4 py-3 text-center text-sm font-semibold text-white transition-colors hover:bg-primary-hover"
+              className="shrink-0 rounded-lg"
             >
               {dashboard.actionLabel}
-            </Link>
+            </Button>
           </div>
         </div>
       )}
@@ -231,25 +237,33 @@ function LearnerDashboard({ tests, progress, field }) {
         </div>
         <div className="grid grid-cols-2 gap-2 sm:flex">
           {dashboard.readinessScore >= 65 && dashboard.actionTest && (
-            <Link
+            <Button
+              as={Link}
               to={`/simulation/${dashboard.actionTest.id}`}
-              className="min-h-10 rounded-lg border border-theme-border bg-bg px-3 py-2 text-center text-sm font-semibold text-text-secondary transition-colors hover:bg-surface"
+              variant="outline"
+              size="sm"
+              className="rounded-lg"
             >
               {t('home.simulation')}
-            </Link>
+            </Button>
           )}
-          <Link
+          <Button
+            as={Link}
             to="/bookmarks"
-            className="min-h-10 rounded-lg bg-primary px-3 py-2 text-center text-sm font-semibold text-white transition-colors hover:bg-primary-hover"
+            size="sm"
+            className="rounded-lg"
           >
             {t('home.bookmarks')}
-          </Link>
-          <Link
+          </Button>
+          <Button
+            as={Link}
             to="/tips"
-            className="min-h-10 rounded-lg bg-surface px-3 py-2 text-center text-sm font-semibold text-text-secondary transition-colors hover:bg-theme-border"
+            variant="secondary"
+            size="sm"
+            className="rounded-lg"
           >
             {t('home.openTips')}
-          </Link>
+          </Button>
         </div>
       </div>
 
@@ -261,7 +275,7 @@ function LearnerDashboard({ tests, progress, field }) {
       </div>
 
       <div className="mt-4 grid gap-3 sm:grid-cols-2">
-        <div className="rounded-lg border border-theme-border bg-bg p-3">
+        <Card className="rounded-lg p-3">
           <p className="text-xs font-medium text-text-secondary">{t('home.latestExam')}</p>
           {dashboard.latestExam ? (
             <>
@@ -276,9 +290,9 @@ function LearnerDashboard({ tests, progress, field }) {
           ) : (
             <p className="mt-1 text-sm text-text-secondary">{t('home.takeFirstTimedExam')}</p>
           )}
-        </div>
+        </Card>
 
-        <div className="rounded-lg border border-theme-border bg-bg p-3">
+        <Card className="rounded-lg p-3">
           <p className="text-xs font-medium text-text-secondary">{t('home.focusNext')}</p>
           {dashboard.weakTest ? (
             <>
@@ -294,18 +308,18 @@ function LearnerDashboard({ tests, progress, field }) {
               {hasAnyPractice ? t('home.keepPassing') : t('home.startAnyTest')}
             </p>
           )}
-        </div>
+        </Card>
       </div>
-    </section>
+    </Card>
   )
 }
 
 function DashboardStat({ label, value }) {
   return (
-    <div className="rounded-lg border border-theme-border bg-bg p-3">
+    <Card className="rounded-lg p-3">
       <p className="text-lg font-bold text-text-primary">{value}</p>
       <p className="mt-0.5 text-xs text-text-secondary">{label}</p>
-    </div>
+    </Card>
   )
 }
 
@@ -314,9 +328,9 @@ function ProgressBadge({ progress }) {
 
   if (!progress) {
     return (
-      <span className="bg-surface text-text-secondary text-xs px-2 py-0.5 rounded-full shrink-0 sm:ml-3">
+      <Badge className="shrink-0 sm:ml-3">
         {t('home.unattempted')}
-      </span>
+      </Badge>
     )
   }
 
@@ -324,32 +338,32 @@ function ProgressBadge({ progress }) {
 
   if (examPassed) {
     return (
-      <span className="bg-green-600 text-white text-xs font-medium px-2 py-0.5 rounded-full shrink-0 sm:ml-3">
+      <Badge tone="correct" className="shrink-0 bg-correct text-white sm:ml-3">
         {t('home.passed')} {examBest}{t('common.points')} ✓
-      </span>
+      </Badge>
     )
   }
 
   if (examAttempts > 0) {
     return (
-      <span className="bg-red-100 dark:bg-red-900/20 text-red-700 dark:text-red-400 text-xs font-medium px-2 py-0.5 rounded-full shrink-0 sm:ml-3">
+      <Badge tone="wrong" className="shrink-0 sm:ml-3">
         {t('home.failed')} {examBest}{t('common.points')} ({examAttempts}{t('home.attempts')})
-      </span>
+      </Badge>
     )
   }
 
   if (studyAttempts > 0) {
     return (
-      <span className="bg-purple-100 dark:bg-purple-900/20 text-purple-700 dark:text-purple-400 text-xs font-medium px-2 py-0.5 rounded-full shrink-0 sm:ml-3">
+      <Badge tone="ai" className="shrink-0 sm:ml-3">
         {t('home.studied')} {studyBest}{t('common.points')} ({studyAttempts}{t('home.attempts')})
-      </span>
+      </Badge>
     )
   }
 
   return (
-    <span className="bg-surface text-text-secondary text-xs px-2 py-0.5 rounded-full shrink-0 sm:ml-3">
+    <Badge className="shrink-0 sm:ml-3">
       {t('home.unattempted')}
-    </span>
+    </Badge>
   )
 }
 
@@ -458,8 +472,11 @@ export default function Home() {
 
   if (loading) {
     return (
-      <div className="flex justify-center py-20">
-        <Spinner />
+      <div className="mx-auto max-w-3xl px-3 py-8 sm:px-4">
+        <div className="flex justify-center py-8">
+          <Spinner />
+        </div>
+        <TestListSkeleton />
       </div>
     )
   }
@@ -497,7 +514,7 @@ export default function Home() {
                         : 'min-h-11 bg-bg border-[1.5px] border-theme-border text-text-secondary font-medium rounded-xl px-4 py-3 text-sm transition-all hover:bg-surface'
                     }
                   >
-                    <span className="mr-1.5">{CATEGORY_EMOJI[cat.code] ?? ''}</span>
+                    <Icon name={CATEGORY_ICON[cat.code] ?? 'focus'} className="mr-1.5 inline h-4 w-4 align-[-2px]" />
                     {field(cat, 'name')}
                   </button>
                 ))}
@@ -517,16 +534,15 @@ export default function Home() {
                         {t('home.practiceTestsHint')}
                       </p>
                     </div>
-                    <span className="shrink-0 rounded-full bg-surface px-3 py-1 text-xs font-medium text-text-secondary">
+                    <Badge className="shrink-0 px-3 py-1">
                       {t('home.testsCount', { count: tests.length })}
-                    </span>
+                    </Badge>
                   </div>
 
                   <StaggerList className="space-y-3">
                     {tests.map(test => (
-                      <div
+                      <Card
                         key={test.id}
-                        className="bg-bg border border-theme-border rounded-xl p-4 shadow-sm"
                       >
                         {/* Top row */}
                         <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
@@ -547,36 +563,41 @@ export default function Home() {
 
                         {/* Bottom row */}
                         <div className="grid grid-cols-1 gap-2 mt-3 sm:grid-cols-3">
-                          <Link
+                          <Button
+                            as={Link}
                             to={`/exam/${test.id}`}
-                            className="min-h-11 bg-primary text-white rounded-lg px-3 py-3 text-sm font-semibold text-center transition-colors hover:bg-primary-hover"
+                            className="rounded-lg"
                           >
                             {t('home.examMode')}
-                          </Link>
-                          <Link
+                          </Button>
+                          <Button
+                            as={Link}
                             to={`/study/${test.id}`}
-                            className="min-h-11 bg-surface text-text-secondary rounded-lg px-3 py-3 text-sm font-medium text-center transition-colors hover:bg-theme-border"
+                            variant="secondary"
+                            className="rounded-lg"
                           >
                             {t('home.studyMode')}
-                          </Link>
-                          <Link
+                          </Button>
+                          <Button
+                            as={Link}
                             to={`/simulation/${test.id}`}
-                            className="min-h-11 rounded-lg border border-theme-border bg-bg px-3 py-3 text-center text-sm font-semibold text-text-secondary transition-colors hover:bg-surface"
+                            variant="outline"
+                            className="rounded-lg"
                           >
                             {t('home.simulation')}
-                          </Link>
+                          </Button>
                         </div>
-                      </div>
+                      </Card>
                     ))}
                   </StaggerList>
                 </section>
               ) : (
-                <div className="mt-6 rounded-xl border border-theme-border bg-surface p-6 text-center">
+                <Card className="mt-6 bg-surface p-6 text-center">
                   <h2 className="text-base font-semibold text-text-primary">{t('home.noActiveTests')}</h2>
                   <p className="mt-1 text-sm text-text-secondary">
                     {t('home.noTests')}
                   </p>
-                </div>
+                </Card>
               )}
             </>
           )}
