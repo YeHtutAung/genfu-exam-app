@@ -7,6 +7,73 @@ import Spinner from '../components/ui/Spinner'
 import PageTransition from '../components/ui/PageTransition'
 import { useI18n } from '../lib/i18n'
 
+function buildStudyCoach({ session, test, stats }) {
+  const score = session.score ?? 0
+  const passScore = test.pass_score ?? 45
+  const totalPoints = test.total_points ?? 50
+  const wrongCount = stats?.wrongCount ?? 0
+  const unansweredCount = stats?.unansweredCount ?? 0
+  const passed = score >= passScore
+
+  if (passed && wrongCount <= 3 && unansweredCount === 0) {
+    return {
+      title: 'Ready to try exam mode',
+      summary: `You scored ${score}/${totalPoints} in study mode. Move to timed exam mode while the material is fresh.`,
+      primary: 'Challenge exam mode',
+      primaryTo: `/exam/${test.id}`,
+      secondary: 'Review tips',
+      secondaryTo: '/tips',
+      tone: 'border-correct/30 bg-correct/10',
+    }
+  }
+
+  if (passed) {
+    return {
+      title: 'Good progress',
+      summary: `You reached the pass line, but ${wrongCount} answer${wrongCount === 1 ? '' : 's'} still need review before exam mode feels stable.`,
+      primary: 'Study again',
+      primaryTo: `/study/${test.id}`,
+      secondary: 'Try exam mode',
+      secondaryTo: `/exam/${test.id}`,
+      tone: 'border-warning/30 bg-warning/10',
+    }
+  }
+
+  return {
+    title: 'Review before exam mode',
+    summary: `You scored ${score}/${totalPoints}. Stay in study mode until the wrong answers make sense.`,
+    primary: 'Study again',
+    primaryTo: `/study/${test.id}`,
+    secondary: 'Read tips',
+    secondaryTo: '/tips',
+    tone: 'border-wrong/30 bg-wrong/10',
+  }
+}
+
+function StudyCoach({ coach }) {
+  return (
+    <section className={`mt-6 rounded-xl border p-4 shadow-sm sm:p-5 ${coach.tone}`}>
+      <p className="text-xs font-semibold uppercase tracking-wide text-primary">Study coaching</p>
+      <h2 className="mt-1 text-xl font-bold text-text-primary">{coach.title}</h2>
+      <p className="mt-2 text-sm leading-relaxed text-text-secondary">{coach.summary}</p>
+      <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2">
+        <Link
+          to={coach.primaryTo}
+          className="min-h-11 rounded-lg bg-primary px-4 py-3 text-center text-sm font-semibold text-white transition-colors hover:bg-primary-hover"
+        >
+          {coach.primary}
+        </Link>
+        <Link
+          to={coach.secondaryTo}
+          className="min-h-11 rounded-lg bg-bg px-4 py-3 text-center text-sm font-semibold text-text-secondary transition-colors hover:bg-surface"
+        >
+          {coach.secondary}
+        </Link>
+      </div>
+    </section>
+  )
+}
+
 export default function StudySummary() {
   const { t } = useI18n()
   const { testId, sessionId } = useParams()
@@ -148,6 +215,8 @@ export default function StudySummary() {
             hideCtas
             mode="study"
           />
+
+          <StudyCoach coach={buildStudyCoach({ session, test, stats })} />
 
           {/* CTAs */}
           <div className="mt-6 flex flex-col items-center gap-3">

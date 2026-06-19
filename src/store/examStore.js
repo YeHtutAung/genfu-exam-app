@@ -8,6 +8,7 @@ const INITIAL_STATE = {
   currentIndex: 0,
   answers: {},       // { questionId: boolean } for standard, { subQuestionId: boolean } for scenario
   mode: null,        // 'exam' | 'study'
+  variant: 'standard',
   sessionId: null,
   startTime: null,
   timeRemaining: 0,  // seconds
@@ -27,16 +28,18 @@ const useExamStore = create(
 
       // ── Load & start ──────────────────────────────────────────────
 
-      startExam: async (testId, mode) => {
+      startExam: async (testId, mode, options = {}) => {
+        const variant = options.variant ?? 'standard'
         const current = get()
         const isResuming =
           !current.completed &&
           current.sessionId &&
           current._testId === testId &&
-          current.mode === mode
+          current.mode === mode &&
+          current.variant === variant
 
         if (!isResuming) {
-          set({ ...INITIAL_STATE, loading: true, mode, _testId: testId })
+          set({ ...INITIAL_STATE, loading: true, mode, variant, _testId: testId })
         } else {
           set({ loading: true })
         }
@@ -65,7 +68,7 @@ const useExamStore = create(
         }
 
         // Sort sub_questions by sub_number
-        const sorted = questions.map(q => ({
+        let sorted = questions.map(q => ({
           ...q,
           sub_questions: (q.sub_questions || []).sort((a, b) => a.sub_number - b.sub_number),
           image: q.image_render
@@ -77,6 +80,10 @@ const useExamStore = create(
               }
             : null,
         }))
+
+        if (variant === 'simulation') {
+          sorted = [...sorted].sort(() => Math.random() - 0.5)
+        }
 
         if (isResuming) {
           // Resume: update questions + test meta, keep answers/index/session
@@ -117,6 +124,7 @@ const useExamStore = create(
           questions: sorted,
           sessionId: session.id,
           _testId: testId,
+          variant,
           startTime: Date.now(),
           timeRemaining: mode === 'exam' ? test.time_limit : 0,
           loading: false,
@@ -274,6 +282,7 @@ const useExamStore = create(
         currentIndex: state.currentIndex,
         answers: state.answers,
         mode: state.mode,
+        variant: state.variant,
         sessionId: state.sessionId,
         startTime: state.startTime,
         completed: state.completed,

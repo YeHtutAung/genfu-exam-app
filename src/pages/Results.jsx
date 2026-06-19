@@ -8,6 +8,121 @@ import PageTransition from '../components/ui/PageTransition'
 import StaggerList from '../components/ui/StaggerList'
 import { useI18n } from '../lib/i18n'
 
+function buildResultCoach({ session, test, wrongCount, unansweredCount, timeTaken }) {
+  const score = session.score ?? 0
+  const totalPoints = test?.total_points ?? 50
+  const passScore = test?.pass_score ?? 45
+  const timeLimit = test?.time_limit ?? 1800
+  const scorePercent = totalPoints > 0 ? Math.round((score / totalPoints) * 100) : 0
+  const margin = score - passScore
+  const nearPass = margin >= 0 && margin <= 2
+  const closeFail = margin < 0 && margin >= -5
+  const slowAttempt = timeTaken > 0 && timeTaken >= timeLimit * 0.9
+  const fastAttempt = timeTaken > 0 && timeTaken <= timeLimit * 0.45 && wrongCount > 0
+
+  if (session.passed && !nearPass && wrongCount <= 3 && unansweredCount === 0) {
+    return {
+      title: 'Strong pass',
+      tone: 'border-correct/30 bg-correct/10',
+      summary: 'You passed with room to spare. This is a good readiness signal.',
+      priority: 'Keep your rhythm with one more timed mock exam before the real test.',
+      actions: ['Take another timed exam', 'Review any missed questions once'],
+      primary: 'Take another exam',
+      primaryTo: `/exam/${session.test_id}`,
+    }
+  }
+
+  if (session.passed) {
+    return {
+      title: nearPass ? 'Passed, but close to the line' : 'Passed with review needed',
+      tone: 'border-warning/30 bg-warning/10',
+      summary: nearPass
+        ? `You passed by ${margin} point${margin === 1 ? '' : 's'}. Treat this as almost ready, not fully ready yet.`
+        : `You passed at ${scorePercent}%, but still missed ${wrongCount} answer${wrongCount === 1 ? '' : 's'}.`,
+      priority: 'Review the missed questions, then pass one more timed exam.',
+      actions: [
+        'Study the incorrect questions',
+        slowAttempt ? 'Practice pacing so you finish with spare time' : 'Retake in exam mode for consistency',
+      ],
+      primary: 'Review in study mode',
+      primaryTo: `/study/${session.test_id}`,
+    }
+  }
+
+  if (unansweredCount > 0) {
+    return {
+      title: 'Unanswered questions cost points',
+      tone: 'border-wrong/30 bg-wrong/10',
+      summary: `${unansweredCount} question${unansweredCount === 1 ? '' : 's'} were left unanswered. Finishing the test is the first fix.`,
+      priority: 'Retake this test and answer every question, even when unsure.',
+      actions: [
+        'Use exam mode to practice full completion',
+        'If stuck, eliminate clearly unsafe answers first',
+      ],
+      primary: 'Retake exam',
+      primaryTo: `/exam/${session.test_id}`,
+    }
+  }
+
+  if (closeFail) {
+    return {
+      title: 'Close to passing',
+      tone: 'border-warning/30 bg-warning/10',
+      summary: `You missed the pass line by ${Math.abs(margin)} point${Math.abs(margin) === 1 ? '' : 's'}. Small improvements can change the result.`,
+      priority: 'Study the wrong answers first, then retake this exact test.',
+      actions: [
+        'Review each wrong answer until the reason is clear',
+        fastAttempt ? 'Slow down and read wording carefully' : 'Retake this test today',
+      ],
+      primary: 'Study wrong areas',
+      primaryTo: `/study/${session.test_id}`,
+    }
+  }
+
+  return {
+    title: 'Needs focused practice',
+    tone: 'border-wrong/30 bg-wrong/10',
+    summary: `You scored ${score}/${totalPoints}. The fastest path is review first, exam retry second.`,
+    priority: 'Use study mode before retaking the timed exam.',
+    actions: [
+      'Review incorrect answers',
+      'Repeat this test in study mode',
+      'Retake exam mode after review',
+    ],
+    primary: 'Start review',
+    primaryTo: `/study/${session.test_id}`,
+  }
+}
+
+function ResultCoach({ coach }) {
+  return (
+    <section className={`mt-6 rounded-xl border p-4 shadow-sm sm:p-5 ${coach.tone}`}>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-wide text-primary">Result coaching</p>
+          <h2 className="mt-1 text-xl font-bold text-text-primary">{coach.title}</h2>
+          <p className="mt-2 text-sm leading-relaxed text-text-primary">{coach.summary}</p>
+          <p className="mt-1 text-sm leading-relaxed text-text-secondary">{coach.priority}</p>
+        </div>
+        <Link
+          to={coach.primaryTo}
+          className="min-h-11 shrink-0 rounded-lg bg-primary px-4 py-3 text-center text-sm font-semibold text-white transition-colors hover:bg-primary-hover"
+        >
+          {coach.primary}
+        </Link>
+      </div>
+
+      <div className="mt-4 grid gap-2 sm:grid-cols-3">
+        {coach.actions.map(action => (
+          <div key={action} className="rounded-lg border border-theme-border bg-bg/80 p-3 text-sm text-text-secondary">
+            {action}
+          </div>
+        ))}
+      </div>
+    </section>
+  )
+}
+
 export default function Results() {
   const { t } = useI18n()
   const { sessionId } = useParams()
@@ -140,10 +255,17 @@ export default function Results() {
   const displayQuestions = wrongOnly
     ? questions.filter(isQuestionWrong)
     : questions
+  const coach = buildResultCoach({
+    session,
+    test,
+    wrongCount,
+    unansweredCount,
+    timeTaken,
+  })
 
   return (
     <PageTransition>
-      <div className="min-h-screen bg-bg px-4 py-6">
+      <div className="min-h-screen bg-bg px-3 py-6 sm:px-4">
         <div className="mx-auto max-w-3xl">
           <ScoreCard
             score={session.score ?? 0}
@@ -157,23 +279,25 @@ export default function Results() {
             unansweredCount={unansweredCount}
           />
 
+          <ResultCoach coach={coach} />
+
           {/* Actions */}
-          <div className="mt-6 flex flex-wrap justify-center gap-3">
+          <div className="mt-6 grid grid-cols-1 gap-2 sm:flex sm:flex-wrap sm:justify-center sm:gap-3">
             <Link
               to={`/exam/${session.test_id}`}
-              className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+              className="min-h-11 rounded-md bg-blue-600 px-4 py-3 text-center text-sm font-medium text-white hover:bg-blue-700 sm:py-2"
             >
               {t('exam.retake')}
             </Link>
             <Link
               to={`/study/${session.test_id}`}
-              className="rounded-md bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200"
+              className="min-h-11 rounded-md bg-gray-100 px-4 py-3 text-center text-sm font-medium text-gray-700 hover:bg-gray-200 sm:py-2"
             >
               {t('exam.reviewStudy')}
             </Link>
             <Link
               to="/"
-              className="rounded-md bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200"
+              className="min-h-11 rounded-md bg-gray-100 px-4 py-3 text-center text-sm font-medium text-gray-700 hover:bg-gray-200 sm:py-2"
             >
               {t('common.backHome')}
             </Link>
@@ -181,11 +305,11 @@ export default function Results() {
 
           {/* Review section */}
           <div className="mt-8">
-            <div className="mb-4 flex items-center justify-between">
+            <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
               <h2 className="text-lg font-semibold text-text-primary">{t('exam.reviewTitle')}</h2>
               <button
                 onClick={() => setWrongOnly(!wrongOnly)}
-                className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
+                className={`min-h-10 rounded-full px-3 py-2 text-xs font-medium transition-colors ${
                   wrongOnly
                     ? 'bg-primary text-white'
                     : 'bg-surface text-text-secondary'
@@ -222,7 +346,7 @@ function ReviewItem({ question, answerMap }) {
       <div className="bg-bg border border-theme-border rounded-xl p-4">
         <div className="flex items-start gap-3">
           <ResultBadge correct={allCorrect} />
-          <div className="flex-1">
+          <div className="min-w-0 flex-1">
             <span className="mb-1 inline-block rounded bg-purple-100 px-2 py-0.5 text-xs font-medium text-purple-700">
               {t('exam.dangerScenario')} ({question.points}{t('common.points')})
             </span>
@@ -238,13 +362,13 @@ function ReviewItem({ question, answerMap }) {
               {question.sub_questions.map(sq => {
                 const a = answerMap[sq.id]
                 return (
-                  <div key={sq.id} className="flex items-center gap-2 text-xs">
+                  <div key={sq.id} className="flex flex-wrap items-center gap-2 text-xs">
                     <span className={a?.is_correct ? 'text-correct font-semibold' : 'text-wrong font-semibold'}>
                       {a?.is_correct ? '○' : '×'}
                     </span>
                     <span className="text-text-secondary">({sq.sub_number})</span>
                     <span className="text-text-primary">{field(sq, 'text')}</span>
-                    <span className="ml-auto text-text-secondary">
+                    <span className="text-text-secondary sm:ml-auto">
                       {t('common.yourAnswer')}: {a?.user_answer === true ? '○' : a?.user_answer === false ? '×' : '—'}
                       {' '}/ {t('common.correct')}: {sq.answer ? '○' : '×'}
                     </span>
@@ -264,9 +388,9 @@ function ReviewItem({ question, answerMap }) {
 
   return (
     <div className="bg-bg border border-theme-border rounded-xl p-4">
-      <div className="flex items-start gap-3">
-        <ResultBadge correct={correct} />
-        <div className="flex-1">
+        <div className="flex items-start gap-3">
+          <ResultBadge correct={correct} />
+        <div className="min-w-0 flex-1">
           <p className="text-sm text-text-primary font-jp">
             <span className="font-medium text-text-secondary">{t('common.questionShort')}{question.question_number}.</span>{' '}
             {field(question, 'question')}
@@ -278,7 +402,7 @@ function ReviewItem({ question, answerMap }) {
             </div>
           )}
 
-          <div className="mt-1 flex gap-4 text-xs">
+          <div className="mt-1 flex flex-wrap gap-2 text-xs sm:gap-4">
             <span className={a?.user_answer === question.answer ? 'text-correct font-semibold' : 'text-wrong font-semibold'}>
               {t('common.yourAnswer')}: {a?.user_answer === true ? '○' : a?.user_answer === false ? '×' : t('exam.unansweredAnswer')}
             </span>

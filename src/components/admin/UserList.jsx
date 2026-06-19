@@ -5,8 +5,8 @@ export default function UserList({ users }) {
   const locale = language === 'ja' ? 'ja-JP' : language === 'my' ? 'my-MM' : 'en-US'
 
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full text-left text-sm">
+    <div className="overflow-x-auto rounded-lg border border-gray-200">
+      <table className="min-w-[640px] w-full text-left text-sm">
         <thead>
           <tr className="border-b border-gray-200 text-xs font-medium text-gray-500">
             <th className="pb-2 pr-4">{t('admin.email')}</th>

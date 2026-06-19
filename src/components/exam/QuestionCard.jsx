@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
 import ImageRenderer from '../signs/ImageRenderer'
+import BookmarkButton from '../ui/BookmarkButton'
 import { useI18n } from '../../lib/i18n'
 
 export default function QuestionCard({ question, onAnswer, showResult, userAnswer }) {
@@ -8,14 +9,17 @@ export default function QuestionCard({ question, onAnswer, showResult, userAnswe
   const scenarioContext = field(question, 'scenario_context')
 
   return (
-    <div className="bg-bg border border-theme-border rounded-xl p-5 shadow-sm">
+    <div className="bg-bg border border-theme-border rounded-xl p-4 shadow-sm sm:p-5">
       {/* Type label */}
-      <p className="text-xs font-semibold uppercase tracking-wide text-primary mb-2">
+      <div className="mb-2 flex items-start justify-between gap-3">
+      <p className="pt-2 text-xs font-semibold uppercase tracking-wide text-primary">
         {isScenario ? t('exam.scenario') : t('exam.standard')} · {question.points}{t('common.points')}
       </p>
+      <BookmarkButton questionId={question.id} />
+      </div>
 
       {/* Question text */}
-      <p className="text-lg font-medium leading-relaxed text-text-primary font-jp mb-3">
+      <p className="text-base font-medium leading-relaxed text-text-primary font-jp mb-3 sm:text-lg">
         {field(question, 'question')}
       </p>
 
@@ -92,7 +96,7 @@ function ScenarioAnswers({ subQuestions, onAnswer, showResult, userAnswer }) {
             <span className="font-medium text-text-secondary">({sq.sub_number})</span>{' '}
             {field(sq, 'text')}
           </p>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <AnswerButton
               label="○"
               value={true}
@@ -141,7 +145,7 @@ function AnswerButton({ label, selected, correct, wrong, onClick, disabled, smal
         whileTap={disabled ? {} : { scale: 0.97 }}
         onClick={onClick}
         disabled={disabled}
-        className={`flex h-8 w-12 items-center justify-center rounded-xl border-[1.5px] text-sm transition-all ${stateClasses} ${cursorClass}`}
+        className={`flex min-h-11 min-w-14 items-center justify-center rounded-xl border-[1.5px] px-3 text-sm transition-all ${stateClasses} ${cursorClass}`}
       >
         {label}
       </motion.button>
@@ -153,7 +157,7 @@ function AnswerButton({ label, selected, correct, wrong, onClick, disabled, smal
       whileTap={disabled ? {} : { scale: 0.97 }}
       onClick={onClick}
       disabled={disabled}
-      className={`flex-1 rounded-xl border-[1.5px] py-3 text-base font-medium transition-all ${stateClasses} ${cursorClass}`}
+      className={`min-h-12 flex-1 rounded-xl border-[1.5px] py-3 text-base font-medium transition-all ${stateClasses} ${cursorClass}`}
     >
       {label}
     </motion.button>

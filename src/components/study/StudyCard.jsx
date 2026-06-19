@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import ImageRenderer from '../signs/ImageRenderer'
 import AIExplanation from './AIExplanation'
+import BookmarkButton from '../ui/BookmarkButton'
 import useReducedMotion from '../../hooks/useReducedMotion'
 import { useI18n } from '../../lib/i18n'
 
@@ -34,14 +35,17 @@ export default function StudyCard({ question, onAnswer, userAnswer }) {
   const showResult = isScenario ? scenarioComplete : revealed
 
   return (
-    <div className="bg-bg border border-theme-border rounded-xl p-5 shadow-sm">
+    <div className="bg-bg border border-theme-border rounded-xl p-4 shadow-sm sm:p-5">
       {/* Type label */}
-      <p className="text-xs font-semibold uppercase tracking-wide text-primary mb-2">
+      <div className="mb-2 flex items-start justify-between gap-3">
+      <p className="pt-2 text-xs font-semibold uppercase tracking-wide text-primary">
         {isScenario ? t('exam.scenario') : t('exam.standard')} · {question.points}{t('common.points')}
       </p>
+      <BookmarkButton questionId={question.id} />
+      </div>
 
       {/* Question text */}
-      <p className="text-lg font-medium leading-relaxed text-text-primary font-jp mb-3">
+      <p className="text-base font-medium leading-relaxed text-text-primary font-jp mb-3 sm:text-lg">
         {field(question, 'question')}
       </p>
 
@@ -152,7 +156,7 @@ function ScenarioAnswers({ subQuestions, onAnswer, showResult, userAnswer, reduc
             <span className="font-medium text-text-secondary">({sq.sub_number})</span>{' '}
             {field(sq, 'text')}
           </p>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <StudyAnswerButton
               label="○"
               value={true}
@@ -228,7 +232,7 @@ function StudyAnswerButton({ label, value, userAnswer, correctAnswer, showResult
           whileTap={showResult ? {} : { scale: 0.97 }}
           onClick={onClick}
           disabled={showResult}
-          className={`flex h-8 w-12 items-center justify-center rounded-xl border-[1.5px] text-sm transition-all ${stateClasses} ${cursorClass}`}
+          className={`flex min-h-11 min-w-14 items-center justify-center rounded-xl border-[1.5px] px-3 text-sm transition-all ${stateClasses} ${cursorClass}`}
         >
           {label}
           {label_suffix}
@@ -243,7 +247,7 @@ function StudyAnswerButton({ label, value, userAnswer, correctAnswer, showResult
         whileTap={showResult ? {} : { scale: 0.97 }}
         onClick={onClick}
         disabled={showResult}
-        className={`w-full rounded-xl border-[1.5px] py-3 text-base font-medium transition-all ${stateClasses} ${cursorClass}`}
+        className={`min-h-12 w-full rounded-xl border-[1.5px] py-3 text-base font-medium transition-all ${stateClasses} ${cursorClass}`}
       >
         {label}
         {label_suffix}

@@ -21,22 +21,22 @@ export default function Header({ theme, toggleTheme }) {
 
   return (
     <header className="sticky top-0 z-50 bg-bg border-b border-theme-border shadow-sm transition-colors">
-      <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
-        <Link to="/" className="flex items-center gap-2">
-          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-primary-hover text-white text-sm font-bold">
+      <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-3 px-3 py-3 sm:flex-nowrap sm:px-4">
+        <Link to="/" className="flex min-w-0 items-center gap-2">
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-primary-hover text-white text-sm font-bold">
             G
           </div>
-          <span className="text-lg font-bold text-text-primary tracking-tight">
+          <span className="truncate text-lg font-bold text-text-primary tracking-tight">
             Genfu
           </span>
         </Link>
 
-        <nav className="flex items-center gap-3 sm:gap-5">
+        <nav className="flex min-w-0 flex-1 flex-wrap items-center justify-end gap-2 sm:flex-none sm:flex-nowrap sm:gap-4">
           {user ? (
             <>
               <Link
                 to="/"
-                className={`text-sm font-medium transition-colors ${
+                className={`min-h-10 rounded-lg px-2 py-2 text-sm font-medium transition-colors sm:min-h-0 sm:px-0 sm:py-0 ${
                   isActive('/') ? 'text-primary' : 'text-text-secondary hover:text-text-primary'
                 }`}
               >
@@ -45,7 +45,7 @@ export default function Header({ theme, toggleTheme }) {
               {role === 'admin' && (
                 <Link
                   to="/admin"
-                  className={`text-sm font-medium transition-colors ${
+                  className={`min-h-10 rounded-lg px-2 py-2 text-sm font-medium transition-colors sm:min-h-0 sm:px-0 sm:py-0 ${
                     location.pathname.startsWith('/admin') ? 'text-primary' : 'text-text-secondary hover:text-text-primary'
                   }`}
                 >
@@ -54,12 +54,12 @@ export default function Header({ theme, toggleTheme }) {
               )}
               <LanguageSelect compact />
               <ThemeToggle theme={theme} onToggle={toggleTheme} />
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-primary to-primary-hover text-white text-xs font-semibold">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-primary to-primary-hover text-white text-xs font-semibold">
                 {initials}
               </div>
               <button
                 onClick={signOut}
-                className="rounded-lg bg-surface px-3 py-1.5 text-sm font-medium text-text-secondary transition-colors hover:bg-theme-border"
+                className="min-h-10 rounded-lg bg-surface px-3 py-2 text-sm font-medium text-text-secondary transition-colors hover:bg-theme-border"
               >
                 {t('common.logout')}
               </button>
@@ -70,7 +70,7 @@ export default function Header({ theme, toggleTheme }) {
               <ThemeToggle theme={theme} onToggle={toggleTheme} />
               <Link
                 to="/login"
-                className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-primary-hover"
+                className="min-h-10 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-primary-hover"
               >
                 {t('common.login')}
               </Link>

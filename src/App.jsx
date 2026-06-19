@@ -15,6 +15,8 @@ const Exam = lazy(() => import('./pages/Exam'))
 const Study = lazy(() => import('./pages/Study'))
 const StudySummary = lazy(() => import('./pages/StudySummary'))
 const Results = lazy(() => import('./pages/Results'))
+const Tips = lazy(() => import('./pages/Tips'))
+const Bookmarks = lazy(() => import('./pages/Bookmarks'))
 const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard'))
 const Upload = lazy(() => import('./pages/admin/Upload'))
 const UploadPreview = lazy(() => import('./pages/admin/UploadPreview'))
@@ -41,6 +43,9 @@ function AppRoutes({ theme, toggleTheme }) {
             <Route path="/exam/:testId" element={
               <ProtectedRoute><Exam /></ProtectedRoute>
             } />
+            <Route path="/simulation/:testId" element={
+              <ProtectedRoute><Exam /></ProtectedRoute>
+            } />
             <Route path="/study/:testId" element={
               <ProtectedRoute><Study /></ProtectedRoute>
             } />
@@ -49,6 +54,12 @@ function AppRoutes({ theme, toggleTheme }) {
             } />
             <Route path="/results/:sessionId" element={
               <ProtectedRoute><Results /></ProtectedRoute>
+            } />
+            <Route path="/tips" element={
+              <ProtectedRoute><Tips /></ProtectedRoute>
+            } />
+            <Route path="/bookmarks" element={
+              <ProtectedRoute><Bookmarks /></ProtectedRoute>
             } />
 
             {/* Admin only */}

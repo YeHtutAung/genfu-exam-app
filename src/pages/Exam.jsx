@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import useExamStore from '../store/examStore'
 import useTimer from '../hooks/useTimer'
@@ -21,6 +21,8 @@ export default function Exam() {
   const { t } = useI18n()
   const { testId } = useParams()
   const navigate = useNavigate()
+  const location = useLocation()
+  const isSimulation = location.pathname.startsWith('/simulation/')
 
   const loading = useExamStore(s => s.loading)
   const error = useExamStore(s => s.error)
@@ -47,9 +49,9 @@ export default function Exam() {
 
   // Start exam on mount
   useEffect(() => {
-    startExam(testId, 'exam')
+    startExam(testId, 'exam', { variant: isSimulation ? 'simulation' : 'standard' })
     return () => reset()
-  }, [testId, startExam, reset])
+  }, [testId, startExam, reset, isSimulation])
 
   // Navigate to results when completed
   useEffect(() => {
@@ -152,19 +154,27 @@ export default function Exam() {
 
   return (
     <PageTransition>
-      <div className="flex flex-col h-[calc(100vh-3.5rem)] bg-bg">
+      <div className="flex min-h-[calc(100dvh-4rem)] flex-col bg-bg">
         {/* Scrollable content area */}
-        <div className="flex-1 overflow-y-auto px-4 py-6">
+        <div className="flex-1 overflow-y-auto px-3 py-4 sm:px-4 sm:py-6">
           <div className="mx-auto max-w-3xl">
             {/* Top bar */}
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
               <div className="flex items-baseline">
-                <span className="text-xs text-text-secondary">{t('common.question')}</span>
+                <span className="text-xs text-text-secondary">
+                  {isSimulation ? 'Real exam simulation' : t('common.question')}
+                </span>
                 <span className="text-xl font-bold text-text-primary ml-1">{current}</span>
                 <span className="text-sm text-text-secondary ml-0.5">/ {total}</span>
               </div>
               <Timer />
             </div>
+
+            {isSimulation && (
+              <div className="mb-4 rounded-xl border border-warning/30 bg-warning/10 p-3 text-sm text-text-primary">
+                No hints, no review until submit, randomized order. Treat this like the real test.
+              </div>
+            )}
 
             {/* Progress bar */}
             <div className="mb-4">
@@ -194,18 +204,18 @@ export default function Exam() {
         </div>
 
         {/* Fixed bottom navigation */}
-        <div className="shrink-0 border-t border-theme-border bg-bg/95 backdrop-blur-sm px-4 py-3">
-          <div className="mx-auto max-w-3xl flex items-center justify-between">
+        <div className="shrink-0 border-t border-theme-border bg-bg/95 px-3 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] backdrop-blur-sm sm:px-4">
+          <div className="mx-auto grid max-w-3xl grid-cols-2 gap-2 sm:flex sm:items-center sm:justify-between">
             <button
               onClick={handlePrev}
               disabled={currentIndex === 0}
-              className="rounded-lg bg-surface px-4 py-2 text-sm font-medium text-text-secondary transition-colors hover:bg-theme-border disabled:opacity-30"
+              className="min-h-11 rounded-lg bg-surface px-3 py-2 text-sm font-medium text-text-secondary transition-colors hover:bg-theme-border disabled:opacity-30 sm:px-4"
             >
               {t('exam.previousQuestion')}
             </button>
 
             {/* Question number grid */}
-            <div className="hidden sm:flex flex-wrap justify-center gap-1 flex-1 mx-4 max-h-28 overflow-y-auto">
+            <div className={`order-3 col-span-2 hidden flex-wrap justify-center gap-1 sm:order-none sm:flex sm:flex-1 sm:mx-4 sm:max-h-28 sm:overflow-y-auto ${isSimulation ? 'sm:hidden' : ''}`}>
               {questions.map((q, i) => {
                 const answered = q.type === 'standard'
                   ? answers[q.id] !== undefined
@@ -215,7 +225,7 @@ export default function Exam() {
                   <button
                     key={q.id}
                     onClick={() => handleGoTo(i)}
-                    className={`w-8 h-8 rounded-lg text-xs font-medium transition-all ${
+                    className={`h-9 w-9 rounded-lg text-xs font-medium transition-all ${
                       isCurrent
                         ? 'bg-primary text-white shadow-sm'
                         : answered
@@ -233,14 +243,14 @@ export default function Exam() {
               <button
                 onClick={handleSubmit}
                 disabled={submitting}
-                className="rounded-xl bg-primary px-6 py-2.5 text-sm font-semibold text-white shadow-sm shadow-primary/25 transition-colors hover:bg-primary-hover disabled:opacity-50"
+                className="min-h-11 rounded-xl bg-primary px-3 py-2.5 text-sm font-semibold text-white shadow-sm shadow-primary/25 transition-colors hover:bg-primary-hover disabled:opacity-50 sm:px-6"
               >
                 {allAnswered ? t('exam.submit') : t('exam.submitWithUnanswered')}
               </button>
             ) : (
               <button
                 onClick={isScenario ? handleScenarioCheck : handleNext}
-                className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-hover"
+                className="min-h-11 rounded-lg bg-primary px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-hover sm:px-4"
               >
                 {t('exam.nextQuestion')}
               </button>
@@ -252,7 +262,7 @@ export default function Exam() {
               <button
                 onClick={completeExam}
                 disabled={submitting}
-                className="shrink-0 rounded-lg bg-wrong px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-50"
+                className="min-h-10 shrink-0 rounded-lg bg-wrong px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-50"
               >
                 {t('common.retry')}
               </button>

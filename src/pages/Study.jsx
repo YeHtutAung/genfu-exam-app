@@ -117,12 +117,12 @@ export default function Study() {
 
   return (
     <PageTransition>
-      <div className="flex flex-col h-[calc(100vh-3.5rem)] bg-bg">
+      <div className="flex min-h-[calc(100dvh-4rem)] flex-col bg-bg">
         {/* Scrollable content area */}
-        <div className="flex-1 overflow-y-auto px-4 py-6">
+        <div className="flex-1 overflow-y-auto px-3 py-4 sm:px-4 sm:py-6">
           <div className="mx-auto max-w-3xl">
             {/* Top bar */}
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
               <div className="flex items-baseline">
                 <span className="text-xs text-text-secondary">{t('study.mode')}</span>
                 <span className="text-xl font-bold text-text-primary ml-1">{t('common.questionShort')} {current}</span>
@@ -156,22 +156,22 @@ export default function Study() {
         </div>
 
         {/* Fixed bottom navigation */}
-        <div className="shrink-0 border-t border-theme-border bg-bg/95 backdrop-blur-sm px-4 py-3">
-          <div className="mx-auto max-w-3xl flex items-center justify-between">
+        <div className="shrink-0 border-t border-theme-border bg-bg/95 px-3 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] backdrop-blur-sm sm:px-4">
+          <div className="mx-auto grid max-w-3xl grid-cols-2 gap-2 sm:flex sm:items-center sm:justify-between">
             <button
               onClick={handlePrev}
               disabled={currentIndex === 0}
-              className="rounded-lg bg-surface px-4 py-2 text-sm font-medium text-text-secondary transition-colors hover:bg-theme-border disabled:opacity-30"
+              className="min-h-11 rounded-lg bg-surface px-3 py-2 text-sm font-medium text-text-secondary transition-colors hover:bg-theme-border disabled:opacity-30 sm:px-4"
             >
               {t('study.previous')}
             </button>
             {currentIndex === questions.length - 1 ? (
-              <div className="flex items-center gap-2">
+              <div className="contents sm:flex sm:items-center sm:gap-2">
                 {allAnswered ? (
                   <button
                     onClick={handleComplete}
                     disabled={completing}
-                    className="rounded-xl bg-primary px-6 py-2.5 text-sm font-semibold text-white shadow-sm shadow-primary/25 transition-colors hover:bg-primary-hover disabled:opacity-50"
+                    className="min-h-11 rounded-xl bg-primary px-3 py-2.5 text-sm font-semibold text-white shadow-sm shadow-primary/25 transition-colors hover:bg-primary-hover disabled:opacity-50 sm:px-6"
                   >
                     {completing ? t('common.saving') : t('study.complete')}
                   </button>
@@ -179,13 +179,13 @@ export default function Study() {
                   <>
                     <button
                       disabled
-                      className="rounded-xl bg-primary/50 px-6 py-2.5 text-sm font-semibold text-white/70 cursor-not-allowed"
+                      className="min-h-11 rounded-xl bg-primary/50 px-3 py-2.5 text-sm font-semibold text-white/70 cursor-not-allowed sm:px-6"
                     >
                       {t('study.complete')}
                     </button>
                     <button
                       onClick={() => navigate('/')}
-                      className="text-text-secondary text-sm font-medium hover:text-text-primary"
+                      className="min-h-11 rounded-lg bg-surface px-3 py-2 text-sm font-medium text-text-secondary hover:bg-theme-border hover:text-text-primary"
                     >
                       {t('common.backHome')}
                     </button>
@@ -195,7 +195,7 @@ export default function Study() {
             ) : (
               <button
                 onClick={handleNext}
-                className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-hover"
+                className="min-h-11 rounded-lg bg-primary px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-hover sm:px-4"
               >
                 {t('study.next')}
               </button>
