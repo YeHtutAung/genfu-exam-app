@@ -7,7 +7,7 @@ import Spinner from '../components/ui/Spinner'
 import PageTransition from '../components/ui/PageTransition'
 import { useI18n } from '../lib/i18n'
 
-function buildStudyCoach({ session, test, stats }) {
+function buildStudyCoach({ session, test, stats, t }) {
   const score = session.score ?? 0
   const passScore = test.pass_score ?? 45
   const totalPoints = test.total_points ?? 50
@@ -17,11 +17,11 @@ function buildStudyCoach({ session, test, stats }) {
 
   if (passed && wrongCount <= 3 && unansweredCount === 0) {
     return {
-      title: 'Ready to try exam mode',
-      summary: `You scored ${score}/${totalPoints} in study mode. Move to timed exam mode while the material is fresh.`,
-      primary: 'Challenge exam mode',
+      title: t('study.readyToTryExam'),
+      summary: t('study.readyToTryExamSummary', { score, total: totalPoints }),
+      primary: t('study.challengeExam'),
       primaryTo: `/exam/${test.id}`,
-      secondary: 'Review tips',
+      secondary: t('study.reviewTips'),
       secondaryTo: '/tips',
       tone: 'border-correct/30 bg-correct/10',
     }
@@ -29,31 +29,33 @@ function buildStudyCoach({ session, test, stats }) {
 
   if (passed) {
     return {
-      title: 'Good progress',
-      summary: `You reached the pass line, but ${wrongCount} answer${wrongCount === 1 ? '' : 's'} still need review before exam mode feels stable.`,
-      primary: 'Study again',
+      title: t('study.goodProgress'),
+      summary: t('study.goodProgressSummary', { count: wrongCount }),
+      primary: t('study.studyAgain'),
       primaryTo: `/study/${test.id}`,
-      secondary: 'Try exam mode',
+      secondary: t('study.tryExamMode'),
       secondaryTo: `/exam/${test.id}`,
       tone: 'border-warning/30 bg-warning/10',
     }
   }
 
   return {
-    title: 'Review before exam mode',
-    summary: `You scored ${score}/${totalPoints}. Stay in study mode until the wrong answers make sense.`,
-    primary: 'Study again',
+    title: t('study.reviewBeforeExamMode'),
+    summary: t('study.reviewBeforeExamModeSummary', { score, total: totalPoints }),
+    primary: t('study.studyAgain'),
     primaryTo: `/study/${test.id}`,
-    secondary: 'Read tips',
+    secondary: t('study.readTips'),
     secondaryTo: '/tips',
     tone: 'border-wrong/30 bg-wrong/10',
   }
 }
 
 function StudyCoach({ coach }) {
+  const { t } = useI18n()
+
   return (
     <section className={`mt-6 rounded-xl border p-4 shadow-sm sm:p-5 ${coach.tone}`}>
-      <p className="text-xs font-semibold uppercase tracking-wide text-primary">Study coaching</p>
+      <p className="text-xs font-semibold uppercase tracking-wide text-primary">{t('study.coaching')}</p>
       <h2 className="mt-1 text-xl font-bold text-text-primary">{coach.title}</h2>
       <p className="mt-2 text-sm leading-relaxed text-text-secondary">{coach.summary}</p>
       <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2">
@@ -109,19 +111,19 @@ export default function StudySummary() {
       setSession(sess)
 
       // Fetch test meta
-      const { data: t } = await supabase
+      const { data: testData } = await supabase
         .from('tests')
         .select('*')
         .eq('id', sess.test_id)
         .single()
 
-      if (!t) {
-        setError('Study summary could not load the test data.')
+      if (!testData) {
+        setError(t('study.summaryTestLoadError'))
         setLoading(false)
         return
       }
 
-      setTest(t)
+      setTest(testData)
 
       // Fetch questions to compute stats
       const { data: qs, error: qErr } = await supabase
@@ -137,7 +139,7 @@ export default function StudySummary() {
         .eq('session_id', sessionId)
 
       if (qErr || aErr) {
-        setError('Study summary could not load answer data.')
+        setError(t('study.summaryAnswerLoadError'))
         setLoading(false)
         return
       }
@@ -216,7 +218,7 @@ export default function StudySummary() {
             mode="study"
           />
 
-          <StudyCoach coach={buildStudyCoach({ session, test, stats })} />
+          <StudyCoach coach={buildStudyCoach({ session, test, stats, t })} />
 
           {/* CTAs */}
           <div className="mt-6 flex flex-col items-center gap-3">

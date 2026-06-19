@@ -52,7 +52,7 @@ export default function Bookmarks() {
         .order('created_at', { ascending: false })
 
       if (error) {
-        setError('Bookmarks are not available yet. Apply the bookmark migration first.')
+        setError(t('bookmarks.unavailable'))
         setBookmarks([])
       } else {
         setError(null)
@@ -88,13 +88,13 @@ export default function Bookmarks() {
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <p className="text-xs font-semibold uppercase tracking-wide text-primary">
-                Saved questions
+                {t('bookmarks.savedQuestions')}
               </p>
               <h1 className="mt-1 text-2xl font-bold text-text-primary sm:text-3xl">
-                Bookmarks
+                {t('bookmarks.title')}
               </h1>
               <p className="mt-2 text-sm leading-relaxed text-text-secondary">
-                Keep difficult or confusing questions here and review them before exam day.
+                {t('bookmarks.description')}
               </p>
             </div>
             <Link
@@ -113,9 +113,9 @@ export default function Bookmarks() {
 
           {!error && bookmarks.length === 0 && (
             <div className="mt-6 rounded-xl border border-theme-border bg-surface p-6 text-center">
-              <h2 className="text-base font-semibold text-text-primary">No bookmarks yet</h2>
+              <h2 className="text-base font-semibold text-text-primary">{t('bookmarks.emptyTitle')}</h2>
               <p className="mt-1 text-sm text-text-secondary">
-                Open any exam or study question and tap Save.
+                {t('bookmarks.emptyDetail')}
               </p>
             </div>
           )}
@@ -131,13 +131,13 @@ export default function Bookmarks() {
                   <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                     <div className="min-w-0">
                       <p className="text-xs font-semibold uppercase tracking-wide text-primary">
-                        {field(category, 'name', 'Category')} · {field(test, 'title') || `Mock Test ${test?.test_number ?? '-'}`}
+                        {field(category, 'name', t('bookmarks.categoryFallback'))} · {field(test, 'title') || t('home.mockTest', { number: test?.test_number ?? '-' })}
                       </p>
                       <h2 className="mt-1 text-sm font-semibold text-text-primary">
                         {t('common.questionShort')}{question?.question_number}. {field(question, 'question')}
                       </h2>
                       <p className="mt-1 text-xs text-text-secondary">
-                        {question?.type === 'scenario' ? 'Scenario question' : 'Standard question'} · {question?.points}{t('common.points')}
+                        {question?.type === 'scenario' ? t('exam.scenario') : t('exam.standard')} · {question?.points}{t('common.points')}
                       </p>
                     </div>
                     <button
@@ -145,7 +145,7 @@ export default function Bookmarks() {
                       onClick={() => removeBookmark(bookmark.id)}
                       className="min-h-10 rounded-lg bg-surface px-3 py-2 text-sm font-semibold text-text-secondary transition-colors hover:bg-theme-border"
                     >
-                      Remove
+                      {t('bookmarks.remove')}
                     </button>
                   </div>
 
@@ -154,13 +154,13 @@ export default function Bookmarks() {
                       to={`/study/${question.test_id}`}
                       className="min-h-11 rounded-lg bg-primary px-4 py-3 text-center text-sm font-semibold text-white transition-colors hover:bg-primary-hover"
                     >
-                      Review in study mode
+                      {t('bookmarks.reviewStudy')}
                     </Link>
                     <Link
                       to={`/exam/${question.test_id}`}
                       className="min-h-11 rounded-lg bg-surface px-4 py-3 text-center text-sm font-semibold text-text-secondary transition-colors hover:bg-theme-border"
                     >
-                      Retake exam
+                      {t('bookmarks.retakeExam')}
                     </Link>
                   </div>
                 </article>

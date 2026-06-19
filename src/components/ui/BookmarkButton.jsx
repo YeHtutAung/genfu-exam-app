@@ -1,6 +1,8 @@
 import useBookmark from '../../hooks/useBookmark'
+import { useI18n } from '../../lib/i18n'
 
 export default function BookmarkButton({ questionId }) {
+  const { t } = useI18n()
   const { bookmarked, loading, available, toggle } = useBookmark(questionId)
 
   if (!available) return null
@@ -17,7 +19,7 @@ export default function BookmarkButton({ questionId }) {
           : 'border-theme-border bg-surface text-text-secondary hover:bg-theme-border'
       }`}
     >
-      {bookmarked ? 'Saved' : 'Save'}
+      {bookmarked ? t('bookmarks.saved') : t('bookmarks.save')}
     </button>
   )
 }

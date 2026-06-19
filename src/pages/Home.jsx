@@ -20,27 +20,27 @@ function clamp(value, min, max) {
   return Math.min(max, Math.max(min, value))
 }
 
-function formatRelativeDate(value) {
-  if (!value) return 'No practice yet'
+function formatRelativeDate(value, t) {
+  if (!value) return t('home.noPracticeYet')
 
   const date = new Date(value)
   const now = new Date()
   const diffDays = Math.floor((now - date) / 86400000)
 
-  if (Number.isNaN(diffDays)) return 'No practice yet'
-  if (diffDays <= 0) return 'Today'
-  if (diffDays === 1) return 'Yesterday'
-  if (diffDays < 7) return `${diffDays} days ago`
-  if (diffDays < 30) return `${Math.floor(diffDays / 7)} weeks ago`
+  if (Number.isNaN(diffDays)) return t('home.noPracticeYet')
+  if (diffDays <= 0) return t('home.today')
+  if (diffDays === 1) return t('home.yesterday')
+  if (diffDays < 7) return t('home.daysAgo', { count: diffDays })
+  if (diffDays < 30) return t('home.weeksAgo', { count: Math.floor(diffDays / 7) })
 
   return date.toLocaleDateString()
 }
 
-function getTestTitle(test, field) {
-  return field(test, 'title') || `Mock Test ${test.test_number}`
+function getTestTitle(test, field, t) {
+  return field(test, 'title') || t('home.mockTest', { number: test.test_number })
 }
 
-function buildProgressDashboard(tests, progress) {
+function buildProgressDashboard(tests, progress, t) {
   const totalTests = tests.length
   const entries = tests.map(test => ({
     test,
@@ -93,22 +93,22 @@ function buildProgressDashboard(tests, progress) {
     100
   ))
 
-  let readinessLabel = 'Start practicing'
+  let readinessLabel = t('home.startPracticing')
   let readinessTone = 'bg-surface text-text-secondary border-theme-border'
-  let recommendation = 'Start with study mode, then take one timed exam.'
+  let recommendation = t('home.recommendationStart')
 
   if (readinessScore >= 85 && passedTests >= Math.min(3, totalTests || 3)) {
-    readinessLabel = 'Ready for exam'
+    readinessLabel = t('home.readyForExam')
     readinessTone = 'bg-correct/10 text-correct border-correct/30'
-    recommendation = 'Keep your rhythm. Take one more timed mock exam before the real test.'
+    recommendation = t('home.recommendationReady')
   } else if (readinessScore >= 65) {
-    readinessLabel = 'Almost ready'
+    readinessLabel = t('home.almostReady')
     readinessTone = 'bg-warning/10 text-warning border-warning/30'
-    recommendation = 'Review failed tests and pass two mock exams in a row.'
+    recommendation = t('home.recommendationAlmost')
   } else if (examAttempts > 0 || studyAttempts > 0) {
-    readinessLabel = 'Needs practice'
+    readinessLabel = t('home.needsPractice')
     readinessTone = 'bg-wrong/10 text-wrong border-wrong/30'
-    recommendation = 'Use study mode for weak tests, then retry exam mode.'
+    recommendation = t('home.recommendationPractice')
   }
 
   const weakTest = entries
@@ -121,24 +121,24 @@ function buildProgressDashboard(tests, progress) {
 
   let actionTest = unstartedTest?.test ?? weakTest?.test ?? nextExamTest
   let actionMode = 'study'
-  let actionLabel = 'Start study mode'
-  let actionHint = 'Build confidence before taking a timed exam.'
+  let actionLabel = t('home.startStudyMode')
+  let actionHint = t('home.startStudyHint')
 
   if (weakTest) {
     actionTest = weakTest.test
     actionMode = 'study'
-    actionLabel = 'Review weak test'
-    actionHint = 'Study the test with the lowest unpassed score.'
+    actionLabel = t('home.reviewWeakTest')
+    actionHint = t('home.reviewWeakHint')
   } else if (readinessScore >= 65 && nextExamTest) {
     actionTest = nextExamTest
     actionMode = 'exam'
-    actionLabel = 'Take timed exam'
-    actionHint = 'Use exam mode to confirm your readiness.'
+    actionLabel = t('home.takeTimedExam')
+    actionHint = t('home.takeTimedHint')
   } else if (unstartedTest) {
     actionTest = unstartedTest.test
     actionMode = 'study'
-    actionLabel = 'Start next test'
-    actionHint = 'Begin with guided study, then retry in exam mode.'
+    actionLabel = t('home.startNextTest')
+    actionHint = t('home.startNextHint')
   }
 
   return {
@@ -164,7 +164,8 @@ function buildProgressDashboard(tests, progress) {
 }
 
 function LearnerDashboard({ tests, progress, field }) {
-  const dashboard = buildProgressDashboard(tests, progress)
+  const { t } = useI18n()
+  const dashboard = buildProgressDashboard(tests, progress, t)
   const hasAnyPractice = dashboard.examAttempts > 0 || dashboard.studyAttempts > 0
   const actionHref = dashboard.actionTest
     ? `/${dashboard.actionMode}/${dashboard.actionTest.id}`
@@ -175,7 +176,7 @@ function LearnerDashboard({ tests, progress, field }) {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <p className="text-xs font-semibold uppercase tracking-wide text-primary">
-            Readiness dashboard
+            {t('home.readinessDashboard')}
           </p>
           <h2 className="mt-1 text-xl font-bold text-text-primary">
             {dashboard.readinessLabel}
@@ -186,7 +187,7 @@ function LearnerDashboard({ tests, progress, field }) {
         </div>
         <div className={`shrink-0 rounded-xl border px-4 py-3 text-center ${dashboard.readinessTone}`}>
           <p className="text-3xl font-bold leading-none">{dashboard.readinessScore}</p>
-          <p className="mt-1 text-xs font-semibold uppercase tracking-wide">Ready score</p>
+          <p className="mt-1 text-xs font-semibold uppercase tracking-wide">{t('home.readyScore')}</p>
         </div>
       </div>
 
@@ -202,10 +203,10 @@ function LearnerDashboard({ tests, progress, field }) {
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="min-w-0">
               <p className="text-xs font-semibold uppercase tracking-wide text-primary">
-                Recommended next
+                {t('home.recommendedNext')}
               </p>
               <p className="mt-1 text-sm font-semibold text-text-primary">
-                {getTestTitle(dashboard.actionTest, field)}
+                {getTestTitle(dashboard.actionTest, field, t)}
               </p>
               <p className="mt-0.5 text-xs text-text-secondary">
                 {dashboard.actionHint}
@@ -223,9 +224,9 @@ function LearnerDashboard({ tests, progress, field }) {
 
       <div className="mt-3 flex flex-col gap-2 rounded-lg border border-theme-border bg-bg p-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <p className="text-sm font-semibold text-text-primary">Before the real exam</p>
+          <p className="text-sm font-semibold text-text-primary">{t('home.beforeRealExam')}</p>
           <p className="mt-0.5 text-xs text-text-secondary">
-            Review saved questions, exam-day tips, and the ready-to-roll checklist.
+            {t('home.beforeRealExamDetail')}
           </p>
         </div>
         <div className="grid grid-cols-2 gap-2 sm:flex">
@@ -234,63 +235,63 @@ function LearnerDashboard({ tests, progress, field }) {
               to={`/simulation/${dashboard.actionTest.id}`}
               className="min-h-10 rounded-lg border border-theme-border bg-bg px-3 py-2 text-center text-sm font-semibold text-text-secondary transition-colors hover:bg-surface"
             >
-              Simulation
+              {t('home.simulation')}
             </Link>
           )}
           <Link
             to="/bookmarks"
             className="min-h-10 rounded-lg bg-primary px-3 py-2 text-center text-sm font-semibold text-white transition-colors hover:bg-primary-hover"
           >
-            Bookmarks
+            {t('home.bookmarks')}
           </Link>
           <Link
             to="/tips"
             className="min-h-10 rounded-lg bg-surface px-3 py-2 text-center text-sm font-semibold text-text-secondary transition-colors hover:bg-theme-border"
           >
-            Open tips
+            {t('home.openTips')}
           </Link>
         </div>
       </div>
 
       <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
-        <DashboardStat label="Completed" value={`${dashboard.completedTests}/${dashboard.totalTests}`} />
-        <DashboardStat label="Passed tests" value={dashboard.passedTests} />
-        <DashboardStat label="Pass rate" value={`${dashboard.passRate}%`} />
-        <DashboardStat label="Last practice" value={formatRelativeDate(dashboard.latestPractice?.completed_at)} />
+        <DashboardStat label={t('home.completed')} value={`${dashboard.completedTests}/${dashboard.totalTests}`} />
+        <DashboardStat label={t('home.passedTests')} value={dashboard.passedTests} />
+        <DashboardStat label={t('home.passRate')} value={`${dashboard.passRate}%`} />
+        <DashboardStat label={t('home.lastPractice')} value={formatRelativeDate(dashboard.latestPractice?.completed_at, t)} />
       </div>
 
       <div className="mt-4 grid gap-3 sm:grid-cols-2">
         <div className="rounded-lg border border-theme-border bg-bg p-3">
-          <p className="text-xs font-medium text-text-secondary">Latest exam</p>
+          <p className="text-xs font-medium text-text-secondary">{t('home.latestExam')}</p>
           {dashboard.latestExam ? (
             <>
               <p className="mt-1 text-sm font-semibold text-text-primary">
-                {getTestTitle(dashboard.latestExam.test, field)}
+                {getTestTitle(dashboard.latestExam.test, field, t)}
               </p>
               <p className="mt-0.5 text-xs text-text-secondary">
                 {dashboard.latestExam.score}{' '}
-                pts · {dashboard.latestExam.passed ? 'Passed' : 'Failed'} · {formatRelativeDate(dashboard.latestExam.completed_at)}
+                {t('common.points')} · {dashboard.latestExam.passed ? t('home.passed') : t('home.failed')} · {formatRelativeDate(dashboard.latestExam.completed_at, t)}
               </p>
             </>
           ) : (
-            <p className="mt-1 text-sm text-text-secondary">Take your first timed exam.</p>
+            <p className="mt-1 text-sm text-text-secondary">{t('home.takeFirstTimedExam')}</p>
           )}
         </div>
 
         <div className="rounded-lg border border-theme-border bg-bg p-3">
-          <p className="text-xs font-medium text-text-secondary">Focus next</p>
+          <p className="text-xs font-medium text-text-secondary">{t('home.focusNext')}</p>
           {dashboard.weakTest ? (
             <>
               <p className="mt-1 text-sm font-semibold text-text-primary">
-                {getTestTitle(dashboard.weakTest.test, field)}
+                {getTestTitle(dashboard.weakTest.test, field, t)}
               </p>
               <p className="mt-0.5 text-xs text-text-secondary">
-                Best score {dashboard.weakTest.progress.examBest} pts. Review in study mode first.
+                {t('home.bestScoreReview', { score: dashboard.weakTest.progress.examBest })}
               </p>
             </>
           ) : (
             <p className="mt-1 text-sm text-text-secondary">
-              {hasAnyPractice ? 'Keep passing tests consistently.' : 'Start with any test below.'}
+              {hasAnyPractice ? t('home.keepPassing') : t('home.startAnyTest')}
             </p>
           )}
         </div>
@@ -511,13 +512,13 @@ export default function Home() {
                 <section className="mt-6">
                   <div className="mb-3 flex items-center justify-between gap-3">
                     <div>
-                      <h2 className="text-lg font-bold text-text-primary">Practice tests</h2>
+                      <h2 className="text-lg font-bold text-text-primary">{t('home.practiceTests')}</h2>
                       <p className="text-xs text-text-secondary">
-                        Choose study mode for learning, exam mode for timed readiness.
+                        {t('home.practiceTestsHint')}
                       </p>
                     </div>
                     <span className="shrink-0 rounded-full bg-surface px-3 py-1 text-xs font-medium text-text-secondary">
-                      {tests.length} tests
+                      {t('home.testsCount', { count: tests.length })}
                     </span>
                   </div>
 
@@ -562,7 +563,7 @@ export default function Home() {
                             to={`/simulation/${test.id}`}
                             className="min-h-11 rounded-lg border border-theme-border bg-bg px-3 py-3 text-center text-sm font-semibold text-text-secondary transition-colors hover:bg-surface"
                           >
-                            Simulation
+                            {t('home.simulation')}
                           </Link>
                         </div>
                       </div>
@@ -571,7 +572,7 @@ export default function Home() {
                 </section>
               ) : (
                 <div className="mt-6 rounded-xl border border-theme-border bg-surface p-6 text-center">
-                  <h2 className="text-base font-semibold text-text-primary">No active tests yet</h2>
+                  <h2 className="text-base font-semibold text-text-primary">{t('home.noActiveTests')}</h2>
                   <p className="mt-1 text-sm text-text-secondary">
                     {t('home.noTests')}
                   </p>

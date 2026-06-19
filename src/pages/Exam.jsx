@@ -162,7 +162,7 @@ export default function Exam() {
             <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
               <div className="flex items-baseline">
                 <span className="text-xs text-text-secondary">
-                  {isSimulation ? 'Real exam simulation' : t('common.question')}
+                  {isSimulation ? t('exam.simulationLabel') : t('common.question')}
                 </span>
                 <span className="text-xl font-bold text-text-primary ml-1">{current}</span>
                 <span className="text-sm text-text-secondary ml-0.5">/ {total}</span>

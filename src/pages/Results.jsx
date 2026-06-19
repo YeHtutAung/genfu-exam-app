@@ -8,7 +8,7 @@ import PageTransition from '../components/ui/PageTransition'
 import StaggerList from '../components/ui/StaggerList'
 import { useI18n } from '../lib/i18n'
 
-function buildResultCoach({ session, test, wrongCount, unansweredCount, timeTaken }) {
+function buildResultCoach({ session, test, wrongCount, unansweredCount, timeTaken, t }) {
   const score = session.score ?? 0
   const totalPoints = test?.total_points ?? 50
   const passScore = test?.pass_score ?? 45
@@ -22,84 +22,86 @@ function buildResultCoach({ session, test, wrongCount, unansweredCount, timeTake
 
   if (session.passed && !nearPass && wrongCount <= 3 && unansweredCount === 0) {
     return {
-      title: 'Strong pass',
+      title: t('exam.strongPass'),
       tone: 'border-correct/30 bg-correct/10',
-      summary: 'You passed with room to spare. This is a good readiness signal.',
-      priority: 'Keep your rhythm with one more timed mock exam before the real test.',
-      actions: ['Take another timed exam', 'Review any missed questions once'],
-      primary: 'Take another exam',
+      summary: t('exam.strongPassSummary'),
+      priority: t('exam.strongPassPriority'),
+      actions: [t('exam.takeAnotherTimedExam'), t('exam.reviewMissedOnce')],
+      primary: t('exam.takeAnotherExam'),
       primaryTo: `/exam/${session.test_id}`,
     }
   }
 
   if (session.passed) {
     return {
-      title: nearPass ? 'Passed, but close to the line' : 'Passed with review needed',
+      title: nearPass ? t('exam.passedClose') : t('exam.passedReviewNeeded'),
       tone: 'border-warning/30 bg-warning/10',
       summary: nearPass
-        ? `You passed by ${margin} point${margin === 1 ? '' : 's'}. Treat this as almost ready, not fully ready yet.`
-        : `You passed at ${scorePercent}%, but still missed ${wrongCount} answer${wrongCount === 1 ? '' : 's'}.`,
-      priority: 'Review the missed questions, then pass one more timed exam.',
+        ? t('exam.passedByPoints', { count: margin })
+        : t('exam.passedWithMisses', { percent: scorePercent, count: wrongCount }),
+      priority: t('exam.reviewMissedThenPass'),
       actions: [
-        'Study the incorrect questions',
-        slowAttempt ? 'Practice pacing so you finish with spare time' : 'Retake in exam mode for consistency',
+        t('exam.studyIncorrectQuestions'),
+        slowAttempt ? t('exam.practicePacing') : t('exam.retakeForConsistency'),
       ],
-      primary: 'Review in study mode',
+      primary: t('exam.reviewStudy'),
       primaryTo: `/study/${session.test_id}`,
     }
   }
 
   if (unansweredCount > 0) {
     return {
-      title: 'Unanswered questions cost points',
+      title: t('exam.unansweredCost'),
       tone: 'border-wrong/30 bg-wrong/10',
-      summary: `${unansweredCount} question${unansweredCount === 1 ? '' : 's'} were left unanswered. Finishing the test is the first fix.`,
-      priority: 'Retake this test and answer every question, even when unsure.',
+      summary: t('exam.unansweredCostSummary', { count: unansweredCount }),
+      priority: t('exam.answerEveryQuestion'),
       actions: [
-        'Use exam mode to practice full completion',
-        'If stuck, eliminate clearly unsafe answers first',
+        t('exam.practiceFullCompletion'),
+        t('exam.eliminateUnsafe'),
       ],
-      primary: 'Retake exam',
+      primary: t('exam.retake'),
       primaryTo: `/exam/${session.test_id}`,
     }
   }
 
   if (closeFail) {
     return {
-      title: 'Close to passing',
+      title: t('exam.closeToPassing'),
       tone: 'border-warning/30 bg-warning/10',
-      summary: `You missed the pass line by ${Math.abs(margin)} point${Math.abs(margin) === 1 ? '' : 's'}. Small improvements can change the result.`,
-      priority: 'Study the wrong answers first, then retake this exact test.',
+      summary: t('exam.missedByPoints', { count: Math.abs(margin) }),
+      priority: t('exam.studyWrongThenRetake'),
       actions: [
-        'Review each wrong answer until the reason is clear',
-        fastAttempt ? 'Slow down and read wording carefully' : 'Retake this test today',
+        t('exam.reviewWrongUntilClear'),
+        fastAttempt ? t('exam.slowDownReadCarefully') : t('exam.retakeToday'),
       ],
-      primary: 'Study wrong areas',
+      primary: t('exam.studyWrongAreas'),
       primaryTo: `/study/${session.test_id}`,
     }
   }
 
   return {
-    title: 'Needs focused practice',
+    title: t('exam.needsFocusedPractice'),
     tone: 'border-wrong/30 bg-wrong/10',
-    summary: `You scored ${score}/${totalPoints}. The fastest path is review first, exam retry second.`,
-    priority: 'Use study mode before retaking the timed exam.',
+    summary: t('exam.scoredReviewFirst', { score, total: totalPoints }),
+    priority: t('exam.useStudyBeforeRetake'),
     actions: [
-      'Review incorrect answers',
-      'Repeat this test in study mode',
-      'Retake exam mode after review',
+      t('exam.reviewIncorrectAnswers'),
+      t('exam.repeatInStudyMode'),
+      t('exam.retakeAfterReview'),
     ],
-    primary: 'Start review',
+    primary: t('exam.startReview'),
     primaryTo: `/study/${session.test_id}`,
   }
 }
 
 function ResultCoach({ coach }) {
+  const { t } = useI18n()
+
   return (
     <section className={`mt-6 rounded-xl border p-4 shadow-sm sm:p-5 ${coach.tone}`}>
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-wide text-primary">Result coaching</p>
+          <p className="text-xs font-semibold uppercase tracking-wide text-primary">{t('exam.resultCoaching')}</p>
           <h2 className="mt-1 text-xl font-bold text-text-primary">{coach.title}</h2>
           <p className="mt-2 text-sm leading-relaxed text-text-primary">{coach.summary}</p>
           <p className="mt-1 text-sm leading-relaxed text-text-secondary">{coach.priority}</p>
@@ -261,6 +263,7 @@ export default function Results() {
     wrongCount,
     unansweredCount,
     timeTaken,
+    t,
   })
 
   return (

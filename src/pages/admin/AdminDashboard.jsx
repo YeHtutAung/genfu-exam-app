@@ -18,10 +18,10 @@ export default function AdminDashboard() {
   return (
     <div className="mx-auto max-w-5xl px-3 py-6 sm:px-4 sm:py-8">
       <div className="mb-6">
-        <p className="text-xs font-semibold uppercase tracking-wide text-primary">Operations</p>
+        <p className="text-xs font-semibold uppercase tracking-wide text-primary">{t('admin.operations')}</p>
         <h1 className="mt-1 text-2xl font-bold text-text-primary">{t('admin.dashboard')}</h1>
         <p className="mt-1 text-sm text-text-secondary">
-          Track learner activity and identify tests that may need content review.
+          {t('admin.dashboardDescription')}
         </p>
       </div>
 
@@ -32,47 +32,47 @@ export default function AdminDashboard() {
           <div className="mb-6 grid grid-cols-2 gap-3 lg:grid-cols-5">
             <StatCard label={t('admin.usersCount')} value={stats.users} />
             <StatCard label={t('admin.testsCount')} value={stats.tests} />
-            <StatCard label="Active tests" value={stats.activeTests} />
+            <StatCard label={t('admin.activeTests')} value={stats.activeTests} />
             <StatCard label={t('admin.sessionsCount')} value={stats.sessions} />
-            <StatCard label="Pass rate" value={`${stats.passRate}%`} />
+            <StatCard label={t('admin.passRate')} value={`${stats.passRate}%`} />
           </div>
 
           <div className="mb-6 grid gap-4 lg:grid-cols-[1.15fr_0.85fr]">
             <section className="rounded-lg border border-theme-border bg-bg p-4 shadow-sm">
               <div className="mb-3 flex items-center justify-between gap-3">
                 <div>
-                  <h2 className="text-lg font-bold text-text-primary">Tests needing review</h2>
-                  <p className="text-xs text-text-secondary">Lowest pass-rate tests from the latest 500 completed sessions.</p>
+                  <h2 className="text-lg font-bold text-text-primary">{t('admin.testsNeedingReview')}</h2>
+                  <p className="text-xs text-text-secondary">{t('admin.testsNeedingReviewDesc')}</p>
                 </div>
                 <span className="rounded-full bg-surface px-3 py-1 text-xs font-medium text-text-secondary">
-                  {stats.examAttempts} exam attempts
+                  {t('admin.examAttempts', { count: stats.examAttempts })}
                 </span>
               </div>
 
               {stats.testPerformance.length === 0 ? (
                 <p className="rounded-lg bg-surface p-4 text-sm text-text-secondary">
-                  No completed exam attempts yet.
+                  {t('admin.noCompletedExamAttempts')}
                 </p>
               ) : (
                 <div className="space-y-2">
                   {stats.testPerformance.map(test => (
-                    <PerformanceRow key={test.test_id} test={test} />
+                    <PerformanceRow key={test.test_id} test={test} t={t} />
                   ))}
                 </div>
               )}
             </section>
 
             <section className="rounded-lg border border-theme-border bg-bg p-4 shadow-sm">
-              <h2 className="text-lg font-bold text-text-primary">Recent activity</h2>
-              <p className="mb-3 text-xs text-text-secondary">Latest completed exam or study sessions.</p>
+              <h2 className="text-lg font-bold text-text-primary">{t('admin.recentActivity')}</h2>
+              <p className="mb-3 text-xs text-text-secondary">{t('admin.recentActivityDesc')}</p>
               {stats.recentAttempts.length === 0 ? (
                 <p className="rounded-lg bg-surface p-4 text-sm text-text-secondary">
-                  No recent attempts yet.
+                  {t('admin.noRecentAttempts')}
                 </p>
               ) : (
                 <div className="space-y-2">
                   {stats.recentAttempts.map(attempt => (
-                    <RecentAttempt key={attempt.id} attempt={attempt} />
+                    <RecentAttempt key={attempt.id} attempt={attempt} t={t} />
                   ))}
                 </div>
               )}
@@ -100,8 +100,8 @@ function StatCard({ label, value }) {
   )
 }
 
-function PerformanceRow({ test }) {
-  const title = test.title_en || test.title_jp || `Test ${test.test_number ?? '-'}`
+function PerformanceRow({ test, t }) {
+  const title = test.title_en || test.title_jp || t('home.mockTest', { number: test.test_number ?? '-' })
 
   return (
     <div className="rounded-lg border border-theme-border bg-surface p-3">
@@ -112,21 +112,21 @@ function PerformanceRow({ test }) {
             ? 'bg-wrong/10 text-wrong'
             : 'bg-warning/10 text-warning'
         }`}>
-          {test.passRate}% pass
+          {t('admin.passPercent', { percent: test.passRate })}
         </span>
       </div>
       <div className="mt-2 h-2 overflow-hidden rounded-full bg-bg">
         <div className="h-full rounded-full bg-primary" style={{ width: `${test.averageScore}%` }} />
       </div>
       <p className="mt-1 text-xs text-text-secondary">
-        {test.attempts} attempts · average score {test.averageScore}%
+        {t('admin.attemptsAverage', { attempts: test.attempts, average: test.averageScore })}
       </p>
     </div>
   )
 }
 
-function RecentAttempt({ attempt }) {
-  const title = attempt.title_en || attempt.title_jp || `Test ${attempt.test_number ?? '-'}`
+function RecentAttempt({ attempt, t }) {
+  const title = attempt.title_en || attempt.title_jp || t('home.mockTest', { number: attempt.test_number ?? '-' })
   const date = attempt.completed_at
     ? new Date(attempt.completed_at).toLocaleDateString()
     : ''
@@ -144,7 +144,7 @@ function RecentAttempt({ attempt }) {
             ? 'bg-correct/10 text-correct'
             : 'bg-wrong/10 text-wrong'
       }`}>
-        {attempt.mode === 'study' ? 'Study' : attempt.passed ? 'Pass' : 'Fail'} {attempt.score ?? '-'}
+        {attempt.mode === 'study' ? t('admin.studyLabel') : attempt.passed ? t('admin.passLabel') : t('admin.failLabel')} {attempt.score ?? '-'}
       </span>
     </div>
   )
