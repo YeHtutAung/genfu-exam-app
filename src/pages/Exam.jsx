@@ -9,6 +9,7 @@ import QuestionCard from '../components/exam/QuestionCard'
 import Spinner from '../components/ui/Spinner'
 import PageTransition from '../components/ui/PageTransition'
 import Modal from '../components/ui/Modal'
+import Button from '../components/ui/Button'
 import { useI18n } from '../lib/i18n'
 
 const slideVariants = {
@@ -271,13 +272,14 @@ export default function Exam() {
         {/* Fixed bottom navigation */}
         <div className="shrink-0 border-t border-theme-border bg-bg/95 px-3 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] backdrop-blur-sm sm:px-4">
           <div className="mx-auto grid max-w-3xl grid-cols-2 gap-2 sm:flex sm:items-center sm:justify-between">
-            <button
+            <Button
               onClick={handlePrev}
               disabled={currentIndex === 0}
-              className="min-h-11 rounded-lg bg-surface px-3 py-2 text-sm font-medium text-text-secondary transition-colors hover:bg-theme-border disabled:opacity-30 sm:px-4"
+              variant="secondary"
+              className="rounded-lg disabled:opacity-30 sm:px-4"
             >
               {t('exam.previousQuestion')}
-            </button>
+            </Button>
 
             {/* Question number grid */}
             <div className={`order-3 col-span-2 hidden flex-wrap justify-center gap-1 sm:order-none sm:flex sm:flex-1 sm:mx-4 sm:max-h-28 sm:overflow-y-auto ${isSimulation ? 'sm:hidden' : ''}`}>
@@ -305,32 +307,34 @@ export default function Exam() {
             </div>
 
             {isLast ? (
-              <button
+              <Button
                 onClick={handleSubmit}
                 disabled={submitting}
-                className="min-h-11 rounded-xl bg-primary px-3 py-2.5 text-sm font-semibold text-white shadow-sm shadow-primary/25 transition-colors hover:bg-primary-hover disabled:opacity-50 sm:px-6"
+                className="sm:px-6"
               >
                 {allAnswered ? t('exam.submit') : t('exam.submitWithUnanswered')}
-              </button>
+              </Button>
             ) : (
-              <button
+              <Button
                 onClick={isScenario ? handleScenarioCheck : handleNext}
-                className="min-h-11 rounded-lg bg-primary px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-hover sm:px-4"
+                className="rounded-lg sm:px-4"
               >
                 {t('exam.nextQuestion')}
-              </button>
+              </Button>
             )}
           </div>
           {submitError && (
             <div className="mx-auto mt-3 flex max-w-3xl items-center justify-between gap-3 rounded-xl border border-wrong/20 bg-wrong/10 px-3 py-2 text-sm text-wrong">
               <span>{submitError}</span>
-              <button
+              <Button
                 onClick={completeExam}
                 disabled={submitting}
-                className="min-h-10 shrink-0 rounded-lg bg-wrong px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-50"
+                variant="danger"
+                size="sm"
+                className="shrink-0 rounded-lg"
               >
                 {t('common.retry')}
-              </button>
+              </Button>
             </div>
           )}
         </div>

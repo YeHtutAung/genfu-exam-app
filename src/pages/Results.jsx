@@ -9,6 +9,7 @@ import StaggerList from '../components/ui/StaggerList'
 import Breadcrumbs from '../components/ui/Breadcrumbs'
 import Button from '../components/ui/Button'
 import Card from '../components/ui/Card'
+import Badge from '../components/ui/Badge'
 import { useI18n } from '../lib/i18n'
 
 function buildResultCoach({ session, test, wrongCount, unansweredCount, timeTaken, t }) {
@@ -358,13 +359,15 @@ function ReviewItem({ question, answerMap }) {
   if (isScenario) {
     const allCorrect = question.sub_questions.every(sq => answerMap[sq.id]?.is_correct)
     return (
-      <div className="bg-bg border border-theme-border rounded-xl p-4">
+      <Card>
         <div className="flex items-start gap-3">
-          <ResultBadge correct={allCorrect} />
+          <Badge tone={allCorrect ? 'correct' : 'wrong'} className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full px-0 py-0 text-sm font-bold">
+            {allCorrect ? '○' : '×'}
+          </Badge>
           <div className="min-w-0 flex-1">
-            <span className="mb-1 inline-block rounded bg-ai/10 px-2 py-0.5 text-xs font-medium text-ai">
+            <Badge tone="ai" className="mb-1 rounded">
               {t('exam.dangerScenario')} ({question.points}{t('common.points')})
-            </span>
+            </Badge>
             <p className="text-sm text-text-primary mt-1 font-jp">{field(question, 'question')}</p>
 
             {question.image && (
@@ -393,7 +396,7 @@ function ReviewItem({ question, answerMap }) {
             </div>
           </div>
         </div>
-      </div>
+      </Card>
     )
   }
 
@@ -402,9 +405,11 @@ function ReviewItem({ question, answerMap }) {
   const correct = a?.is_correct
 
   return (
-    <div className="bg-bg border border-theme-border rounded-xl p-4">
+    <Card>
         <div className="flex items-start gap-3">
-          <ResultBadge correct={correct} />
+          <Badge tone={correct ? 'correct' : 'wrong'} className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full px-0 py-0 text-sm font-bold">
+            {correct ? '○' : '×'}
+          </Badge>
         <div className="min-w-0 flex-1">
           <p className="text-sm text-text-primary font-jp">
             <span className="font-medium text-text-secondary">{t('common.questionShort')}{question.question_number}.</span>{' '}
@@ -431,16 +436,6 @@ function ReviewItem({ question, answerMap }) {
           )}
         </div>
       </div>
-    </div>
-  )
-}
-
-function ResultBadge({ correct }) {
-  return (
-    <span className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-sm font-bold ${
-      correct ? 'bg-correct/15 text-correct' : 'bg-wrong/15 text-wrong'
-    }`}>
-      {correct ? '○' : '×'}
-    </span>
+    </Card>
   )
 }

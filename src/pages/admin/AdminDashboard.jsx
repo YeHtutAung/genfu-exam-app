@@ -132,7 +132,7 @@ function RecentAttempt({ attempt, t }) {
     : ''
 
   return (
-    <div className="flex items-center justify-between gap-3 rounded-lg bg-surface p-3">
+    <Card className="flex items-center justify-between gap-3 rounded-lg p-3">
       <div className="min-w-0">
         <p className="truncate text-sm font-medium text-text-primary">{title}</p>
         <p className="text-xs text-text-secondary">{attempt.mode} · {date}</p>
@@ -143,7 +143,7 @@ function RecentAttempt({ attempt, t }) {
       >
         {attempt.mode === 'study' ? t('admin.studyLabel') : attempt.passed ? t('admin.passLabel') : t('admin.failLabel')} {attempt.score ?? '-'}
       </Badge>
-    </div>
+    </Card>
   )
 }
 

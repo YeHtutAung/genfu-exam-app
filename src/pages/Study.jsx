@@ -6,6 +6,8 @@ import StudyCard from '../components/study/StudyCard'
 import Spinner from '../components/ui/Spinner'
 import PageTransition from '../components/ui/PageTransition'
 import Icon from '../components/ui/Icon'
+import Button from '../components/ui/Button'
+import Badge from '../components/ui/Badge'
 import { useI18n } from '../lib/i18n'
 
 const slideVariants = {
@@ -129,10 +131,10 @@ export default function Study() {
                 <span className="text-xl font-bold text-text-primary ml-1">{t('common.questionShort')} {current}</span>
                 <span className="text-sm text-text-secondary ml-0.5">/ {total}</span>
               </h1>
-              <span className="inline-flex items-center gap-1 bg-primary/10 text-primary text-xs font-semibold px-2.5 py-1 rounded-full">
+              <Badge tone="primary" className="px-2.5 py-1 font-semibold">
                 <Icon name="book" className="h-3.5 w-3.5" />
                 {t('study.studying')}
-              </span>
+              </Badge>
             </div>
 
             {/* Animated question card */}
@@ -160,47 +162,49 @@ export default function Study() {
         {/* Fixed bottom navigation */}
         <div className="shrink-0 border-t border-theme-border bg-bg/95 px-3 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] backdrop-blur-sm sm:px-4">
           <div className="mx-auto grid max-w-3xl grid-cols-2 gap-2 sm:flex sm:items-center sm:justify-between">
-            <button
+            <Button
               onClick={handlePrev}
               disabled={currentIndex === 0}
-              className="min-h-11 rounded-lg bg-surface px-3 py-2 text-sm font-medium text-text-secondary transition-colors hover:bg-theme-border disabled:opacity-30 sm:px-4"
+              variant="secondary"
+              className="rounded-lg disabled:opacity-30 sm:px-4"
             >
               {t('study.previous')}
-            </button>
+            </Button>
             {currentIndex === questions.length - 1 ? (
               <div className="contents sm:flex sm:items-center sm:gap-2">
                 {allAnswered ? (
-                  <button
+                  <Button
                     onClick={handleComplete}
                     disabled={completing}
-                    className="min-h-11 rounded-xl bg-primary px-3 py-2.5 text-sm font-semibold text-white shadow-sm shadow-primary/25 transition-colors hover:bg-primary-hover disabled:opacity-50 sm:px-6"
+                    className="sm:px-6"
                   >
                     {completing ? t('common.saving') : t('study.complete')}
-                  </button>
+                  </Button>
                 ) : (
                   <>
-                    <button
+                    <Button
                       disabled
-                      className="min-h-11 rounded-xl bg-primary/50 px-3 py-2.5 text-sm font-semibold text-white/70 cursor-not-allowed sm:px-6"
+                      className="bg-primary/50 text-white/70 cursor-not-allowed sm:px-6"
                     >
                       {t('study.complete')}
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                       onClick={() => navigate('/')}
-                      className="min-h-11 rounded-lg bg-surface px-3 py-2 text-sm font-medium text-text-secondary hover:bg-theme-border hover:text-text-primary"
+                      variant="secondary"
+                      className="rounded-lg hover:text-text-primary"
                     >
                       {t('common.backHome')}
-                    </button>
+                    </Button>
                   </>
                 )}
               </div>
             ) : (
-              <button
+              <Button
                 onClick={handleNext}
-                className="min-h-11 rounded-lg bg-primary px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-hover sm:px-4"
+                className="rounded-lg sm:px-4"
               >
                 {t('study.next')}
-              </button>
+              </Button>
             )}
           </div>
         </div>

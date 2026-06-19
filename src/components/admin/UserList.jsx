@@ -1,4 +1,5 @@
 import { useI18n } from '../../lib/i18n'
+import Badge from '../ui/Badge'
 
 export default function UserList({ users }) {
   const { language, t } = useI18n()
@@ -21,13 +22,9 @@ export default function UserList({ users }) {
             <tr key={user.id} className="border-b border-theme-border/60">
               <td className="py-3 pr-4 text-text-primary">{user.email}</td>
               <td className="py-3 pr-4">
-                <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${
-                  user.role === 'admin'
-                    ? 'bg-ai/10 text-ai'
-                    : 'bg-surface text-text-secondary'
-                }`}>
+                <Badge tone={user.role === 'admin' ? 'ai' : 'default'}>
                   {user.role}
-                </span>
+                </Badge>
               </td>
               <td className="py-3 pr-4 text-text-secondary">
                 {new Date(user.created_at).toLocaleDateString(locale)}

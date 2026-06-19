@@ -505,18 +505,19 @@ export default function Home() {
             <>
               <div className="grid grid-cols-2 gap-3 mt-6 sm:grid-cols-4">
                 {categories.map(cat => (
-                  <button
+                  <Button
                     key={cat.id}
                     onClick={() => setSelectedCategory(cat.id)}
+                    variant={selectedCategory === cat.id ? 'primary' : 'outline'}
                     className={
                       selectedCategory === cat.id
-                        ? 'min-h-11 bg-gradient-to-br from-primary to-primary-hover text-white shadow-md shadow-primary/25 font-semibold rounded-xl px-4 py-3 text-sm transition-all'
-                        : 'min-h-11 bg-bg border-[1.5px] border-theme-border text-text-secondary font-medium rounded-xl px-4 py-3 text-sm transition-all hover:bg-surface'
+                        ? 'bg-gradient-to-br from-primary to-primary-hover shadow-md shadow-primary/25 px-4 py-3'
+                        : 'border-[1.5px] font-medium px-4 py-3'
                     }
                   >
                     <Icon name={CATEGORY_ICON[cat.code] ?? 'focus'} className="mr-1.5 inline h-4 w-4 align-[-2px]" />
                     {field(cat, 'name')}
-                  </button>
+                  </Button>
                 ))}
               </div>
 
