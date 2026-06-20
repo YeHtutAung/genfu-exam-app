@@ -72,6 +72,11 @@ const icons = {
       <path d="M8.5 14.5A6 6 0 1 1 15.5 14c-.9.7-1.5 1.7-1.5 3h-4c0-1.2-.6-2-1.5-2.5Z" {...pathProps} />
     </>
   ),
+  bookmark: (
+    <>
+      <path d="M6 4.5A1.5 1.5 0 0 1 7.5 3h9A1.5 1.5 0 0 1 18 4.5V21l-6-3.5L6 21V4.5Z" {...pathProps} />
+    </>
+  ),
 }
 
 export default function Icon({ name, className = 'h-4 w-4', title }) {

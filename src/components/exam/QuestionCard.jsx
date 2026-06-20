@@ -11,11 +11,11 @@ export default function QuestionCard({ question, onAnswer, showResult, userAnswe
   return (
     <div className="bg-bg border border-theme-border rounded-xl p-4 shadow-sm sm:p-5">
       {/* Type label */}
-      <div className="mb-2 flex items-start justify-between gap-3">
-      <p className="pt-2 text-xs font-semibold uppercase tracking-wide text-primary">
+      <div className="mb-3 flex items-start justify-between gap-3">
+        <p className="pt-2 text-xs font-semibold uppercase tracking-wide text-primary">
         {isScenario ? t('exam.scenario') : t('exam.standard')} · {question.points}{t('common.points')}
-      </p>
-      <BookmarkButton questionId={question.id} />
+        </p>
+        <BookmarkButton questionId={question.id} />
       </div>
 
       {/* Question text */}
