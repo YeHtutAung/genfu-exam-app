@@ -21,13 +21,13 @@ export default function Header({ theme, toggleTheme }) {
     : '??'
 
   return (
-    <header className="sticky top-0 z-50 bg-bg border-b border-theme-border shadow-sm transition-colors">
+    <header className="sticky top-0 z-50 border-b border-theme-border/70 bg-bg/85 shadow-sm shadow-slate-900/5 backdrop-blur-xl transition-colors">
       <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-3 px-3 py-3 sm:flex-nowrap sm:px-4">
         <Link to="/" className="flex min-w-0 items-center gap-2">
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-primary-hover text-white text-sm font-bold">
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-primary via-ai to-primary-hover text-white text-sm font-bold shadow-md shadow-primary/25">
             G
           </div>
-          <span className="truncate text-lg font-bold text-text-primary tracking-tight">
+          <span className="truncate text-lg font-bold text-text-primary tracking-normal">
             Genfu
           </span>
         </Link>
@@ -55,7 +55,7 @@ export default function Header({ theme, toggleTheme }) {
               )}
               <LanguageSelect compact />
               <ThemeToggle theme={theme} onToggle={toggleTheme} />
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-primary to-primary-hover text-white text-xs font-semibold">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-primary via-ai to-primary-hover text-white text-xs font-semibold shadow-sm shadow-primary/25">
                 {initials}
               </div>
               <Button

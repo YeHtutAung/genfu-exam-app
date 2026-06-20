@@ -177,149 +177,152 @@ function LearnerDashboard({ tests, progress, field }) {
     : null
 
   return (
-    <Card as="section" className="mt-6 bg-surface/70 sm:p-5">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-wide text-primary">
-            {t('home.readinessDashboard')}
-          </p>
-          <h2 className="mt-1 text-xl font-bold text-text-primary">
-            {dashboard.readinessLabel}
-          </h2>
-          <p className="mt-1 text-sm leading-relaxed text-text-secondary">
-            {dashboard.recommendation}
-          </p>
+    <Card as="section" className="mt-5 overflow-hidden border-primary/15 bg-surface/90 p-0 shadow-lg shadow-slate-900/10 sm:mt-6">
+      <div className="relative overflow-hidden bg-gradient-to-br from-primary via-ai to-correct px-4 py-5 text-white sm:px-6 sm:py-6">
+        <div className="absolute inset-y-0 right-0 hidden w-1/2 opacity-25 sm:block">
+          <div className="h-full w-full bg-[linear-gradient(135deg,transparent_0_34%,rgba(255,255,255,.45)_34%_35%,transparent_35%_54%,rgba(255,255,255,.35)_54%_55%,transparent_55%)]" />
         </div>
-        <div className={`shrink-0 rounded-xl border px-4 py-3 text-center ${dashboard.readinessTone}`}>
-          <p className="text-3xl font-bold leading-none">{dashboard.readinessScore}</p>
-          <p className="mt-1 text-xs font-semibold uppercase tracking-wide">{t('home.readyScore')}</p>
+        <div className="relative flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <div className="max-w-xl">
+            <p className="text-xs font-semibold uppercase tracking-normal text-white/80">
+              {t('home.readinessDashboard')}
+            </p>
+            <h2 className="mt-1 text-2xl font-bold tracking-normal sm:text-3xl">
+              {dashboard.readinessLabel}
+            </h2>
+            <p className="mt-2 text-sm leading-relaxed text-white/85">
+              {dashboard.recommendation}
+            </p>
+          </div>
+          <div className="shrink-0 rounded-xl border border-white/25 bg-white/15 px-4 py-3 text-center shadow-lg shadow-slate-950/10 backdrop-blur">
+            <p className="text-4xl font-bold leading-none">{dashboard.readinessScore}</p>
+            <p className="mt-1 text-xs font-semibold uppercase tracking-normal text-white/80">{t('home.readyScore')}</p>
+          </div>
+        </div>
+
+        <div className="relative mt-5 h-2.5 overflow-hidden rounded-full bg-white/20">
+          <div
+            className="h-full rounded-full bg-white transition-all"
+            style={{ width: `${dashboard.readinessScore}%` }}
+          />
         </div>
       </div>
 
-      <div className="mt-4 h-2 overflow-hidden rounded-full bg-bg">
-        <div
-          className="h-full rounded-full bg-primary transition-all"
-          style={{ width: `${dashboard.readinessScore}%` }}
-        />
-      </div>
+      <div className="p-4 sm:p-5">
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+          <DashboardStat label={t('home.completed')} value={`${dashboard.completedTests}/${dashboard.totalTests}`} tone="primary" />
+          <DashboardStat label={t('home.passedTests')} value={dashboard.passedTests} tone="correct" />
+          <DashboardStat label={t('home.passRate')} value={`${dashboard.passRate}%`} tone="warning" />
+          <DashboardStat label={t('home.lastPractice')} value={formatRelativeDate(dashboard.latestPractice?.completed_at, t)} tone="ai" />
+        </div>
 
-      {actionHref && (
-        <div className="mt-4 rounded-xl border border-primary/20 bg-primary/5 p-3">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div className="min-w-0">
-              <p className="text-xs font-semibold uppercase tracking-wide text-primary">
-                {t('home.recommendedNext')}
-              </p>
-              <p className="mt-1 text-sm font-semibold text-text-primary">
-                {getTestTitle(dashboard.actionTest, field, t)}
-              </p>
-              <p className="mt-0.5 text-xs text-text-secondary">
-                {dashboard.actionHint}
-              </p>
+        {actionHref && (
+          <div className="mt-4 rounded-xl border border-primary/20 bg-primary/5 p-3 shadow-sm shadow-primary/5">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div className="min-w-0">
+                <p className="text-xs font-semibold uppercase tracking-normal text-primary">
+                  {t('home.recommendedNext')}
+                </p>
+                <p className="mt-1 text-sm font-semibold text-text-primary">
+                  {getTestTitle(dashboard.actionTest, field, t)}
+                </p>
+                <p className="mt-0.5 text-xs text-text-secondary">
+                  {dashboard.actionHint}
+                </p>
+              </div>
+              <Button
+                as={Link}
+                to={actionHref}
+                className="shrink-0 rounded-lg shadow-md shadow-primary/20"
+              >
+                {dashboard.actionLabel}
+              </Button>
             </div>
-            <Button
-              as={Link}
-              to={actionHref}
-              className="shrink-0 rounded-lg"
-            >
-              {dashboard.actionLabel}
+          </div>
+        )}
+
+        <div className="mt-3 flex flex-col gap-2 rounded-lg border border-theme-border bg-bg/80 p-3 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="text-sm font-semibold text-text-primary">{t('home.beforeRealExam')}</p>
+            <p className="mt-0.5 text-xs text-text-secondary">
+              {t('home.beforeRealExamDetail')}
+            </p>
+          </div>
+          <div className="grid grid-cols-2 gap-2 sm:flex">
+            {dashboard.readinessScore >= 65 && dashboard.actionTest && (
+              <Button
+                as={Link}
+                to={`/simulation/${dashboard.actionTest.id}`}
+                variant="outline"
+                size="sm"
+                className="rounded-lg"
+              >
+                {t('home.simulation')}
+              </Button>
+            )}
+            <Button as={Link} to="/bookmarks" size="sm" className="rounded-lg">
+              {t('home.bookmarks')}
+            </Button>
+            <Button as={Link} to="/tips" variant="secondary" size="sm" className="rounded-lg">
+              {t('home.openTips')}
             </Button>
           </div>
         </div>
-      )}
 
-      <div className="mt-3 flex flex-col gap-2 rounded-lg border border-theme-border bg-bg p-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <p className="text-sm font-semibold text-text-primary">{t('home.beforeRealExam')}</p>
-          <p className="mt-0.5 text-xs text-text-secondary">
-            {t('home.beforeRealExamDetail')}
-          </p>
+        <div className="mt-4 grid gap-3 sm:grid-cols-2">
+          <div className="rounded-lg border border-theme-border/80 bg-bg/80 p-3">
+            <p className="text-xs font-medium text-text-secondary">{t('home.latestExam')}</p>
+            {dashboard.latestExam ? (
+              <>
+                <p className="mt-1 text-sm font-semibold text-text-primary">
+                  {getTestTitle(dashboard.latestExam.test, field, t)}
+                </p>
+                <p className="mt-0.5 text-xs text-text-secondary">
+                  {dashboard.latestExam.score}{' '}
+                  {t('common.points')} / {dashboard.latestExam.passed ? t('home.passed') : t('home.failed')} / {formatRelativeDate(dashboard.latestExam.completed_at, t)}
+                </p>
+              </>
+            ) : (
+              <p className="mt-1 text-sm text-text-secondary">{t('home.takeFirstTimedExam')}</p>
+            )}
+          </div>
+
+          <div className="rounded-lg border border-theme-border/80 bg-bg/80 p-3">
+            <p className="text-xs font-medium text-text-secondary">{t('home.focusNext')}</p>
+            {dashboard.weakTest ? (
+              <>
+                <p className="mt-1 text-sm font-semibold text-text-primary">
+                  {getTestTitle(dashboard.weakTest.test, field, t)}
+                </p>
+                <p className="mt-0.5 text-xs text-text-secondary">
+                  {t('home.bestScoreReview', { score: dashboard.weakTest.progress.examBest })}
+                </p>
+              </>
+            ) : (
+              <p className="mt-1 text-sm text-text-secondary">
+                {hasAnyPractice ? t('home.keepPassing') : t('home.startAnyTest')}
+              </p>
+            )}
+          </div>
         </div>
-        <div className="grid grid-cols-2 gap-2 sm:flex">
-          {dashboard.readinessScore >= 65 && dashboard.actionTest && (
-            <Button
-              as={Link}
-              to={`/simulation/${dashboard.actionTest.id}`}
-              variant="outline"
-              size="sm"
-              className="rounded-lg"
-            >
-              {t('home.simulation')}
-            </Button>
-          )}
-          <Button
-            as={Link}
-            to="/bookmarks"
-            size="sm"
-            className="rounded-lg"
-          >
-            {t('home.bookmarks')}
-          </Button>
-          <Button
-            as={Link}
-            to="/tips"
-            variant="secondary"
-            size="sm"
-            className="rounded-lg"
-          >
-            {t('home.openTips')}
-          </Button>
-        </div>
-      </div>
-
-      <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
-        <DashboardStat label={t('home.completed')} value={`${dashboard.completedTests}/${dashboard.totalTests}`} />
-        <DashboardStat label={t('home.passedTests')} value={dashboard.passedTests} />
-        <DashboardStat label={t('home.passRate')} value={`${dashboard.passRate}%`} />
-        <DashboardStat label={t('home.lastPractice')} value={formatRelativeDate(dashboard.latestPractice?.completed_at, t)} />
-      </div>
-
-      <div className="mt-4 grid gap-3 sm:grid-cols-2">
-        <Card className="rounded-lg p-3">
-          <p className="text-xs font-medium text-text-secondary">{t('home.latestExam')}</p>
-          {dashboard.latestExam ? (
-            <>
-              <p className="mt-1 text-sm font-semibold text-text-primary">
-                {getTestTitle(dashboard.latestExam.test, field, t)}
-              </p>
-              <p className="mt-0.5 text-xs text-text-secondary">
-                {dashboard.latestExam.score}{' '}
-                {t('common.points')} · {dashboard.latestExam.passed ? t('home.passed') : t('home.failed')} · {formatRelativeDate(dashboard.latestExam.completed_at, t)}
-              </p>
-            </>
-          ) : (
-            <p className="mt-1 text-sm text-text-secondary">{t('home.takeFirstTimedExam')}</p>
-          )}
-        </Card>
-
-        <Card className="rounded-lg p-3">
-          <p className="text-xs font-medium text-text-secondary">{t('home.focusNext')}</p>
-          {dashboard.weakTest ? (
-            <>
-              <p className="mt-1 text-sm font-semibold text-text-primary">
-                {getTestTitle(dashboard.weakTest.test, field, t)}
-              </p>
-              <p className="mt-0.5 text-xs text-text-secondary">
-                {t('home.bestScoreReview', { score: dashboard.weakTest.progress.examBest })}
-              </p>
-            </>
-          ) : (
-            <p className="mt-1 text-sm text-text-secondary">
-              {hasAnyPractice ? t('home.keepPassing') : t('home.startAnyTest')}
-            </p>
-          )}
-        </Card>
       </div>
     </Card>
   )
 }
 
-function DashboardStat({ label, value }) {
+function DashboardStat({ label, value, tone = 'primary' }) {
+  const tones = {
+    primary: 'bg-primary/10 text-primary ring-primary/15',
+    correct: 'bg-correct/10 text-correct ring-correct/15',
+    warning: 'bg-warning/10 text-warning ring-warning/15',
+    ai: 'bg-ai/10 text-ai ring-ai/15',
+  }
+
   return (
-    <Card className="rounded-lg p-3">
+    <div className={`rounded-lg p-3 ring-1 ${tones[tone] ?? tones.primary}`}>
       <p className="text-lg font-bold text-text-primary">{value}</p>
       <p className="mt-0.5 text-xs text-text-secondary">{label}</p>
-    </Card>
+    </div>
   )
 }
 
@@ -484,13 +487,31 @@ export default function Home() {
   return (
     <PageTransition>
       <div className="min-h-screen bg-bg px-3 py-6 sm:px-4 sm:py-8">
-        <div className="mx-auto max-w-3xl">
+        <div className="mx-auto max-w-4xl">
 
           {/* Header */}
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-wide text-primary text-center">{t('home.eyebrow')}</p>
-            <h1 className="text-2xl font-bold text-text-primary tracking-tight text-center mt-1 sm:text-3xl">{t('home.title')}</h1>
-            <p className="text-sm text-text-secondary text-center mt-1">{t('home.subtitle')}</p>
+          <div className="rounded-xl border border-theme-border/80 bg-surface/90 p-5 shadow-lg shadow-slate-900/10 backdrop-blur sm:p-7">
+            <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+              <div className="max-w-2xl">
+                <p className="text-xs font-semibold uppercase tracking-normal text-primary">{t('home.eyebrow')}</p>
+                <h1 className="mt-2 text-3xl font-bold tracking-normal text-text-primary sm:text-4xl">{t('home.title')}</h1>
+                <p className="mt-2 text-sm leading-relaxed text-text-secondary">{t('home.subtitle')}</p>
+              </div>
+              <div className="grid grid-cols-2 gap-2 sm:w-56">
+                <div className="rounded-lg bg-primary/10 p-3 ring-1 ring-primary/15">
+                  <Icon name="book" className="h-5 w-5 text-primary" />
+                  <p className="mt-2 text-lg font-bold text-text-primary">{tests.length}</p>
+                  <p className="text-xs text-text-secondary">{t('home.practiceTests')}</p>
+                </div>
+                <div className="rounded-lg bg-correct/10 p-3 ring-1 ring-correct/15">
+                  <Icon name="focus" className="h-5 w-5 text-correct" />
+                  <p className="mt-2 text-lg font-bold text-text-primary">
+                    {Object.keys(progress).length}
+                  </p>
+                  <p className="text-xs text-text-secondary">{t('home.completed')}</p>
+                </div>
+              </div>
+            </div>
           </div>
 
           {/* Error */}
@@ -503,7 +524,7 @@ export default function Home() {
           {/* Category buttons */}
           {categories.length > 0 && (
             <>
-              <div className="grid grid-cols-2 gap-3 mt-6 sm:grid-cols-4">
+              <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
                 {categories.map(cat => (
                   <Button
                     key={cat.id}
@@ -511,8 +532,8 @@ export default function Home() {
                     variant={selectedCategory === cat.id ? 'primary' : 'outline'}
                     className={
                       selectedCategory === cat.id
-                        ? 'bg-gradient-to-br from-primary to-primary-hover shadow-md shadow-primary/25 px-4 py-3'
-                        : 'border-[1.5px] font-medium px-4 py-3'
+                        ? 'bg-gradient-to-br from-primary via-ai to-primary-hover px-4 py-3 shadow-md shadow-primary/25'
+                        : 'border-[1.5px] px-4 py-3 font-medium'
                     }
                   >
                     <Icon name={CATEGORY_ICON[cat.code] ?? 'focus'} className="mr-1.5 inline h-4 w-4 align-[-2px]" />
@@ -544,26 +565,32 @@ export default function Home() {
                     {tests.map(test => (
                       <Card
                         key={test.id}
+                        className="group overflow-hidden p-0 transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-md hover:shadow-slate-900/10"
                       >
                         {/* Top row */}
-                        <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
-                          <div className="min-w-0">
-                            <h3 className="text-base font-semibold text-text-primary">
-                              {field(test, 'title') || t('home.mockTest', { number: test.test_number })}
-                            </h3>
-                            <p className="text-xs text-text-secondary mt-0.5">
-                              {t('home.testMeta', {
-                                questions: test.question_count ?? 48,
-                                minutes: Math.round((test.time_limit ?? 1800) / 60),
-                                score: test.pass_score,
-                              })}
-                            </p>
+                        <div className="flex flex-col gap-3 p-4 sm:flex-row sm:items-start sm:justify-between">
+                          <div className="flex min-w-0 gap-3">
+                            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary ring-1 ring-primary/15">
+                              <Icon name="book" className="h-5 w-5" />
+                            </div>
+                            <div className="min-w-0">
+                              <h3 className="text-base font-semibold text-text-primary">
+                                {field(test, 'title') || t('home.mockTest', { number: test.test_number })}
+                              </h3>
+                              <p className="mt-0.5 text-xs text-text-secondary">
+                                {t('home.testMeta', {
+                                  questions: test.question_count ?? 48,
+                                  minutes: Math.round((test.time_limit ?? 1800) / 60),
+                                  score: test.pass_score,
+                                })}
+                              </p>
+                            </div>
                           </div>
                           <ProgressBadge progress={progress[test.id]} />
                         </div>
 
                         {/* Bottom row */}
-                        <div className="grid grid-cols-1 gap-2 mt-3 sm:grid-cols-3">
+                        <div className="grid grid-cols-1 gap-2 border-t border-theme-border/80 bg-surface/60 p-3 sm:grid-cols-3">
                           <Button
                             as={Link}
                             to={`/exam/${test.id}`}

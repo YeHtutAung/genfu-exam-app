@@ -1,9 +1,9 @@
 const variants = {
   primary: 'bg-primary text-white shadow-sm shadow-primary/25 hover:bg-primary-hover',
-  secondary: 'bg-surface text-text-secondary hover:bg-theme-border',
-  outline: 'border border-theme-border bg-bg text-text-secondary hover:bg-surface',
-  success: 'bg-correct text-white hover:bg-correct/90',
-  danger: 'bg-wrong text-white hover:bg-wrong/90',
+  secondary: 'bg-surface text-text-secondary ring-1 ring-theme-border/70 hover:bg-theme-border/70 hover:text-text-primary',
+  outline: 'border border-theme-border bg-bg/80 text-text-secondary hover:border-primary/40 hover:bg-primary/5 hover:text-text-primary',
+  success: 'bg-correct text-white shadow-sm shadow-correct/20 hover:bg-correct/90',
+  danger: 'bg-wrong text-white shadow-sm shadow-wrong/20 hover:bg-wrong/90',
   ghost: 'text-primary hover:bg-primary/10',
 }
 
@@ -14,7 +14,7 @@ const sizes = {
 }
 
 function buttonClasses({ variant = 'primary', size = 'md', className = '' } = {}) {
-  return `inline-flex items-center justify-center gap-2 rounded-xl font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${variants[variant] ?? variants.primary} ${sizes[size] ?? sizes.md} ${className}`
+  return `inline-flex items-center justify-center gap-2 rounded-xl font-semibold transition-all duration-200 hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0 ${variants[variant] ?? variants.primary} ${sizes[size] ?? sizes.md} ${className}`
 }
 
 export default function Button({ as: Component = 'button', className = '', children, variant = 'primary', size = 'md', ...props }) {
