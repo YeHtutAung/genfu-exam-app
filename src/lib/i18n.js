@@ -1150,16 +1150,24 @@ const notificationTranslations = {
   },
 }
 
+const sessionTranslations = {
+  ja: { exam: { sessionNotReady: '試験セッションを準備できませんでした。再試行してください。' } },
+  en: { exam: { sessionNotReady: 'The exam session could not be prepared. Please try again.' } },
+  my: { exam: { sessionNotReady: 'စာမေးပွဲ session ကို ပြင်ဆင်၍ မရပါ။ ထပ်မံကြိုးစားပါ။' } },
+}
+
 function getNestedValue(source, path) {
   return path.split('.').reduce((value, key) => value?.[key], source)
 }
 
 export function translate(language, key, params = {}) {
   const value =
+    getNestedValue(sessionTranslations[language], key) ??
     getNestedValue(notificationTranslations[language], key) ??
     getNestedValue(signalTranslations[language], key) ??
     getNestedValue(extraTranslations[language], key) ??
     getNestedValue(translations[language], key) ??
+    getNestedValue(sessionTranslations[FALLBACK_LANGUAGE], key) ??
     getNestedValue(notificationTranslations[FALLBACK_LANGUAGE], key) ??
     getNestedValue(signalTranslations[FALLBACK_LANGUAGE], key) ??
     getNestedValue(extraTranslations[FALLBACK_LANGUAGE], key) ??

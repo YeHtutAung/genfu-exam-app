@@ -191,6 +191,14 @@ export default function Exam() {
     await completeExam()
   }
 
+  const handleRetry = async () => {
+    if (!sessionId || submitError === 'exam.sessionNotReady') {
+      await startExam(testId, 'exam', { variant: isSimulation ? 'simulation' : 'standard' })
+      return
+    }
+    await completeExam()
+  }
+
   const handleTouchStart = (event) => {
     touchStartX.current = event.touches[0]?.clientX ?? null
   }
@@ -325,9 +333,9 @@ export default function Exam() {
           </div>
           {submitError && (
             <div className="mx-auto mt-3 flex max-w-3xl items-center justify-between gap-3 rounded-xl border border-wrong/20 bg-wrong/10 px-3 py-2 text-sm text-wrong">
-              <span>{submitError}</span>
+              <span>{t(submitError)}</span>
               <Button
-                onClick={completeExam}
+                onClick={handleRetry}
                 disabled={submitting}
                 variant="danger"
                 size="sm"

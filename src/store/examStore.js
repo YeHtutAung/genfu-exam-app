@@ -128,6 +128,7 @@ const useExamStore = create(
           startTime: Date.now(),
           timeRemaining: mode === 'exam' ? test.time_limit : 0,
           loading: false,
+          submitError: null,
         })
       },
 
@@ -204,7 +205,7 @@ const useExamStore = create(
         if (completed || get().submitting) return { ok: true }
 
         if (!sessionId || !testMeta) {
-          const message = 'Session is not ready. Please reload and try again.'
+          const message = 'exam.sessionNotReady'
           set({ submitError: message })
           return { ok: false, error: message }
         }
