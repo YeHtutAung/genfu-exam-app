@@ -2,7 +2,18 @@
   "buildCommand": "vite build",
   "outputDirectory": "dist",
   "framework": "vite",
+  "redirects": [
+    { "source": "/", "destination": "/genfu/", "permanent": false },
+    { "source": "/genfu", "destination": "/genfu/", "permanent": true }
+  ],
   "rewrites": [
+    { "source": "/genfu/api/(.*)", "destination": "/api/$1" },
+    { "source": "/genfu/assets/(.*)", "destination": "/assets/$1" },
+    { "source": "/genfu/sw.js", "destination": "/sw.js" },
+    { "source": "/genfu/manifest.webmanifest", "destination": "/manifest.webmanifest" },
+    { "source": "/genfu/pwa-icon.svg", "destination": "/pwa-icon.svg" },
+    { "source": "/genfu/pwa-icon-(.*).png", "destination": "/pwa-icon-$1.png" },
+    { "source": "/genfu/(.*)", "destination": "/index.html" },
     { "source": "/api/(.*)", "destination": "/api/$1" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]

@@ -1,4 +1,5 @@
 import { supabase } from './supabase'
+import { withBase } from './paths'
 
 async function authHeaders() {
   const { data } = await supabase.auth.getSession()
@@ -8,7 +9,7 @@ async function authHeaders() {
 }
 
 export async function explain(questionJp, hintJp) {
-  const res = await fetch('/api/explain', {
+  const res = await fetch(withBase('/api/explain'), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ question_jp: questionJp, hint_jp: hintJp }),
@@ -28,7 +29,7 @@ export async function explain(questionJp, hintJp) {
 }
 
 export async function uploadBundle(formData) {
-  const res = await fetch('/api/upload-bundle', {
+  const res = await fetch(withBase('/api/upload-bundle'), {
     method: 'POST',
     headers: await authHeaders(),
     body: formData,
@@ -43,7 +44,7 @@ export async function uploadBundle(formData) {
 }
 
 export async function confirmUpload(payload) {
-  const res = await fetch('/api/confirm-upload', {
+  const res = await fetch(withBase('/api/confirm-upload'), {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -66,7 +67,7 @@ export async function uploadQuestionImage({ questionId, file, imageAlt }) {
   formData.append('image', file)
   formData.append('imageAlt', imageAlt || file.name)
 
-  const res = await fetch('/api/upload-image', {
+  const res = await fetch(withBase('/api/upload-image'), {
     method: 'POST',
     headers: await authHeaders(),
     body: formData,
@@ -82,7 +83,7 @@ export async function uploadQuestionImage({ questionId, file, imageAlt }) {
 }
 
 export async function deleteTest(testId) {
-  const res = await fetch('/api/delete-test', {
+  const res = await fetch(withBase('/api/delete-test'), {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -101,7 +102,7 @@ export async function deleteTest(testId) {
 }
 
 export async function sendGuidance({ userId, band, weakestTestId }) {
-  const res = await fetch('/api/send-guidance', {
+  const res = await fetch(withBase('/api/send-guidance'), {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

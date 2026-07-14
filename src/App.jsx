@@ -10,6 +10,7 @@ import AdminLayout from './components/layout/AdminLayout'
 import Spinner from './components/ui/Spinner'
 import { ToastProvider } from './components/ui/Toast'
 import { LANGUAGES, useI18n, useLanguageStore } from './lib/i18n'
+import { BASE_PATH } from './lib/paths'
 
 const Home = lazy(() => import('./pages/Home'))
 const Login = lazy(() => import('./pages/Login'))
@@ -123,7 +124,7 @@ export default function App() {
   }
 
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={BASE_PATH || '/'}>
       <ToastProvider>
         <AppRoutes theme={theme} toggleTheme={toggleTheme} />
       </ToastProvider>

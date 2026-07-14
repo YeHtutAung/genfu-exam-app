@@ -10,6 +10,7 @@ const localApiRoutes = new Set([
   'explain',
   'upload-bundle',
   'upload-image',
+  'send-guidance',
 ])
 
 function localApiPlugin() {
@@ -76,6 +77,7 @@ export default defineConfig(({ mode }) => {
   process.env.GEMINI_API_KEY ||= env.GEMINI_API_KEY || env.VITE_GEMINI_API_KEY
 
   return {
+    base: env.VITE_BASE_PATH || (mode === 'production' ? '/genfu/' : '/'),
     plugins: [react(), localApiPlugin()],
   }
 })

@@ -1,5 +1,10 @@
 import { create } from 'zustand'
 import { supabase } from '../lib/supabase'
+import { withBase } from '../lib/paths'
+
+function appUrl(path = '/') {
+  return new URL(withBase(path), window.location.origin).toString()
+}
 
 const useAuthStore = create((set, get) => ({
   // ── State ──────────────────────────────────────────────────
@@ -65,7 +70,7 @@ const useAuthStore = create((set, get) => ({
     set({ error: null })
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: `${window.location.origin}/` },
+      options: { redirectTo: appUrl('/') },
     })
     if (error) set({ error: error.message })
     return { error: error ?? null }
@@ -75,7 +80,7 @@ const useAuthStore = create((set, get) => ({
     set({ error: null })
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'facebook',
-      options: { redirectTo: `${window.location.origin}/` },
+      options: { redirectTo: appUrl('/') },
     })
     if (error) set({ error: error.message })
     return { error: error ?? null }
@@ -84,7 +89,7 @@ const useAuthStore = create((set, get) => ({
   resetPassword: async (email) => {
     set({ error: null })
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/login`,
+      redirectTo: appUrl('/login'),
     })
     if (error) {
       set({ error: error.message })

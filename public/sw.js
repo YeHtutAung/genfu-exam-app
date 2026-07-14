@@ -1,5 +1,7 @@
-const CACHE_NAME = 'genfu-exam-app-v1'
-const APP_SHELL = ['/', '/index.html', '/manifest.webmanifest', '/pwa-icon.svg']
+const CACHE_NAME = 'genfu-exam-app-v2'
+const BASE_PATH = new URL(self.registration.scope).pathname.replace(/\/$/, '')
+const scopedPath = path => `${BASE_PATH}${path}`
+const APP_SHELL = [scopedPath('/'), scopedPath('/index.html'), scopedPath('/manifest.webmanifest'), scopedPath('/pwa-icon.svg')]
 
 self.addEventListener('install', event => {
   event.waitUntil(
@@ -27,7 +29,7 @@ self.addEventListener('fetch', event => {
 
   if (request.mode === 'navigate') {
     event.respondWith(
-      fetch(request).catch(() => caches.match('/index.html'))
+      fetch(request).catch(() => caches.match(scopedPath('/index.html')))
     )
     return
   }
