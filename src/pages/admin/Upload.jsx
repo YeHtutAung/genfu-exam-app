@@ -31,7 +31,7 @@ export default function Upload() {
 
   return (
     <div className="max-w-3xl">
-      <p className="signal-eyebrow">運用</p>
+      <p className="signal-eyebrow">{t('signal.operations')}</p>
       <h1 className="mt-1 text-[28px] font-extrabold tracking-tight text-text-primary">{t('admin.testUpload')}</h1>
       <p className="mb-6 text-sm text-text-secondary">
         {t('admin.uploadDescription')}

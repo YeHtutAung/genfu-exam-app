@@ -3,7 +3,7 @@ import { supabase } from '../lib/supabase'
 import { deleteTest as deleteTestApi } from '../lib/api'
 import { calculateReadiness } from '../lib/readiness'
 
-const LOAD_ERROR = 'データの取得に失敗しました'
+const LOAD_ERROR = 'signal.loadError'
 
 const useAdminStore = create((set, get) => ({
   // Dashboard stats
@@ -39,7 +39,7 @@ const useAdminStore = create((set, get) => ({
       supabase.from('tests').select('id', { count: 'exact', head: true }).eq('active', true),
       supabase
         .from('exam_sessions')
-        .select('id, test_id, mode, score, passed, completed_at, tests(id, test_number, title_jp, title_en, total_points, active)')
+        .select('id, test_id, mode, score, passed, completed_at, tests(id, test_number, title_jp, title_en, title_my, total_points, active)')
         .not('completed_at', 'is', null)
         .order('completed_at', { ascending: false })
         .limit(500),
@@ -66,6 +66,7 @@ const useAdminStore = create((set, get) => ({
           test_number: session.tests?.test_number,
           title_jp: session.tests?.title_jp,
           title_en: session.tests?.title_en,
+          title_my: session.tests?.title_my,
           attempts: 0,
           passed: 0,
           totalScorePercent: 0,
@@ -106,6 +107,7 @@ const useAdminStore = create((set, get) => ({
       test_number: session.tests?.test_number,
       title_jp: session.tests?.title_jp,
       title_en: session.tests?.title_en,
+      title_my: session.tests?.title_my,
     }))
 
     set({
@@ -157,7 +159,7 @@ const useAdminStore = create((set, get) => ({
       .eq('mode', 'exam')
       .not('score', 'is', null)
     if (sErr) {
-      set({ usersError: 'セッションデータの取得に失敗しました', usersLoading: false })
+      set({ usersError: 'signal.sessionLoadError', usersLoading: false })
       return
     }
     const statsMap = {}
@@ -180,7 +182,7 @@ const useAdminStore = create((set, get) => ({
     set({ analyticsLoading: true, analyticsError: null })
     const [profilesRes, testsRes, sessionsRes] = await Promise.all([
       supabase.from('profiles').select('id, email, role, created_at').order('created_at', { ascending: false }),
-      supabase.from('tests').select('id, test_number, title_jp, title_en, total_points').eq('active', true).order('test_number'),
+      supabase.from('tests').select('id, test_number, title_jp, title_en, title_my, total_points').eq('active', true).order('test_number'),
       supabase.from('exam_sessions').select('id, user_id, test_id, mode, score, passed, completed_at').not('completed_at', 'is', null),
     ])
     if (profilesRes.error || testsRes.error || sessionsRes.error) {
@@ -204,25 +206,20 @@ const useAdminStore = create((set, get) => ({
         byTest.set(test.id, current)
       }
       const weakest = [...byTest.values()].sort((a, b) => (a.total / a.count) - (b.total / b.count))[0]?.test
-      const recommendedAction = metrics.band === 'ready'
-        ? '安定して合格。本番試験の予約をすすめる。'
-        : metrics.band === 'almost'
-          ? `${weakest?.title_jp || `第${weakest?.test_number || '-'}回`}が弱点。学習モードで復習してから再挑戦。`
-          : '基礎が不安定。学習モードで標識・徐行を重点復習。'
-      return { ...profile, ...metrics, recommendedAction }
+      return { ...profile, ...metrics, weakestTest: weakest || null }
     })
     set({ analytics, analyticsLoading: false })
   },
 
-  sendGuidance: async (userId, message) => {
-    const { error } = await supabase.from('notifications').insert({ user_id: userId, type: 'readiness_guidance', title_jp: '試験準備度のご案内', body_jp: message })
+  sendGuidance: async (userId, title, message) => {
+    const { error } = await supabase.from('notifications').insert({ user_id: userId, type: 'readiness_guidance', title_jp: title, body_jp: message })
     if (error) throw error
   },
 
   toggleTestActive: async (testId, active) => {
     const { error } = await supabase.from('tests').update({ active }).eq('id', testId)
     if (error) {
-      set({ testsError: 'テストの更新に失敗しました' })
+      set({ testsError: 'signal.testUpdateError' })
       return
     }
     await get().fetchTests()
@@ -232,7 +229,7 @@ const useAdminStore = create((set, get) => ({
     try {
       await deleteTestApi(testId)
     } catch (err) {
-      set({ testsError: err.message || 'テストの削除に失敗しました' })
+      set({ testsError: err.message || 'signal.testDeleteError' })
       return
     }
     await get().fetchTests()

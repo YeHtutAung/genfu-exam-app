@@ -4,7 +4,7 @@ import Button from '../ui/Button'
 import Card from '../ui/Card'
 
 export default function UploadPreviewPanel({ preview, onConfirm, onCancel, confirming }) {
-  const { t } = useI18n()
+  const { t, field } = useI18n()
   const { meta, questions, images } = preview
 
   const standardCount = questions.filter(q => q.type === 'standard').length
@@ -86,7 +86,7 @@ export default function UploadPreviewPanel({ preview, onConfirm, onCancel, confi
                     </Badge>
                   </td>
                   <td className="py-1.5 text-text-secondary">
-                    {q.question_jp.slice(0, 40)}{q.question_jp.length > 40 ? '...' : ''}
+                    {field(q, 'question').slice(0, 40)}{field(q, 'question').length > 40 ? '...' : ''}
                   </td>
                 </tr>
               ))}

@@ -55,7 +55,7 @@ export function calculateReadiness({ tests = [], sessions = [] }) {
 }
 
 export const readinessPresentation = {
-  ready: { color: '#1F9D57', label: '準備OK' },
-  almost: { color: '#E4890F', label: 'もう少し' },
-  needs: { color: '#E23B2E', label: '要練習' },
+  ready: { color: '#1F9D57' },
+  almost: { color: '#E4890F' },
+  needs: { color: '#E23B2E' },
 }

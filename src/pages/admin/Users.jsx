@@ -28,10 +28,10 @@ export default function Users() {
 
   return (
     <div>
-      <p className="signal-eyebrow">運用</p>
+      <p className="signal-eyebrow">{t('signal.operations')}</p>
       <h1 className="mb-6 mt-1 text-[28px] font-extrabold tracking-tight text-text-primary">{t('admin.usersManagement')}</h1>
 
-      {error && <p className="mb-4 text-sm text-wrong">{error}</p>}
+      {error && <p className="mb-4 text-sm text-wrong">{t(error)}</p>}
 
       <div className="mb-4 flex gap-2">
         {['all', 'user', 'admin'].map(r => (

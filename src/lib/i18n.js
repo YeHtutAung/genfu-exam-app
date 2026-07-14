@@ -1060,14 +1060,79 @@ const extraTranslations = {
   },
 }
 
+const signalTranslations = {
+  ja: {
+    signal: {
+      footerHome: 'ホーム', footerTips: 'コツ', footerSaved: '保存',
+      analytics: 'ユーザー分析', operations: '運用', adminNavigation: '管理ナビゲーション',
+      tableTest: 'テスト', tableStructure: '構成', tableStatus: '状態', tableActions: '操作',
+      enabled: '有効', disabled: '無効', preview: 'プレビュー', enable: '有効化', disable: '無効化', delete: '削除',
+      testStats: '{questions}問 / {points}点 / 合格{passScore}', testComposition: '{questions}問 / {points}点',
+      examAttempts: '受験回数', bestScore: '最高点',
+      dropZip: 'ZIPファイルをドラッグ＆ドロップ', clickToSelect: 'またはクリックして選択', ready: '準備完了',
+      validationRules: '検証ルール', validationSummary: 'JSON 1件 · PNG のみ · 最大 50MB · 重複ID なし', cancel: 'キャンセル',
+      selectTest: 'テストを選択...', testOption: '{category} - テスト {number}', imageUploaded: '問{number}: 画像をアップロードしました',
+      imageUploadedToast: '画像をアップロードしました', noQuestions: '問題が見つかりません', noImage: '画像なし', questionNumber: '問{number}', replace: '差し替え', upload: 'アップロード',
+      analyticsDescription: '学習データから試験準備度と次のアクションを確認します。', all: 'すべて', readyBand: '準備OK', almostBand: 'もう少し', needsBand: '要練習',
+      user: 'ユーザー', readiness: '準備度', passRate: '合格率', recommendedAction: 'おすすめアクション',
+      readyCohort: '安定して合格ラインを超えているユーザー', almostCohort: 'あと一歩で本番準備が整うユーザー', needsCohort: '基礎の重点復習が必要なユーザー',
+      cohortTitle: '試験準備{band}', bestBadge: '最高 {score}点 · 合格率 {rate}%', sendReady: '案内を送る', sendGuide: 'ガイド送信', guidanceSent: '{email} にガイドを送信しました',
+      guidanceReady: '安定して合格。本番試験の予約をすすめる。', guidanceAlmost: '{test}が弱点。学習モードで復習してから再挑戦。', guidanceNeeds: '基礎が不安定。学習モードで標識・徐行を重点復習。', notificationTitle: '試験準備度のご案内',
+      loadError: 'データの取得に失敗しました', sessionLoadError: 'セッションデータの取得に失敗しました', testUpdateError: 'テストの更新に失敗しました', testDeleteError: 'テストの削除に失敗しました',
+    },
+  },
+  en: {
+    signal: {
+      footerHome: 'Home', footerTips: 'Tips', footerSaved: 'Saved',
+      analytics: 'User analytics', operations: 'Operations', adminNavigation: 'Admin navigation',
+      tableTest: 'Test', tableStructure: 'Structure', tableStatus: 'Status', tableActions: 'Actions',
+      enabled: 'Enabled', disabled: 'Disabled', preview: 'Preview', enable: 'Enable', disable: 'Disable', delete: 'Delete',
+      testStats: '{questions} questions / {points} points / Pass {passScore}', testComposition: '{questions} questions / {points} points',
+      examAttempts: 'Exam attempts', bestScore: 'Best score',
+      dropZip: 'Drag and drop a ZIP file', clickToSelect: 'or click to select', ready: 'Ready',
+      validationRules: 'Validation rules', validationSummary: '1 JSON · PNG only · 50MB maximum · No duplicate IDs', cancel: 'Cancel',
+      selectTest: 'Select a test...', testOption: '{category} - Test {number}', imageUploaded: 'Question {number}: image uploaded',
+      imageUploadedToast: 'Image uploaded', noQuestions: 'No questions found', noImage: 'No image', questionNumber: 'Question {number}', replace: 'Replace', upload: 'Upload',
+      analyticsDescription: 'Review exam readiness and recommended next actions from learner data.', all: 'All', readyBand: 'Ready', almostBand: 'Almost ready', needsBand: 'Needs practice',
+      user: 'User', readiness: 'Readiness', passRate: 'Pass rate', recommendedAction: 'Recommended action',
+      readyCohort: 'Learners consistently scoring above the pass line', almostCohort: 'Learners who are close to being exam-ready', needsCohort: 'Learners who need focused review of the basics',
+      cohortTitle: 'Exam readiness: {band}', bestBadge: 'Best {score} · Pass rate {rate}%', sendReady: 'Send notice', sendGuide: 'Send guidance', guidanceSent: 'Guidance sent to {email}',
+      guidanceReady: 'Consistently passing. Recommend booking the official exam.', guidanceAlmost: '{test} is the weakest area. Review it in study mode before trying again.', guidanceNeeds: 'The fundamentals are unstable. Focus on signs and slow-driving rules in study mode.', notificationTitle: 'Your exam-readiness update',
+      loadError: 'Failed to load data', sessionLoadError: 'Failed to load session data', testUpdateError: 'Failed to update the test', testDeleteError: 'Failed to delete the test',
+    },
+  },
+  my: {
+    signal: {
+      footerHome: 'ပင်မ', footerTips: 'အကြံပြုချက်', footerSaved: 'သိမ်းထားသည်',
+      analytics: 'အသုံးပြုသူ ခွဲခြမ်းစိတ်ဖြာမှု', operations: 'စီမံခန့်ခွဲမှု', adminNavigation: 'စီမံသူ လမ်းညွှန်',
+      tableTest: 'စာမေးပွဲ', tableStructure: 'ဖွဲ့စည်းပုံ', tableStatus: 'အခြေအနေ', tableActions: 'လုပ်ဆောင်ချက်',
+      enabled: 'ဖွင့်ထားသည်', disabled: 'ပိတ်ထားသည်', preview: 'ကြိုကြည့်ရန်', enable: 'ဖွင့်ရန်', disable: 'ပိတ်ရန်', delete: 'ဖျက်ရန်',
+      testStats: 'မေးခွန်း {questions} ခု / {points} မှတ် / အောင်မှတ် {passScore}', testComposition: 'မေးခွန်း {questions} ခု / {points} မှတ်',
+      examAttempts: 'ဖြေဆိုမှုအကြိမ်', bestScore: 'အမြင့်ဆုံးမှတ်',
+      dropZip: 'ZIP ဖိုင်ကို ဆွဲချပါ', clickToSelect: 'သို့မဟုတ် ရွေးချယ်ရန် နှိပ်ပါ', ready: 'အဆင်သင့်',
+      validationRules: 'စစ်ဆေးမှု စည်းမျဉ်းများ', validationSummary: 'JSON ၁ ခု · PNG သာ · အများဆုံး 50MB · ID မထပ်ရ', cancel: 'မလုပ်တော့ပါ',
+      selectTest: 'စာမေးပွဲ ရွေးပါ...', testOption: '{category} - စာမေးပွဲ {number}', imageUploaded: 'မေးခွန်း {number}: ပုံတင်ပြီးပါပြီ',
+      imageUploadedToast: 'ပုံတင်ပြီးပါပြီ', noQuestions: 'မေးခွန်း မတွေ့ပါ', noImage: 'ပုံမရှိ', questionNumber: 'မေးခွန်း {number}', replace: 'အစားထိုးရန်', upload: 'တင်ရန်',
+      analyticsDescription: 'လေ့လာမှုဒေတာမှ စာမေးပွဲအဆင်သင့်မှုနှင့် နောက်လုပ်ဆောင်ချက်ကို ကြည့်ပါ။', all: 'အားလုံး', readyBand: 'အဆင်သင့်', almostBand: 'နီးပါပြီ', needsBand: 'လေ့ကျင့်ရန်လို',
+      user: 'အသုံးပြုသူ', readiness: 'အဆင်သင့်မှု', passRate: 'အောင်မြင်နှုန်း', recommendedAction: 'အကြံပြုလုပ်ဆောင်ချက်',
+      readyCohort: 'အောင်မှတ်ထက် တည်ငြိမ်စွာ မြင့်သော အသုံးပြုသူများ', almostCohort: 'စာမေးပွဲအတွက် အဆင်သင့်ဖြစ်ခါနီး အသုံးပြုသူများ', needsCohort: 'အခြေခံကို အာရုံစိုက်လေ့ကျင့်ရန်လိုသော အသုံးပြုသူများ',
+      cohortTitle: 'စာမေးပွဲအဆင်သင့်မှု: {band}', bestBadge: 'အမြင့်ဆုံး {score} · အောင်မြင်နှုန်း {rate}%', sendReady: 'အသိပေးချက်ပို့ရန်', sendGuide: 'လမ်းညွှန်ပို့ရန်', guidanceSent: '{email} သို့ လမ်းညွှန်ပို့ပြီးပါပြီ',
+      guidanceReady: 'တည်ငြိမ်စွာ အောင်မြင်နေပါသည်။ တကယ့်စာမေးပွဲကို ဘွတ်ကင်လုပ်ရန် အကြံပြုပါ။', guidanceAlmost: '{test} သည် အားနည်းချက်ဖြစ်သည်။ ပြန်မဖြေမီ လေ့လာမှုမုဒ်တွင် ပြန်လေ့ကျင့်ပါ။', guidanceNeeds: 'အခြေခံမတည်ငြိမ်သေးပါ။ လမ်းညွှန်ဆိုင်းဘုတ်နှင့် ဖြည်းဖြည်းမောင်းစည်းမျဉ်းများကို အာရုံစိုက်ပါ။', notificationTitle: 'စာမေးပွဲအဆင်သင့်မှု အချက်အလက်',
+      loadError: 'ဒေတာရယူ၍ မရပါ', sessionLoadError: 'Session ဒေတာရယူ၍ မရပါ', testUpdateError: 'စာမေးပွဲကို ပြင်ဆင်၍ မရပါ', testDeleteError: 'စာမေးပွဲကို ဖျက်၍ မရပါ',
+    },
+  },
+}
+
 function getNestedValue(source, path) {
   return path.split('.').reduce((value, key) => value?.[key], source)
 }
 
 export function translate(language, key, params = {}) {
   const value =
+    getNestedValue(signalTranslations[language], key) ??
     getNestedValue(extraTranslations[language], key) ??
     getNestedValue(translations[language], key) ??
+    getNestedValue(signalTranslations[FALLBACK_LANGUAGE], key) ??
     getNestedValue(extraTranslations[FALLBACK_LANGUAGE], key) ??
     getNestedValue(translations[FALLBACK_LANGUAGE], key) ??
     key

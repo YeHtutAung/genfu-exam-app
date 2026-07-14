@@ -6,7 +6,8 @@ import Card from '../../components/ui/Card'
 import { useI18n } from '../../lib/i18n'
 
 export default function AdminDashboard() {
-  const { t } = useI18n()
+  const { t, field, language } = useI18n()
+  const locale = language === 'ja' ? 'ja-JP' : language === 'my' ? 'my-MM' : 'en-US'
   const { data: stats, loading, error } = useAdmin('stats')
 
   if (loading || !stats) {
@@ -27,7 +28,7 @@ export default function AdminDashboard() {
         </p>
       </div>
 
-      {error && <p className="mb-4 text-sm text-wrong">{error}</p>}
+      {error && <p className="mb-4 text-sm text-wrong">{t(error)}</p>}
 
       {stats && (
         <>
@@ -56,7 +57,7 @@ export default function AdminDashboard() {
               ) : (
                 <div className="space-y-2">
                   {stats.testPerformance.map(test => (
-                    <PerformanceRow key={test.test_id} test={test} t={t} />
+                    <PerformanceRow key={test.test_id} test={test} t={t} field={field} />
                   ))}
                 </div>
               )}
@@ -72,7 +73,7 @@ export default function AdminDashboard() {
               ) : (
                 <div className="space-y-2">
                   {stats.recentAttempts.map(attempt => (
-                    <RecentAttempt key={attempt.id} attempt={attempt} t={t} />
+                    <RecentAttempt key={attempt.id} attempt={attempt} t={t} field={field} locale={locale} />
                   ))}
                 </div>
               )}
@@ -100,8 +101,8 @@ function StatCard({ label, value }) {
   )
 }
 
-function PerformanceRow({ test, t }) {
-  const title = test.title_en || test.title_jp || t('home.mockTest', { number: test.test_number ?? '-' })
+function PerformanceRow({ test, t, field }) {
+  const title = field(test, 'title') || t('home.mockTest', { number: test.test_number ?? '-' })
 
   return (
     <Card className="rounded-xl bg-surface p-3">
@@ -121,17 +122,17 @@ function PerformanceRow({ test, t }) {
   )
 }
 
-function RecentAttempt({ attempt, t }) {
-  const title = attempt.title_en || attempt.title_jp || t('home.mockTest', { number: attempt.test_number ?? '-' })
+function RecentAttempt({ attempt, t, field, locale }) {
+  const title = field(attempt, 'title') || t('home.mockTest', { number: attempt.test_number ?? '-' })
   const date = attempt.completed_at
-    ? new Date(attempt.completed_at).toLocaleDateString()
+    ? new Date(attempt.completed_at).toLocaleDateString(locale)
     : ''
 
   return (
     <Card className="flex items-center justify-between gap-3 rounded-xl p-3">
       <div className="min-w-0">
         <p className="truncate text-sm font-medium text-text-primary">{title}</p>
-        <p className="text-xs text-text-secondary">{attempt.mode} · {date}</p>
+        <p className="text-xs text-text-secondary">{attempt.mode === 'study' ? t('admin.studyLabel') : t('common.test')} · {date}</p>
       </div>
       <Badge
         tone={attempt.mode === 'study' ? 'primary' : attempt.passed ? 'correct' : 'wrong'}

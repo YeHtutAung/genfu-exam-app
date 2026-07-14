@@ -42,10 +42,10 @@ export default function Tests() {
 
   return (
     <div>
-      <p className="signal-eyebrow">運用</p>
+      <p className="signal-eyebrow">{t('signal.operations')}</p>
       <h1 className="mb-6 mt-1 text-[28px] font-extrabold tracking-tight text-text-primary">{t('admin.testsManagement')}</h1>
 
-      {error && <p className="mb-4 text-sm text-wrong">{error}</p>}
+      {error && <p className="mb-4 text-sm text-wrong">{t(error)}</p>}
 
       {tests.length === 0 ? (
         <p className="py-12 text-center text-text-secondary">{t('admin.noTestsLong')}</p>
