@@ -28,7 +28,8 @@ function TestTitle({ test }) {
 
 function Toggle({ active, onClick }) {
   const { t } = useI18n()
-  return <button type="button" onClick={onClick} className="inline-flex items-center gap-2 text-xs font-semibold text-text-secondary"><span className={`relative h-6 w-11 rounded-full transition-colors ${active ? 'bg-correct' : 'bg-[#D9D2C4]'}`}><span className={`absolute top-1 h-4 w-4 rounded-full bg-white shadow transition-transform ${active ? 'translate-x-6' : 'translate-x-1'}`} /></span>{active ? t('signal.enabled') : t('signal.disabled')}</button>
+  const label = active ? t('signal.enabled') : t('signal.disabled')
+  return <button type="button" role="switch" aria-checked={active} aria-label={label} onClick={onClick} className="inline-flex items-center gap-2 whitespace-nowrap text-xs font-semibold text-text-secondary"><span aria-hidden="true" className={`relative h-6 w-11 shrink-0 overflow-hidden rounded-full transition-colors ${active ? 'bg-correct' : 'bg-[#D9D2C4]'}`}><span className={`absolute left-1 top-1 h-4 w-4 rounded-full bg-white shadow transition-transform ${active ? 'translate-x-5' : 'translate-x-0'}`} /></span><span>{label}</span></button>
 }
 
 function Actions({ test, onToggleActive, onDelete }) {
