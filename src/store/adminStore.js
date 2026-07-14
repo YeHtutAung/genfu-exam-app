@@ -234,7 +234,10 @@ const useAdminStore = create((set, get) => ({
       set({ testsError: 'signal.testUpdateError' })
       return
     }
-    await get().fetchTests()
+    set(state => ({
+      tests: state.tests?.map(test => test.id === testId ? { ...test, active } : test),
+      testsError: null,
+    }))
   },
 
   deleteTest: async (testId) => {
