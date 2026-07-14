@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { supabase } from '../lib/supabase'
-import { deleteTest as deleteTestApi } from '../lib/api'
+import { deleteTest as deleteTestApi, sendGuidance as sendGuidanceApi } from '../lib/api'
 import { calculateReadiness } from '../lib/readiness'
 
 const LOAD_ERROR = 'signal.loadError'
@@ -180,17 +180,22 @@ const useAdminStore = create((set, get) => ({
 
   fetchAnalytics: async () => {
     set({ analyticsLoading: true, analyticsError: null })
-    const [profilesRes, testsRes, sessionsRes] = await Promise.all([
+    const [profilesRes, testsRes, sessionsRes, notificationsRes] = await Promise.all([
       supabase.from('profiles').select('id, email, role, created_at').order('created_at', { ascending: false }),
       supabase.from('tests').select('id, test_number, title_jp, title_en, title_my, total_points').eq('active', true).order('test_number'),
       supabase.from('exam_sessions').select('id, user_id, test_id, mode, score, passed, completed_at').not('completed_at', 'is', null),
+      supabase.from('notifications').select('id, user_id, read_at, created_at').eq('type', 'readiness_guidance').order('created_at', { ascending: false }),
     ])
-    if (profilesRes.error || testsRes.error || sessionsRes.error) {
+    if (profilesRes.error || testsRes.error || sessionsRes.error || notificationsRes.error) {
       set({ analyticsError: LOAD_ERROR, analyticsLoading: false })
       return
     }
     const tests = testsRes.data || []
     const sessions = sessionsRes.data || []
+    const guidanceByUser = new Map()
+    for (const notification of notificationsRes.data || []) {
+      if (!guidanceByUser.has(notification.user_id)) guidanceByUser.set(notification.user_id, notification)
+    }
     const testMap = new Map(tests.map(test => [test.id, test]))
     const analytics = (profilesRes.data || []).map(profile => {
       const userSessions = sessions.filter(session => session.user_id === profile.id)
@@ -206,14 +211,21 @@ const useAdminStore = create((set, get) => ({
         byTest.set(test.id, current)
       }
       const weakest = [...byTest.values()].sort((a, b) => (a.total / a.count) - (b.total / b.count))[0]?.test
-      return { ...profile, ...metrics, weakestTest: weakest || null }
+      return { ...profile, ...metrics, weakestTest: weakest || null, guidance: guidanceByUser.get(profile.id) || null }
     })
     set({ analytics, analyticsLoading: false })
   },
 
-  sendGuidance: async (userId, title, message) => {
-    const { error } = await supabase.from('notifications').insert({ user_id: userId, type: 'readiness_guidance', title_jp: title, body_jp: message })
-    if (error) throw error
+  sendGuidance: async ({ userId, band, weakestTestId }) => {
+    const result = await sendGuidanceApi({ userId, band, weakestTestId })
+    if (result.notification) {
+      set(state => ({
+        analytics: state.analytics?.map(user => user.id === userId
+          ? { ...user, guidance: result.notification }
+          : user),
+      }))
+    }
+    return result
   },
 
   toggleTestActive: async (testId, active) => {

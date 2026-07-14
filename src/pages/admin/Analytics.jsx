@@ -1,13 +1,15 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import useAdmin from '../../hooks/useAdmin'
 import useAdminStore from '../../store/adminStore'
 import Spinner from '../../components/ui/Spinner'
 import Button from '../../components/ui/Button'
 import Badge from '../../components/ui/Badge'
 import Card from '../../components/ui/Card'
+import Modal from '../../components/ui/Modal'
 import useToast from '../../components/ui/useToast'
 import { readinessPresentation } from '../../lib/readiness'
 import { useI18n } from '../../lib/i18n'
+import { supabase } from '../../lib/supabase'
 
 const filterKeys = ['all', 'ready', 'almost', 'needs']
 
@@ -31,18 +33,38 @@ export default function Analytics() {
   const { showToast } = useToast()
   const [filter, setFilter] = useState('all')
   const [sending, setSending] = useState(null)
+  const [sendTarget, setSendTarget] = useState(null)
+
+  useEffect(() => {
+    const channel = supabase
+      .channel('admin-guidance-status')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'notifications' }, payload => {
+        const notification = payload.new
+        if (notification?.type !== 'readiness_guidance') return
+        useAdminStore.setState(state => ({
+          analytics: state.analytics?.map(user => user.id === notification.user_id
+            ? { ...user, guidance: notification }
+            : user),
+        }))
+      })
+      .subscribe()
+    return () => { supabase.removeChannel(channel) }
+  }, [])
 
   if (loading || !users) return <div className="flex justify-center py-20"><Spinner /></div>
   const visible = filter === 'all' ? users : users.filter(user => user.band === filter)
   const cohorts = ['ready', 'almost', 'needs'].map(band => ({ band, count: users.filter(user => user.band === band).length }))
 
-  const handleSend = async user => {
+  const handleSend = async () => {
+    const user = sendTarget
+    if (!user) return
     setSending(user.id)
     try {
-      await sendGuidance(user.id, t('signal.notificationTitle'), recommendation(user, t, field))
-      showToast(t('signal.guidanceSent', { email: user.email }), 'success')
+      const result = await sendGuidance({ userId: user.id, band: user.band, weakestTestId: user.weakestTest?.id })
+      showToast(t(result.duplicate ? 'signal.guidanceAlreadySent' : 'signal.guidanceSent', { email: user.email }), 'success')
+      setSendTarget(null)
     } catch (sendError) {
-      showToast(sendError.message, 'error')
+      showToast(sendError.message || t('signal.guidanceSendError'), 'error')
     } finally {
       setSending(null)
     }
@@ -62,11 +84,20 @@ export default function Analytics() {
         <div className="hidden overflow-x-auto lg:block">
           <table className="w-full min-w-[900px] text-left text-sm">
             <thead className="border-b border-theme-border bg-[#FAF8F3] text-xs text-text-secondary"><tr><th className="px-4 py-3">{t('signal.user')}</th><th className="px-4 py-3">{t('signal.readiness')}</th><th className="px-4 py-3">{t('signal.bestScore')}</th><th className="px-4 py-3">{t('signal.passRate')}</th><th className="px-4 py-3">{t('signal.recommendedAction')}</th><th className="px-4 py-3" /></tr></thead>
-            <tbody>{visible.map(user => <AnalyticsRow key={user.id} user={user} sending={sending} onSend={handleSend} />)}</tbody>
+            <tbody>{visible.map(user => <AnalyticsRow key={user.id} user={user} sending={sending} onSend={setSendTarget} />)}</tbody>
           </table>
         </div>
-        <div className="space-y-3 p-3 lg:hidden">{visible.map(user => <AnalyticsCard key={user.id} user={user} sending={sending} onSend={handleSend} />)}</div>
+        <div className="space-y-3 p-3 lg:hidden">{visible.map(user => <AnalyticsCard key={user.id} user={user} sending={sending} onSend={setSendTarget} />)}</div>
       </div>
+
+      <Modal
+        isOpen={Boolean(sendTarget)}
+        title={t('signal.confirmGuidanceTitle')}
+        message={sendTarget ? `${sendTarget.email}\n\n${recommendation(sendTarget, t, field)}` : ''}
+        confirmLabel={t('signal.confirmSend')}
+        onConfirm={handleSend}
+        onCancel={() => setSendTarget(null)}
+      />
     </div>
   )
 }
@@ -86,10 +117,12 @@ function Readiness({ user }) {
 
 function AnalyticsRow({ user, sending, onSend }) {
   const { t, field } = useI18n()
-  return <tr className="border-b border-theme-border last:border-0"><td className="px-4 py-4 font-semibold text-text-primary">{user.email}</td><td className="px-4 py-4"><Readiness user={user} /></td><td className="num px-4 py-4 font-bold text-text-primary">{user.bestScore ?? '—'}</td><td className="num px-4 py-4 text-text-primary">{user.passRate}%</td><td className="max-w-xs px-4 py-4 text-xs leading-relaxed text-text-secondary">{recommendation(user, t, field)}</td><td className="px-4 py-4"><Button onClick={() => onSend(user)} disabled={sending === user.id} size="sm" className={user.band === 'ready' ? '' : 'bg-[#17150F] hover:bg-[#33302A]'}>{user.band === 'ready' ? t('signal.sendReady') : t('signal.sendGuide')}</Button></td></tr>
+  const status = user.guidance ? t(user.guidance.read_at ? 'signal.guidanceRead' : 'signal.guidanceDelivered') : null
+  return <tr className="border-b border-theme-border last:border-0"><td className="px-4 py-4 font-semibold text-text-primary">{user.email}</td><td className="px-4 py-4"><Readiness user={user} /></td><td className="num px-4 py-4 font-bold text-text-primary">{user.bestScore ?? '—'}</td><td className="num px-4 py-4 text-text-primary">{user.passRate}%</td><td className="max-w-xs px-4 py-4 text-xs leading-relaxed text-text-secondary">{recommendation(user, t, field)}</td><td className="px-4 py-4"><Button onClick={() => onSend(user)} disabled={sending === user.id} size="sm" className={user.band === 'ready' ? '' : 'bg-[#17150F] hover:bg-[#33302A]'}>{user.band === 'ready' ? t('signal.sendReady') : t('signal.sendGuide')}</Button>{status && <p className="mt-1.5 text-center text-[11px] font-semibold text-text-secondary">{status}</p>}</td></tr>
 }
 
 function AnalyticsCard({ user, sending, onSend }) {
   const { t, field } = useI18n()
-  return <Card><div className="flex items-start justify-between gap-3"><div className="min-w-0"><p className="truncate text-sm font-bold text-text-primary">{user.email}</p><Badge className="mt-1">{t('signal.bestBadge', { score: user.bestScore ?? '—', rate: user.passRate })}</Badge></div><Readiness user={user} /></div><p className="mt-3 text-xs leading-relaxed text-text-secondary">{recommendation(user, t, field)}</p><Button onClick={() => onSend(user)} disabled={sending === user.id} size="sm" className={`mt-3 w-full ${user.band === 'ready' ? '' : 'bg-[#17150F] hover:bg-[#33302A]'}`}>{user.band === 'ready' ? t('signal.sendReady') : t('signal.sendGuide')}</Button></Card>
+  const status = user.guidance ? t(user.guidance.read_at ? 'signal.guidanceRead' : 'signal.guidanceDelivered') : null
+  return <Card><div className="flex items-start justify-between gap-3"><div className="min-w-0"><p className="truncate text-sm font-bold text-text-primary">{user.email}</p><Badge className="mt-1">{t('signal.bestBadge', { score: user.bestScore ?? '—', rate: user.passRate })}</Badge></div><Readiness user={user} /></div><p className="mt-3 text-xs leading-relaxed text-text-secondary">{recommendation(user, t, field)}</p><Button onClick={() => onSend(user)} disabled={sending === user.id} size="sm" className={`mt-3 w-full ${user.band === 'ready' ? '' : 'bg-[#17150F] hover:bg-[#33302A]'}`}>{user.band === 'ready' ? t('signal.sendReady') : t('signal.sendGuide')}</Button>{status && <p className="mt-2 text-center text-[11px] font-semibold text-text-secondary">{status}</p>}</Card>
 }

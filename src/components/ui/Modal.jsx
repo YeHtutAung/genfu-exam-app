@@ -26,7 +26,7 @@ export default function Modal({ isOpen, title, message, onConfirm, onCancel, con
       onClose={onCancel}
     >
       <h2 className="text-lg font-bold text-text-primary">{title}</h2>
-      <p className="mt-2 text-sm text-text-secondary">{message}</p>
+      <p className="mt-2 whitespace-pre-line text-sm text-text-secondary">{message}</p>
       <div className="mt-6 flex justify-end gap-3">
         <Button
           onClick={onCancel}

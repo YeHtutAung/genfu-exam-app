@@ -1123,15 +1123,44 @@ const signalTranslations = {
   },
 }
 
+const notificationTranslations = {
+  ja: {
+    signal: {
+      notifications: '通知', markAllRead: 'すべて既読にする', noNotifications: '通知はまだありません',
+      notificationLoadError: '通知を取得できませんでした', guidanceAlreadySent: '{email} には本日すでに同じ案内を送信済みです',
+      guidanceSendError: '案内を送信できませんでした', guidanceDelivered: '配信済み', guidanceRead: '既読',
+      confirmGuidanceTitle: 'この案内を送信しますか？', confirmSend: '送信する',
+    },
+  },
+  en: {
+    signal: {
+      notifications: 'Notifications', markAllRead: 'Mark all read', noNotifications: 'No notifications yet',
+      notificationLoadError: 'Could not load notifications', guidanceAlreadySent: 'The same guidance was already sent to {email} today',
+      guidanceSendError: 'Could not send guidance', guidanceDelivered: 'Delivered', guidanceRead: 'Read',
+      confirmGuidanceTitle: 'Send this guidance?', confirmSend: 'Send',
+    },
+  },
+  my: {
+    signal: {
+      notifications: 'အသိပေးချက်များ', markAllRead: 'အားလုံးကို ဖတ်ပြီးအဖြစ် သတ်မှတ်ရန်', noNotifications: 'အသိပေးချက် မရှိသေးပါ',
+      notificationLoadError: 'အသိပေးချက်များ ရယူ၍ မရပါ', guidanceAlreadySent: '{email} သို့ ယနေ့ အလားတူလမ်းညွှန် ပို့ပြီးပါပြီ',
+      guidanceSendError: 'လမ်းညွှန်ကို ပို့၍ မရပါ', guidanceDelivered: 'ပို့ပြီး', guidanceRead: 'ဖတ်ပြီး',
+      confirmGuidanceTitle: 'ဤလမ်းညွှန်ကို ပို့မည်လား။', confirmSend: 'ပို့ရန်',
+    },
+  },
+}
+
 function getNestedValue(source, path) {
   return path.split('.').reduce((value, key) => value?.[key], source)
 }
 
 export function translate(language, key, params = {}) {
   const value =
+    getNestedValue(notificationTranslations[language], key) ??
     getNestedValue(signalTranslations[language], key) ??
     getNestedValue(extraTranslations[language], key) ??
     getNestedValue(translations[language], key) ??
+    getNestedValue(notificationTranslations[FALLBACK_LANGUAGE], key) ??
     getNestedValue(signalTranslations[FALLBACK_LANGUAGE], key) ??
     getNestedValue(extraTranslations[FALLBACK_LANGUAGE], key) ??
     getNestedValue(translations[FALLBACK_LANGUAGE], key) ??

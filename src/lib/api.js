@@ -99,3 +99,22 @@ export async function deleteTest(testId) {
 
   return data
 }
+
+export async function sendGuidance({ userId, band, weakestTestId }) {
+  const res = await fetch('/api/send-guidance', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      ...await authHeaders(),
+    },
+    body: JSON.stringify({ userId, band, weakestTestId }),
+  })
+
+  const data = await res.json().catch(() => null)
+
+  if (!res.ok || !data?.success) {
+    throw new Error(data?.error || `send-guidance failed: ${res.status}`)
+  }
+
+  return data
+}

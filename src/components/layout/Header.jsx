@@ -4,6 +4,7 @@ import ThemeToggle from '../ui/ThemeToggle'
 import LanguageSelect from '../ui/LanguageSelect'
 import Button from '../ui/Button'
 import BrandMark from '../ui/BrandMark'
+import NotificationBell from './NotificationBell'
 import { useI18n } from '../../lib/i18n'
 
 export default function Header({ theme, toggleTheme }) {
@@ -60,6 +61,7 @@ export default function Header({ theme, toggleTheme }) {
               )}
               <div className="hidden sm:block"><LanguageSelect compact /></div>
               <div className="hidden sm:block"><ThemeToggle theme={theme} onToggle={toggleTheme} /></div>
+              <NotificationBell userId={user.id} />
               <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#17150F] text-xs font-bold text-white">
                 {initials}
               </div>
