@@ -9,17 +9,17 @@ export default function QuestionCard({ question, onAnswer, showResult, userAnswe
   const scenarioContext = field(question, 'scenario_context')
 
   return (
-    <div className="bg-bg border border-theme-border rounded-xl p-4 shadow-sm sm:p-5">
+    <div className="rounded-2xl border border-theme-border bg-surface p-5 shadow-[0_1px_2px_rgba(23,21,15,0.04)] sm:p-6">
       {/* Type label */}
       <div className="mb-3 flex items-start justify-between gap-3">
-        <p className="pt-2 text-xs font-semibold uppercase tracking-wide text-primary">
+        <p className="signal-eyebrow pt-2">
         {isScenario ? t('exam.scenario') : t('exam.standard')} · {question.points}{t('common.points')}
         </p>
         <BookmarkButton questionId={question.id} />
       </div>
 
       {/* Question text */}
-      <p className="text-base font-medium leading-relaxed text-text-primary font-jp mb-3 sm:text-lg">
+      <p className="mb-3 font-jp text-[17px] font-medium leading-[1.65] text-text-primary sm:text-lg">
         {field(question, 'question')}
       </p>
 
@@ -128,13 +128,13 @@ function AnswerButton({ label, selected, correct, wrong, onClick, disabled, smal
   let stateClasses = ''
 
   if (correct) {
-    stateClasses = 'border-correct bg-correct/5 text-correct font-semibold'
+    stateClasses = 'border-correct bg-[#E7F6ED] text-correct font-semibold'
   } else if (wrong) {
-    stateClasses = 'border-wrong bg-wrong/5 text-wrong font-semibold'
+    stateClasses = 'border-wrong bg-[#FDECEA] text-wrong font-semibold'
   } else if (selected) {
-    stateClasses = 'border-primary bg-primary/5 text-primary ring-2 ring-primary/10 font-semibold'
+    stateClasses = 'border-primary bg-[#EEF1FE] text-primary ring-4 ring-primary/10 font-semibold'
   } else {
-    stateClasses = 'border-theme-border bg-bg text-text-secondary hover:bg-surface'
+    stateClasses = 'border-[#D9D2C4] bg-surface text-[#9A9280] hover:bg-[#FAF8F3]'
   }
 
   const cursorClass = disabled ? 'cursor-default' : 'cursor-pointer'
@@ -157,7 +157,7 @@ function AnswerButton({ label, selected, correct, wrong, onClick, disabled, smal
       whileTap={disabled ? {} : { scale: 0.97 }}
       onClick={onClick}
       disabled={disabled}
-      className={`min-h-12 flex-1 rounded-xl border-[1.5px] py-3 text-base font-medium transition-all ${stateClasses} ${cursorClass}`}
+      className={`h-[76px] flex-1 rounded-xl border-[1.5px] py-2 text-[38px] font-bold leading-none transition-all ${stateClasses} ${cursorClass}`}
     >
       {label}
     </motion.button>

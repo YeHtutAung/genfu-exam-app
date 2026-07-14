@@ -3,7 +3,6 @@ import { supabase } from '../../lib/supabase'
 import { uploadQuestionImage } from '../../lib/api'
 import Spinner from '../../components/ui/Spinner'
 import PageTransition from '../../components/ui/PageTransition'
-import Breadcrumbs from '../../components/ui/Breadcrumbs'
 import useToast from '../../components/ui/useToast'
 
 export default function QuestionImages() {
@@ -11,160 +10,59 @@ export default function QuestionImages() {
   const [selectedTest, setSelectedTest] = useState(null)
   const [questions, setQuestions] = useState([])
   const [loading, setLoading] = useState(true)
-  const [uploading, setUploading] = useState(null) // questionId being uploaded
+  const [uploading, setUploading] = useState(null)
   const [message, setMessage] = useState(null)
   const [imageVersion, setImageVersion] = useState(Date.now())
   const { showToast } = useToast()
 
-  // Load tests
   useEffect(() => {
-    async function load() {
-      const { data } = await supabase
-        .from('tests')
-        .select('id, test_number, title_jp, category_id, categories(code, name_jp)')
-        .order('test_number')
-      setTests(data || [])
-      setLoading(false)
-    }
-    load()
+    supabase.from('tests').select('id, test_number, title_jp, category_id, categories(code, name_jp)').order('test_number').then(({ data }) => { setTests(data || []); setLoading(false) })
   }, [])
 
-  // Load questions when test selected
-  useEffect(() => {
-    if (!selectedTest) {
-      setQuestions([])
-      return
-    }
-    async function load() {
-      const { data } = await supabase
-        .from('questions')
-        .select('id, question_number, question_jp, image_render, image_url, sign_code, image_alt')
-        .eq('test_id', selectedTest)
-        .order('question_number')
-      setQuestions(data || [])
-    }
-    load()
-  }, [selectedTest])
+  const loadQuestions = async testId => {
+    if (!testId) { setQuestions([]); return }
+    const { data } = await supabase.from('questions').select('id, question_number, question_jp, image_render, image_url, sign_code, image_alt').eq('test_id', testId).order('question_number')
+    setQuestions(data || [])
+  }
+
+  useEffect(() => { loadQuestions(selectedTest) }, [selectedTest])
 
   const handleUpload = async (questionId, file) => {
-    setUploading(questionId)
-    setMessage(null)
-
+    setUploading(questionId); setMessage(null)
     try {
       await uploadQuestionImage({ questionId, file, imageAlt: file.name })
-      showToast('Image uploaded', 'success')
-        setMessage({ type: 'success', text: `問${questions.find(q => q.id === questionId)?.question_number}: 画像をアップロードしました` })
-      // Refresh questions
-      const { data: updated } = await supabase
-        .from('questions')
-        .select('id, question_number, question_jp, image_render, image_url, sign_code, image_alt')
-        .eq('test_id', selectedTest)
-        .order('question_number')
-      setQuestions(updated || [])
+      await loadQuestions(selectedTest)
       setImageVersion(Date.now())
-    } catch (err) {
-      setMessage({ type: 'error', text: err.message })
-      showToast(err.message, 'error')
-    } finally {
-      setUploading(null)
-    }
+      setMessage({ type: 'success', text: `問${questions.find(question => question.id === questionId)?.question_number}: 画像をアップロードしました` })
+      showToast('画像をアップロードしました', 'success')
+    } catch (error) {
+      setMessage({ type: 'error', text: error.message }); showToast(error.message, 'error')
+    } finally { setUploading(null) }
   }
 
-  if (loading) {
-    return (
-      <div className="flex justify-center py-20">
-        <Spinner />
-      </div>
-    )
-  }
+  if (loading) return <div className="flex justify-center py-20"><Spinner /></div>
 
-  return (
-    <PageTransition>
-      <div className="mx-auto max-w-4xl px-4 py-8">
-        <h1 className="mb-6 text-2xl font-bold text-text-primary">問題画像の管理</h1>
-        <Breadcrumbs items={[{ label: 'Admin', to: '/admin' }, { label: 'Question images' }]} />
+  return <PageTransition><div>
+    <p className="signal-eyebrow">運用</p><h1 className="mb-6 mt-1 text-[28px] font-extrabold tracking-tight text-text-primary">問題画像</h1>
+    <select value={selectedTest || ''} onChange={event => setSelectedTest(event.target.value || null)} className="mb-6 h-[50px] w-full max-w-md rounded-xl border-[1.5px] border-theme-border bg-surface px-3 text-text-primary focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary/10">
+      <option value="">テストを選択...</option>{tests.map(test => <option key={test.id} value={test.id}>{test.categories?.name_jp} - テスト {test.test_number} {test.title_jp ? `(${test.title_jp})` : ''}</option>)}
+    </select>
+    {message && <div className={`mb-4 rounded-xl p-3 text-sm ${message.type === 'success' ? 'bg-[#E7F6ED] text-correct' : 'bg-[#FDECEA] text-wrong'}`}>{message.text}</div>}
+    {selectedTest && questions.length > 0 && <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">{questions.map(question => <ImageCard key={question.id} question={question} uploading={uploading} imageVersion={imageVersion} onUpload={handleUpload} />)}</div>}
+    {selectedTest && questions.length === 0 && <p className="py-8 text-center text-text-secondary">問題が見つかりません</p>}
+  </div></PageTransition>
+}
 
-        {/* Test selector */}
-        <select
-          value={selectedTest || ''}
-          onChange={e => setSelectedTest(e.target.value || null)}
-          className="mb-6 w-full rounded-lg border border-theme-border bg-surface px-3 py-2 text-text-primary"
-        >
-          <option value="">テストを選択...</option>
-          {tests.map(t => (
-            <option key={t.id} value={t.id}>
-              {t.categories?.name_jp} - テスト {t.test_number} {t.title_jp ? `(${t.title_jp})` : ''}
-            </option>
-          ))}
-        </select>
-
-        {/* Message */}
-        {message && (
-          <div className={`mb-4 rounded-lg p-3 text-sm ${
-            message.type === 'success'
-              ? 'bg-correct/10 text-correct'
-              : 'bg-wrong/10 text-wrong'
-          }`}>
-            {message.text}
-          </div>
-        )}
-
-        {/* Questions list */}
-        {selectedTest && questions.length > 0 && (
-          <div className="space-y-3">
-            {questions.map(q => (
-              <div key={q.id} className="flex items-start gap-4 rounded-xl border border-theme-border bg-surface p-4">
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="text-sm font-bold text-text-primary">問{q.question_number}</span>
-                    {q.image_render === 'css' && (
-                      <span className="rounded bg-primary/10 px-1.5 py-0.5 text-xs text-primary">CSS: {q.sign_code}</span>
-                    )}
-                    {q.image_render === 'static' && (
-                      <span className="rounded bg-correct/10 px-1.5 py-0.5 text-xs text-correct">画像あり</span>
-                    )}
-                    {!q.image_render && (
-                      <span className="rounded bg-surface px-1.5 py-0.5 text-xs text-text-secondary">画像なし</span>
-                    )}
-                  </div>
-                  <p className="text-sm text-text-secondary font-jp line-clamp-2">{q.question_jp}</p>
-
-                  {/* Show current image */}
-                  {q.image_render === 'static' && q.image_url && (
-                    <img src={`${q.image_url}?v=${imageVersion}`} alt={q.image_alt} className="mt-2 h-20 rounded border border-theme-border object-contain" />
-                  )}
-                </div>
-
-                {/* Upload button */}
-                <div className="shrink-0">
-                  <label className={`inline-flex cursor-pointer items-center gap-1 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
-                    uploading === q.id
-                      ? 'bg-primary/20 text-primary'
-                      : 'bg-primary text-white hover:bg-primary-hover'
-                  }`}>
-                    {uploading === q.id ? '...' : q.image_url ? '変更' : 'アップロード'}
-                    <input
-                      type="file"
-                      accept="image/png,image/jpeg"
-                      className="hidden"
-                      disabled={uploading === q.id}
-                      onChange={e => {
-                        const file = e.target.files?.[0]
-                        if (file) handleUpload(q.id, file)
-                        e.target.value = ''
-                      }}
-                    />
-                  </label>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {selectedTest && questions.length === 0 && (
-          <p className="text-center text-text-secondary py-8">問題が見つかりません</p>
-        )}
-      </div>
-    </PageTransition>
-  )
+function ImageCard({ question, uploading, imageVersion, onUpload }) {
+  const filename = question.image_url?.split('/').pop()?.split('?')[0]
+  return <article className="flex flex-col rounded-2xl border border-theme-border bg-surface p-4 shadow-sm">
+    <div className={`flex h-[150px] items-center justify-center overflow-hidden rounded-xl ${question.image_url ? 'bg-[#EEF1FE]' : 'border border-dashed border-[#C6BEAC] bg-[#FDF3E3]'}`}>
+      {question.image_url ? <img src={`${question.image_url}?v=${imageVersion}`} alt={question.image_alt || ''} className="h-full w-full object-contain" /> : <span className="text-sm font-bold text-warning">画像なし</span>}
+    </div>
+    <div className="mt-3 flex-1"><p className="font-bold text-text-primary">問{question.question_number} {question.question_jp?.slice(0, 18)}</p><p className={`mt-1 text-xs ${filename ? 'text-correct' : 'text-warning'}`}>{filename || (question.image_render === 'css' ? `CSS: ${question.sign_code}` : '画像なし')}</p></div>
+    <label className={`mt-4 inline-flex min-h-10 cursor-pointer items-center justify-center rounded-xl px-3 text-sm font-bold transition-colors ${uploading === question.id ? 'bg-primary/20 text-primary' : question.image_url ? 'border-[1.5px] border-[#D9D2C4] bg-white text-text-primary hover:border-primary' : 'bg-primary text-white hover:bg-primary-hover'}`}>
+      {uploading === question.id ? '...' : question.image_url ? '差し替え' : 'アップロード'}
+      <input type="file" accept="image/png" className="hidden" disabled={uploading === question.id} onChange={event => { const file = event.target.files?.[0]; if (file) onUpload(question.id, file); event.target.value = '' }} />
+    </label>
+  </article>
 }

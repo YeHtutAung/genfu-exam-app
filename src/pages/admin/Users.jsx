@@ -2,7 +2,6 @@ import { useState } from 'react'
 import useAdmin from '../../hooks/useAdmin'
 import UserList from '../../components/admin/UserList'
 import Spinner from '../../components/ui/Spinner'
-import Breadcrumbs from '../../components/ui/Breadcrumbs'
 import Button from '../../components/ui/Button'
 import { AdminTableSkeleton } from '../../components/ui/LoadingPanels'
 import { useI18n } from '../../lib/i18n'
@@ -28,9 +27,9 @@ export default function Users() {
     : users.filter(u => u.role === roleFilter)
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-8">
-      <h1 className="mb-6 text-2xl font-bold text-text-primary">{t('admin.usersManagement')}</h1>
-      <Breadcrumbs items={[{ label: t('common.admin'), to: '/admin' }, { label: t('admin.usersManagement') }]} />
+    <div>
+      <p className="signal-eyebrow">運用</p>
+      <h1 className="mb-6 mt-1 text-[28px] font-extrabold tracking-tight text-text-primary">{t('admin.usersManagement')}</h1>
 
       {error && <p className="mb-4 text-sm text-wrong">{error}</p>}
 
@@ -41,7 +40,7 @@ export default function Users() {
             onClick={() => setRoleFilter(r)}
             variant={roleFilter === r ? 'primary' : 'secondary'}
             size="sm"
-            className="rounded-md"
+            className="rounded-full"
           >
             {r === 'all' ? t('admin.allRoles') : r === 'admin' ? t('admin.adminRole') : t('admin.userRole')}
           </Button>

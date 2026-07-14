@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom'
 import { uploadBundle } from '../../lib/api'
 import useAdminStore from '../../store/adminStore'
 import UploadForm from '../../components/admin/UploadForm'
-import Breadcrumbs from '../../components/ui/Breadcrumbs'
 import useToast from '../../components/ui/useToast'
 import { useI18n } from '../../lib/i18n'
 
@@ -31,9 +30,9 @@ export default function Upload() {
   }
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-8">
-      <h1 className="mb-6 text-2xl font-bold text-text-primary">{t('admin.testUpload')}</h1>
-      <Breadcrumbs items={[{ label: t('common.admin'), to: '/admin' }, { label: t('admin.testUpload') }]} />
+    <div className="max-w-3xl">
+      <p className="signal-eyebrow">運用</p>
+      <h1 className="mt-1 text-[28px] font-extrabold tracking-tight text-text-primary">{t('admin.testUpload')}</h1>
       <p className="mb-6 text-sm text-text-secondary">
         {t('admin.uploadDescription')}
       </p>

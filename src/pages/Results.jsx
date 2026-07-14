@@ -102,11 +102,11 @@ function ResultCoach({ coach }) {
   const { t } = useI18n()
 
   return (
-    <section className={`mt-6 rounded-xl border p-4 shadow-sm sm:p-5 ${coach.tone}`}>
+    <section className={`mt-6 rounded-2xl border p-4 shadow-sm sm:p-5 ${coach.tone}`}>
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-wide text-primary">{t('exam.resultCoaching')}</p>
-          <h2 className="mt-1 text-xl font-bold text-text-primary">{coach.title}</h2>
+          <p className="signal-eyebrow">{t('exam.resultCoaching')}</p>
+          <h2 className="mt-1 text-xl font-extrabold text-text-primary">{coach.title}</h2>
           <p className="mt-2 text-sm leading-relaxed text-text-primary">{coach.summary}</p>
           <p className="mt-1 text-sm leading-relaxed text-text-secondary">{coach.priority}</p>
         </div>

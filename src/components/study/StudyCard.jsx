@@ -36,17 +36,17 @@ export default function StudyCard({ question, onAnswer, userAnswer }) {
   const showResult = isScenario ? scenarioComplete : revealed
 
   return (
-    <div className="bg-bg border border-theme-border rounded-xl p-4 shadow-sm sm:p-5">
+    <div className="rounded-2xl border border-theme-border bg-surface p-5 shadow-[0_1px_2px_rgba(23,21,15,0.04)] sm:p-6">
       {/* Type label */}
       <div className="mb-3 flex items-start justify-between gap-3">
-        <p className="pt-2 text-xs font-semibold uppercase tracking-wide text-primary">
+        <p className="signal-eyebrow pt-2">
         {isScenario ? t('exam.scenario') : t('exam.standard')} · {question.points}{t('common.points')}
         </p>
         <BookmarkButton questionId={question.id} />
       </div>
 
       {/* Question text */}
-      <p className="text-base font-medium leading-relaxed text-text-primary font-jp mb-3 sm:text-lg">
+      <p className="mb-3 font-jp text-[17px] font-medium leading-[1.65] text-text-primary sm:text-lg">
         {field(question, 'question')}
       </p>
 
@@ -92,7 +92,7 @@ export default function StudyCard({ question, onAnswer, userAnswer }) {
           transition={{ duration: 0.3, type: 'spring', stiffness: 200 }}
           style={{ overflow: 'hidden' }}
         >
-          <div className="bg-warning/10 border border-warning/20 rounded-xl p-3 mt-3">
+          <div className="mt-3 rounded-xl border border-[#F4E0BC] bg-[#FDF3E3] p-3">
             <p className="mb-1 text-xs">
               <span className="inline-flex items-center gap-1 font-medium text-warning">
                 <Icon name="lightbulb" className="h-4 w-4" />
@@ -203,20 +203,21 @@ function StudyAnswerButton({ label, value, userAnswer, correctAnswer, showResult
 
   if (showResult) {
     if (isUserCorrect) {
-      stateClasses = 'border-correct bg-correct/5 text-correct font-semibold'
+      stateClasses = 'border-correct bg-[#E7F6ED] text-correct font-semibold'
       animateProps = reduced ? {} : { scale: [1, 1.05, 1] }
+      label_suffix = <span className="ml-2 text-xs">✓ {t('common.correct')}</span>
     } else if (isUserWrong) {
-      stateClasses = 'border-wrong bg-wrong/5 text-wrong font-semibold'
+      stateClasses = 'border-wrong bg-[#FDECEA] text-wrong font-semibold'
       animateProps = reduced ? {} : { x: [-8, 8, -8, 8, 0] }
       label_suffix = <span className="text-xs ml-1">{t('study.yourAnswer')}</span>
     } else if (isCorrectNotSelected) {
-      stateClasses = 'border-correct bg-correct/5 text-correct font-semibold'
+      stateClasses = 'border-correct bg-[#E7F6ED] text-correct font-semibold'
       label_suffix = <span className="text-xs ml-1">✓</span>
     } else {
       stateClasses = 'border-theme-border bg-bg text-text-secondary'
     }
   } else if (isUserAnswer) {
-    stateClasses = 'border-primary bg-primary/5 text-primary ring-2 ring-primary/10 font-semibold'
+    stateClasses = 'border-primary bg-[#EEF1FE] text-primary ring-4 ring-primary/10 font-semibold'
   } else {
     stateClasses = 'border-theme-border bg-bg text-text-secondary hover:bg-surface'
   }
@@ -251,7 +252,7 @@ function StudyAnswerButton({ label, value, userAnswer, correctAnswer, showResult
         whileTap={showResult ? {} : { scale: 0.97 }}
         onClick={onClick}
         disabled={showResult}
-        className={`min-h-12 w-full rounded-xl border-[1.5px] py-3 text-base font-medium transition-all ${stateClasses} ${cursorClass}`}
+        className={`h-[76px] w-full rounded-xl border-[1.5px] py-2 text-[34px] font-bold leading-none transition-all ${stateClasses} ${cursorClass}`}
       >
         {label}
         {label_suffix}

@@ -6,6 +6,7 @@ import useTheme from './hooks/useTheme'
 import ProtectedRoute from './components/layout/ProtectedRoute'
 import Header from './components/layout/Header'
 import Footer from './components/layout/Footer'
+import AdminLayout from './components/layout/AdminLayout'
 import Spinner from './components/ui/Spinner'
 import { ToastProvider } from './components/ui/Toast'
 import { LANGUAGES, useI18n, useLanguageStore } from './lib/i18n'
@@ -24,6 +25,7 @@ const UploadPreview = lazy(() => import('./pages/admin/UploadPreview'))
 const Tests = lazy(() => import('./pages/admin/Tests'))
 const Users = lazy(() => import('./pages/admin/Users'))
 const QuestionImages = lazy(() => import('./pages/admin/QuestionImages'))
+const Analytics = lazy(() => import('./pages/admin/Analytics'))
 
 function AppRoutes({ theme, toggleTheme }) {
   const location = useLocation()
@@ -72,24 +74,15 @@ function AppRoutes({ theme, toggleTheme }) {
             } />
 
             {/* Admin only */}
-            <Route path="/admin" element={
-              <ProtectedRoute adminOnly><AdminDashboard /></ProtectedRoute>
-            } />
-            <Route path="/admin/upload" element={
-              <ProtectedRoute adminOnly><Upload /></ProtectedRoute>
-            } />
-            <Route path="/admin/upload/preview" element={
-              <ProtectedRoute adminOnly><UploadPreview /></ProtectedRoute>
-            } />
-            <Route path="/admin/tests" element={
-              <ProtectedRoute adminOnly><Tests /></ProtectedRoute>
-            } />
-            <Route path="/admin/users" element={
-              <ProtectedRoute adminOnly><Users /></ProtectedRoute>
-            } />
-            <Route path="/admin/images" element={
-              <ProtectedRoute adminOnly><QuestionImages /></ProtectedRoute>
-            } />
+            <Route path="/admin" element={<ProtectedRoute adminOnly><AdminLayout /></ProtectedRoute>}>
+              <Route index element={<AdminDashboard />} />
+              <Route path="upload" element={<Upload />} />
+              <Route path="upload/preview" element={<UploadPreview />} />
+              <Route path="tests" element={<Tests />} />
+              <Route path="users" element={<Users />} />
+              <Route path="analytics" element={<Analytics />} />
+              <Route path="images" element={<QuestionImages />} />
+            </Route>
             </Routes>
           </AnimatePresence>
         </Suspense>

@@ -210,7 +210,7 @@ export default function Exam() {
 
   return (
     <PageTransition>
-      <div className="flex min-h-[calc(100dvh-4rem)] flex-col bg-bg">
+      <div className="flex min-h-screen flex-col bg-bg">
         {/* Scrollable content area */}
         <div
           className="flex-1 overflow-y-auto px-3 py-4 sm:px-4 sm:py-6"
@@ -224,7 +224,7 @@ export default function Exam() {
                 <span className="text-xs text-text-secondary">
                   {isSimulation ? t('exam.simulationLabel') : t('common.question')}
                 </span>
-                <span className="text-xl font-bold text-text-primary ml-1">{current}</span>
+                <span className="num ml-1 text-2xl font-extrabold text-text-primary">{current}</span>
                 <span className="text-sm text-text-secondary ml-0.5">/ {total}</span>
               </h1>
               <Timer />
@@ -270,7 +270,7 @@ export default function Exam() {
         </div>
 
         {/* Fixed bottom navigation */}
-        <div className="shrink-0 border-t border-theme-border bg-bg/95 px-3 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] backdrop-blur-sm sm:px-4">
+        <div className="shrink-0 border-t border-theme-border bg-surface/95 px-3 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] backdrop-blur-sm sm:px-4">
           <div className="mx-auto grid max-w-3xl grid-cols-2 gap-2 sm:flex sm:items-center sm:justify-between">
             <Button
               onClick={handlePrev}

@@ -4,7 +4,6 @@ import useAdminStore from '../../store/adminStore'
 import TestList from '../../components/admin/TestList'
 import Modal from '../../components/ui/Modal'
 import Spinner from '../../components/ui/Spinner'
-import Breadcrumbs from '../../components/ui/Breadcrumbs'
 import { TestListSkeleton } from '../../components/ui/LoadingPanels'
 import useToast from '../../components/ui/useToast'
 import { useI18n } from '../../lib/i18n'
@@ -42,9 +41,9 @@ export default function Tests() {
   }
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-8">
-      <h1 className="mb-6 text-2xl font-bold text-text-primary">{t('admin.testsManagement')}</h1>
-      <Breadcrumbs items={[{ label: t('common.admin'), to: '/admin' }, { label: t('admin.testsManagement') }]} />
+    <div>
+      <p className="signal-eyebrow">運用</p>
+      <h1 className="mb-6 mt-1 text-[28px] font-extrabold tracking-tight text-text-primary">{t('admin.testsManagement')}</h1>
 
       {error && <p className="mb-4 text-sm text-wrong">{error}</p>}
 

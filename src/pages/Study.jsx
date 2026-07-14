@@ -120,21 +120,17 @@ export default function Study() {
 
   return (
     <PageTransition>
-      <div className="flex min-h-[calc(100dvh-4rem)] flex-col bg-bg">
+      <div className="flex min-h-screen flex-col bg-bg">
         {/* Scrollable content area */}
         <div className="flex-1 overflow-y-auto px-3 py-4 sm:px-4 sm:py-6">
           <div className="mx-auto max-w-3xl">
             {/* Top bar */}
             <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
-              <h1 className="flex items-baseline">
-                <span className="text-xs text-text-secondary">{t('study.mode')}</span>
-                <span className="text-xl font-bold text-text-primary ml-1">{t('common.questionShort')} {current}</span>
-                <span className="text-sm text-text-secondary ml-0.5">/ {total}</span>
-              </h1>
-              <Badge tone="primary" className="px-2.5 py-1 font-semibold">
+              <Badge tone="ai" className="bg-[#F0EAFE] px-3 py-1 font-semibold">
                 <Icon name="book" className="h-3.5 w-3.5" />
-                {t('study.studying')}
+                {t('study.mode')}
               </Badge>
+              <p className="num text-sm font-bold text-text-secondary"><span className="text-xl font-extrabold text-text-primary">{current}</span> / {total}</p>
             </div>
 
             {/* Animated question card */}
@@ -160,7 +156,7 @@ export default function Study() {
         </div>
 
         {/* Fixed bottom navigation */}
-        <div className="shrink-0 border-t border-theme-border bg-bg/95 px-3 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] backdrop-blur-sm sm:px-4">
+        <div className="shrink-0 border-t border-theme-border bg-surface/95 px-3 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] backdrop-blur-sm sm:px-4">
           <div className="mx-auto grid max-w-3xl grid-cols-2 gap-2 sm:flex sm:items-center sm:justify-between">
             <Button
               onClick={handlePrev}
@@ -201,7 +197,7 @@ export default function Study() {
             ) : (
               <Button
                 onClick={handleNext}
-                className="rounded-lg sm:px-4"
+                className="rounded-xl bg-ai hover:bg-ai/90 sm:px-4"
               >
                 {t('study.next')}
               </Button>

@@ -20,6 +20,12 @@ const sectionMap = {
     error:   s => s.usersError,
     fetch:   'fetchUsers',
   },
+  analytics: {
+    data:    s => s.analytics,
+    loading: s => s.analyticsLoading,
+    error:   s => s.analyticsError,
+    fetch:   'fetchAnalytics',
+  },
 }
 
 export default function useAdmin(section) {

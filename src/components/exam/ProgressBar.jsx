@@ -25,7 +25,7 @@ export default function ProgressBar() {
         <span className="text-xs text-text-secondary font-medium">{t('common.questionShort')} {currentIndex + 1} / {total}</span>
         <span className="text-xs text-text-secondary font-medium">{t('common.answer')} {answeredCount} / {total}</span>
       </div>
-      <div className="h-1.5 rounded-full bg-theme-border overflow-hidden">
+      <div className="h-1.5 overflow-hidden rounded-[3px] bg-[#EAE5D8]">
         <div
           className="h-full rounded-full bg-primary transition-all duration-300"
           style={{ width: `${pct}%` }}

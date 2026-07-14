@@ -11,6 +11,7 @@ import Badge from '../components/ui/Badge'
 import Button from '../components/ui/Button'
 import Card from '../components/ui/Card'
 import { useI18n } from '../lib/i18n'
+import { calculateReadiness, readinessPresentation } from '../lib/readiness'
 
 const SELECTED_CATEGORY_KEY = 'genfu-selected-category'
 
@@ -19,10 +20,6 @@ const CATEGORY_ICON = {
   futsu_bike: 'motorcycle',
   daigata_bike: 'motorcycle',
   futsu_car: 'car',
-}
-
-function clamp(value, min, max) {
-  return Math.min(max, Math.max(min, value))
 }
 
 function formatRelativeDate(value, t) {
@@ -59,44 +56,14 @@ function buildProgressDashboard(tests, progress, t) {
     (progress?.studySessions ?? []).map(session => ({ ...session, test }))
   )
 
-  const completedTests = entries.filter(({ progress }) =>
-    progress?.examAttempts > 0 || progress?.studyAttempts > 0
-  ).length
-  const passedTests = entries.filter(({ progress }) => progress?.examPassed).length
-  const examAttempts = examSessions.length
-  const studyAttempts = studySessions.length
-  const passedAttempts = examSessions.filter(session => session.passed).length
-  const passRate = examAttempts > 0 ? Math.round((passedAttempts / examAttempts) * 100) : 0
-  const bestScore = examSessions.reduce((best, session) => {
-    if (typeof session.score !== 'number') return best
-    return best === null || session.score > best ? session.score : best
-  }, null)
+  const metrics = calculateReadiness({ tests, sessions: [...examSessions, ...studySessions] })
+  const { completedTests, passedTests, examAttempts, studyAttempts, passRate, bestScore, readinessScore } = metrics
   const latestExam = [...examSessions].sort((a, b) =>
     new Date(b.completed_at) - new Date(a.completed_at)
   )[0]
   const latestPractice = [...examSessions, ...studySessions].sort((a, b) =>
     new Date(b.completed_at) - new Date(a.completed_at)
   )[0]
-
-  const scorePercents = examSessions
-    .filter(session => typeof session.score === 'number')
-    .map(session => {
-      const total = session.test?.total_points || 50
-      return clamp((session.score / total) * 100, 0, 100)
-    })
-  const avgScorePercent = scorePercents.length > 0
-    ? Math.round(scorePercents.reduce((sum, value) => sum + value, 0) / scorePercents.length)
-    : 0
-
-  const coverageScore = totalTests > 0 ? (completedTests / totalTests) * 25 : 0
-  const passCoverageScore = totalTests > 0 ? (passedTests / totalTests) * 35 : 0
-  const passRateScore = passRate * 0.25
-  const scoreQualityScore = avgScorePercent * 0.15
-  const readinessScore = Math.round(clamp(
-    coverageScore + passCoverageScore + passRateScore + scoreQualityScore,
-    0,
-    100
-  ))
 
   let readinessLabel = t('home.startPracticing')
   let readinessTone = 'bg-surface text-text-secondary border-theme-border'
@@ -157,6 +124,7 @@ function buildProgressDashboard(tests, progress, t) {
     latestExam,
     latestPractice,
     readinessScore,
+    readinessBand: metrics.band,
     readinessLabel,
     readinessTone,
     recommendation,
@@ -177,38 +145,34 @@ function LearnerDashboard({ tests, progress, field }) {
     : null
 
   return (
-    <Card as="section" className="mt-5 overflow-hidden border-primary/15 bg-surface/90 p-0 shadow-lg shadow-slate-900/10 sm:mt-6">
-      <div className="relative overflow-hidden bg-gradient-to-br from-primary via-ai to-correct px-4 py-5 text-white sm:px-6 sm:py-6">
-        <div className="absolute inset-y-0 right-0 hidden w-1/2 opacity-25 sm:block">
-          <div className="h-full w-full bg-[linear-gradient(135deg,transparent_0_34%,rgba(255,255,255,.45)_34%_35%,transparent_35%_54%,rgba(255,255,255,.35)_54%_55%,transparent_55%)]" />
-        </div>
-        <div className="relative flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+    <section className="mt-5 sm:mt-6">
+      <div className="px-1 py-2 sm:px-0">
+        <div className="flex items-start justify-between gap-4">
           <div className="max-w-xl">
-            <p className="text-xs font-semibold uppercase tracking-normal text-white/80">
+            <p className="signal-eyebrow">
               {t('home.readinessDashboard')}
             </p>
-            <h2 className="mt-1 text-2xl font-bold tracking-normal sm:text-3xl">
+            <h2 className="mt-1 text-[27px] font-extrabold leading-tight tracking-tight text-text-primary">
               {dashboard.readinessLabel}
             </h2>
-            <p className="mt-2 text-sm leading-relaxed text-white/85">
+            <p className="mt-2 text-sm leading-relaxed text-text-secondary">
               {dashboard.recommendation}
             </p>
           </div>
-          <div className="shrink-0 rounded-xl border border-white/25 bg-white/15 px-4 py-3 text-center shadow-lg shadow-slate-950/10 backdrop-blur">
-            <p className="text-4xl font-bold leading-none">{dashboard.readinessScore}</p>
-            <p className="mt-1 text-xs font-semibold uppercase tracking-normal text-white/80">{t('home.readyScore')}</p>
+          <div className="shrink-0 text-right" style={{ color: readinessPresentation[dashboard.readinessBand].color }}>
+            <p className="num text-[52px] font-extrabold leading-none tracking-tight">{dashboard.readinessScore}</p>
+            <p className="mt-1 text-[10px] font-bold uppercase tracking-[0.12em]">{t('home.readyScore')}</p>
           </div>
         </div>
-
-        <div className="relative mt-5 h-2.5 overflow-hidden rounded-full bg-white/20">
+        <div className="mt-5 h-2 overflow-hidden rounded-full bg-[#EAE5D8]">
           <div
-            className="h-full rounded-full bg-white transition-all"
-            style={{ width: `${dashboard.readinessScore}%` }}
+            className="h-full rounded-full transition-all"
+            style={{ width: `${dashboard.readinessScore}%`, backgroundColor: readinessPresentation[dashboard.readinessBand].color }}
           />
         </div>
       </div>
 
-      <div className="p-4 sm:p-5">
+      <div className="pt-4">
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
           <DashboardStat label={t('home.completed')} value={`${dashboard.completedTests}/${dashboard.totalTests}`} tone="primary" />
           <DashboardStat label={t('home.passedTests')} value={dashboard.passedTests} tone="correct" />
@@ -217,16 +181,16 @@ function LearnerDashboard({ tests, progress, field }) {
         </div>
 
         {actionHref && (
-          <div className="mt-4 rounded-xl border border-primary/20 bg-primary/5 p-3 shadow-sm shadow-primary/5">
+          <div className="mt-4 rounded-2xl bg-[#17150F] p-4 text-white shadow-sm">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div className="min-w-0">
-                <p className="text-xs font-semibold uppercase tracking-normal text-primary">
+                <p className="text-[10.5px] font-bold uppercase tracking-[0.14em] text-[#9FB0FF]">
                   {t('home.recommendedNext')}
                 </p>
-                <p className="mt-1 text-sm font-semibold text-text-primary">
+                <p className="mt-1 text-base font-bold text-white">
                   {getTestTitle(dashboard.actionTest, field, t)}
                 </p>
-                <p className="mt-0.5 text-xs text-text-secondary">
+                <p className="mt-0.5 text-xs text-[#B7AF9A]">
                   {dashboard.actionHint}
                 </p>
               </div>
@@ -306,7 +270,7 @@ function LearnerDashboard({ tests, progress, field }) {
           </div>
         </div>
       </div>
-    </Card>
+    </section>
   )
 }
 
@@ -319,8 +283,8 @@ function DashboardStat({ label, value, tone = 'primary' }) {
   }
 
   return (
-    <div className={`rounded-lg p-3 ring-1 ${tones[tone] ?? tones.primary}`}>
-      <p className="text-lg font-bold text-text-primary">{value}</p>
+    <div className="rounded-xl border border-theme-border bg-surface p-3">
+      <p className={`num text-lg font-extrabold ${tones[tone]?.split(' ')[1] ?? 'text-text-primary'}`}>{value}</p>
       <p className="mt-0.5 text-xs text-text-secondary">{label}</p>
     </div>
   )
@@ -489,31 +453,6 @@ export default function Home() {
       <div className="min-h-screen bg-bg px-3 py-6 sm:px-4 sm:py-8">
         <div className="mx-auto max-w-4xl">
 
-          {/* Header */}
-          <div className="rounded-xl border border-theme-border/80 bg-surface/90 p-5 shadow-lg shadow-slate-900/10 backdrop-blur sm:p-7">
-            <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
-              <div className="max-w-2xl">
-                <p className="text-xs font-semibold uppercase tracking-normal text-primary">{t('home.eyebrow')}</p>
-                <h1 className="mt-2 text-3xl font-bold tracking-normal text-text-primary sm:text-4xl">{t('home.title')}</h1>
-                <p className="mt-2 text-sm leading-relaxed text-text-secondary">{t('home.subtitle')}</p>
-              </div>
-              <div className="grid grid-cols-2 gap-2 sm:w-56">
-                <div className="rounded-lg bg-primary/10 p-3 ring-1 ring-primary/15">
-                  <Icon name="book" className="h-5 w-5 text-primary" />
-                  <p className="mt-2 text-lg font-bold text-text-primary">{tests.length}</p>
-                  <p className="text-xs text-text-secondary">{t('home.practiceTests')}</p>
-                </div>
-                <div className="rounded-lg bg-correct/10 p-3 ring-1 ring-correct/15">
-                  <Icon name="focus" className="h-5 w-5 text-correct" />
-                  <p className="mt-2 text-lg font-bold text-text-primary">
-                    {Object.keys(progress).length}
-                  </p>
-                  <p className="text-xs text-text-secondary">{t('home.completed')}</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
           {/* Error */}
           {error && (
             <div className="rounded-xl bg-wrong/10 border border-wrong/20 text-wrong text-sm p-4 text-center mt-6">
@@ -524,7 +463,7 @@ export default function Home() {
           {/* Category buttons */}
           {categories.length > 0 && (
             <>
-              <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
+              <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
                 {categories.map(cat => (
                   <Button
                     key={cat.id}
@@ -532,7 +471,7 @@ export default function Home() {
                     variant={selectedCategory === cat.id ? 'primary' : 'outline'}
                     className={
                       selectedCategory === cat.id
-                        ? 'bg-gradient-to-br from-primary via-ai to-primary-hover px-4 py-3 shadow-md shadow-primary/25'
+                        ? 'px-4 py-3'
                         : 'border-[1.5px] px-4 py-3 font-medium'
                     }
                   >
@@ -565,12 +504,12 @@ export default function Home() {
                     {tests.map(test => (
                       <Card
                         key={test.id}
-                        className="group overflow-hidden p-0 transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-md hover:shadow-slate-900/10"
+                        className="group overflow-hidden p-0 transition-colors hover:border-primary/30"
                       >
                         {/* Top row */}
                         <div className="flex flex-col gap-3 p-4 sm:flex-row sm:items-start sm:justify-between">
                           <div className="flex min-w-0 gap-3">
-                            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary ring-1 ring-primary/15">
+                            <div className="flex h-[42px] w-[42px] shrink-0 items-center justify-center rounded-xl bg-[#EEF1FE] text-primary">
                               <Icon name="book" className="h-5 w-5" />
                             </div>
                             <div className="min-w-0">
@@ -590,7 +529,7 @@ export default function Home() {
                         </div>
 
                         {/* Bottom row */}
-                        <div className="grid grid-cols-1 gap-2 border-t border-theme-border/80 bg-surface/60 p-3 sm:grid-cols-3">
+                        <div className="grid grid-cols-3 gap-2 border-t border-theme-border p-3">
                           <Button
                             as={Link}
                             to={`/exam/${test.id}`}

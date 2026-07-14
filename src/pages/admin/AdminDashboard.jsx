@@ -1,7 +1,6 @@
 import { Link } from 'react-router-dom'
 import useAdmin from '../../hooks/useAdmin'
 import Spinner from '../../components/ui/Spinner'
-import Breadcrumbs from '../../components/ui/Breadcrumbs'
 import Badge from '../../components/ui/Badge'
 import Card from '../../components/ui/Card'
 import { useI18n } from '../../lib/i18n'
@@ -19,11 +18,10 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="mx-auto max-w-5xl px-3 py-6 sm:px-4 sm:py-8">
+    <div>
       <div className="mb-6">
-        <Breadcrumbs items={[{ label: t('common.admin') }]} />
-        <p className="text-xs font-semibold uppercase tracking-wide text-primary">{t('admin.operations')}</p>
-        <h1 className="mt-1 text-2xl font-bold text-text-primary">{t('admin.dashboard')}</h1>
+        <p className="signal-eyebrow">{t('admin.operations')}</p>
+        <h1 className="mt-1 text-[28px] font-extrabold tracking-tight text-text-primary">{t('admin.dashboard')}</h1>
         <p className="mt-1 text-sm text-text-secondary">
           {t('admin.dashboardDescription')}
         </p>
@@ -33,16 +31,14 @@ export default function AdminDashboard() {
 
       {stats && (
         <>
-          <div className="mb-6 grid grid-cols-2 gap-3 lg:grid-cols-5">
+          <div className="mb-6 grid gap-3 sm:grid-cols-3">
             <StatCard label={t('admin.usersCount')} value={stats.users} />
             <StatCard label={t('admin.testsCount')} value={stats.tests} />
-            <StatCard label={t('admin.activeTests')} value={stats.activeTests} />
             <StatCard label={t('admin.sessionsCount')} value={stats.sessions} />
-            <StatCard label={t('admin.passRate')} value={`${stats.passRate}%`} />
           </div>
 
           <div className="mb-6 grid gap-4 lg:grid-cols-[1.15fr_0.85fr]">
-            <Card as="section" className="rounded-lg">
+            <Card as="section">
               <div className="mb-3 flex items-center justify-between gap-3">
                 <div>
                   <h2 className="text-lg font-bold text-text-primary">{t('admin.testsNeedingReview')}</h2>
@@ -66,7 +62,7 @@ export default function AdminDashboard() {
               )}
             </Card>
 
-            <Card as="section" className="rounded-lg">
+            <Card as="section">
               <h2 className="text-lg font-bold text-text-primary">{t('admin.recentActivity')}</h2>
               <p className="mb-3 text-xs text-text-secondary">{t('admin.recentActivityDesc')}</p>
               {stats.recentAttempts.length === 0 ? (
@@ -98,7 +94,7 @@ export default function AdminDashboard() {
 function StatCard({ label, value }) {
   return (
     <Card className="rounded-lg text-center">
-      <p className="text-2xl font-bold text-text-primary sm:text-3xl">{value}</p>
+      <p className="num text-3xl font-extrabold text-text-primary">{value}</p>
       <p className="mt-1 text-xs text-text-secondary sm:text-sm">{label}</p>
     </Card>
   )
@@ -108,7 +104,7 @@ function PerformanceRow({ test, t }) {
   const title = test.title_en || test.title_jp || t('home.mockTest', { number: test.test_number ?? '-' })
 
   return (
-    <Card className="rounded-lg bg-surface p-3">
+    <Card className="rounded-xl bg-surface p-3">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <p className="text-sm font-semibold text-text-primary">{title}</p>
         <Badge tone={test.passRate < 50 ? 'wrong' : 'warning'} className="py-1 font-semibold">
@@ -132,7 +128,7 @@ function RecentAttempt({ attempt, t }) {
     : ''
 
   return (
-    <Card className="flex items-center justify-between gap-3 rounded-lg p-3">
+    <Card className="flex items-center justify-between gap-3 rounded-xl p-3">
       <div className="min-w-0">
         <p className="truncate text-sm font-medium text-text-primary">{title}</p>
         <p className="text-xs text-text-secondary">{attempt.mode} · {date}</p>

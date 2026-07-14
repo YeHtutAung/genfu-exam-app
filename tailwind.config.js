@@ -21,7 +21,7 @@ export default {
         'theme-border': 'rgb(var(--color-border) / <alpha-value>)',
       },
       fontFamily: {
-        sans: ['Inter', 'Noto Sans JP', 'system-ui', 'sans-serif'],
+        sans: ['Hanken Grotesk', 'Noto Sans JP', 'system-ui', 'sans-serif'],
         jp: ['"Noto Sans JP"', 'sans-serif'],
         mono: ['ui-monospace', 'SF Mono', 'monospace'],
       },
@@ -29,8 +29,8 @@ export default {
         tight: '-0.02em',
       },
       borderRadius: {
-        xl: '12px',
-        '2xl': '16px',
+        xl: '13px',
+        '2xl': '20px',
       },
     },
   },

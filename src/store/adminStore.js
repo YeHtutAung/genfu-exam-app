@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { supabase } from '../lib/supabase'
 import { deleteTest as deleteTestApi } from '../lib/api'
+import { calculateReadiness } from '../lib/readiness'
 
 const LOAD_ERROR = 'データの取得に失敗しました'
 
@@ -20,6 +21,11 @@ const useAdminStore = create((set, get) => ({
   users: null,
   usersLoading: false,
   usersError: null,
+
+  // User readiness analytics
+  analytics: null,
+  analyticsLoading: false,
+  analyticsError: null,
 
   // Upload pipeline - flows from Upload page to UploadPreview page
   uploadPreview: null,
@@ -168,6 +174,49 @@ const useAdminStore = create((set, get) => ({
       best_score: statsMap[p.id]?.best ?? null,
     }))
     set({ users, usersLoading: false })
+  },
+
+  fetchAnalytics: async () => {
+    set({ analyticsLoading: true, analyticsError: null })
+    const [profilesRes, testsRes, sessionsRes] = await Promise.all([
+      supabase.from('profiles').select('id, email, role, created_at').order('created_at', { ascending: false }),
+      supabase.from('tests').select('id, test_number, title_jp, title_en, total_points').eq('active', true).order('test_number'),
+      supabase.from('exam_sessions').select('id, user_id, test_id, mode, score, passed, completed_at').not('completed_at', 'is', null),
+    ])
+    if (profilesRes.error || testsRes.error || sessionsRes.error) {
+      set({ analyticsError: LOAD_ERROR, analyticsLoading: false })
+      return
+    }
+    const tests = testsRes.data || []
+    const sessions = sessionsRes.data || []
+    const testMap = new Map(tests.map(test => [test.id, test]))
+    const analytics = (profilesRes.data || []).map(profile => {
+      const userSessions = sessions.filter(session => session.user_id === profile.id)
+      const metrics = calculateReadiness({ tests, sessions: userSessions })
+      const examSessions = userSessions.filter(session => session.mode === 'exam')
+      const byTest = new Map()
+      for (const session of examSessions) {
+        const test = testMap.get(session.test_id)
+        if (!test || typeof session.score !== 'number') continue
+        const current = byTest.get(test.id) || { test, total: 0, count: 0 }
+        current.total += (session.score / (test.total_points || 50)) * 100
+        current.count++
+        byTest.set(test.id, current)
+      }
+      const weakest = [...byTest.values()].sort((a, b) => (a.total / a.count) - (b.total / b.count))[0]?.test
+      const recommendedAction = metrics.band === 'ready'
+        ? '安定して合格。本番試験の予約をすすめる。'
+        : metrics.band === 'almost'
+          ? `${weakest?.title_jp || `第${weakest?.test_number || '-'}回`}が弱点。学習モードで復習してから再挑戦。`
+          : '基礎が不安定。学習モードで標識・徐行を重点復習。'
+      return { ...profile, ...metrics, recommendedAction }
+    })
+    set({ analytics, analyticsLoading: false })
+  },
+
+  sendGuidance: async (userId, message) => {
+    const { error } = await supabase.from('notifications').insert({ user_id: userId, type: 'readiness_guidance', title_jp: '試験準備度のご案内', body_jp: message })
+    if (error) throw error
   },
 
   toggleTestActive: async (testId, active) => {

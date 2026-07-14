@@ -4,49 +4,36 @@
 
 @layer base {
   :root {
-    --color-bg: 248 250 252;
+    --color-bg: 244 241 233;
     --color-surface: 255 255 255;
-    --color-primary: 37 99 235;
-    --color-primary-hover: 29 78 216;
-    --color-text-primary: 15 23 42;
-    --color-text-secondary: 71 85 105;
-    --color-correct: 5 150 105;
-    --color-wrong: 220 38 38;
-    --color-ai: 124 58 237;
-    --color-warning: 217 119 6;
-    --color-border: 203 213 225;
+    --color-primary: 39 75 219;
+    --color-primary-hover: 27 52 168;
+    --color-text-primary: 23 21 15;
+    --color-text-secondary: 107 101 88;
+    --color-correct: 31 157 87;
+    --color-wrong: 226 59 46;
+    --color-ai: 109 74 224;
+    --color-warning: 228 137 15;
+    --color-border: 231 225 212;
   }
 
   .dark {
-    --color-bg: 15 23 42;
-    --color-surface: 30 41 59;
-    --color-primary: 96 165 250;
-    --color-primary-hover: 147 187 253;
-    --color-text-primary: 241 245 249;
-    --color-text-secondary: 148 163 184;
-    --color-correct: 134 239 172;
-    --color-wrong: 252 165 165;
-    --color-ai: 167 139 250;
-    --color-warning: 251 191 36;
-    --color-border: 51 65 85;
+    --color-bg: 23 21 15;
+    --color-surface: 36 33 25;
+    --color-primary: 121 145 255;
+    --color-primary-hover: 151 169 255;
+    --color-text-primary: 250 248 241;
+    --color-text-secondary: 183 175 154;
+    --color-correct: 91 207 137;
+    --color-wrong: 255 126 114;
+    --color-ai: 167 143 245;
+    --color-warning: 242 174 73;
+    --color-border: 62 58 48;
   }
 
   body {
     @apply bg-bg text-text-primary font-sans antialiased;
     transition: background-color 200ms ease-out, color 200ms ease-out;
-  }
-
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    z-index: -1;
-    pointer-events: none;
-    background:
-      radial-gradient(circle at 15% 8%, rgb(var(--color-primary) / 0.10), transparent 28rem),
-      radial-gradient(circle at 88% 18%, rgb(var(--color-correct) / 0.09), transparent 24rem),
-      linear-gradient(135deg, rgb(var(--color-primary) / 0.035) 0 1px, transparent 1px 18px),
-      linear-gradient(45deg, rgb(var(--color-warning) / 0.035) 0 1px, transparent 1px 26px);
   }
 
   html {
@@ -56,6 +43,10 @@
   body {
     min-width: 320px;
     overflow-x: hidden;
+  }
+
+  .num {
+    font-variant-numeric: tabular-nums;
   }
 
   img,
@@ -75,5 +66,19 @@
 
   :where(a, button, input, select, textarea, summary, [tabindex]:not([tabindex="-1"])):focus-visible {
     @apply outline-none ring-2 ring-primary ring-offset-2 ring-offset-bg;
+  }
+}
+
+@layer components {
+  .signal-card {
+    @apply rounded-2xl border border-theme-border bg-surface shadow-[0_1px_2px_rgba(23,21,15,0.04)];
+  }
+
+  .signal-eyebrow {
+    @apply text-[10.5px] font-bold uppercase tracking-[0.14em] text-primary;
+  }
+
+  .signal-input {
+    @apply h-[50px] w-full rounded-xl border-[1.5px] border-theme-border bg-surface px-3.5 text-sm text-text-primary transition-shadow placeholder:text-[#9A9280] focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary/10;
   }
 }

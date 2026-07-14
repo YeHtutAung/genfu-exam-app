@@ -5,10 +5,18 @@ import Spinner from '../components/ui/Spinner'
 import PageTransition from '../components/ui/PageTransition'
 import Button from '../components/ui/Button'
 import LanguageSelect from '../components/ui/LanguageSelect'
+import BrandMark from '../components/ui/BrandMark'
 import { useI18n } from '../lib/i18n'
 
+const registerCopy = {
+  ja: { confirm: 'パスワード（確認）', mismatch: 'パスワードが一致しません', google: 'Googleで登録' },
+  en: { confirm: 'Confirm password', mismatch: 'Passwords must match', google: 'Sign up with Google' },
+  my: { confirm: 'စကားဝှက် အတည်ပြုရန်', mismatch: 'စကားဝှက်များ တူညီရပါမည်', google: 'Google ဖြင့် စာရင်းသွင်းရန်' },
+}
+
 export default function Login() {
-  const { t } = useI18n()
+  const { t, language } = useI18n()
+  const copy = registerCopy[language] || registerCopy.ja
   const user = useAuthStore(s => s.user)
   const authError = useAuthStore(s => s.error)
   const signInWithEmail = useAuthStore(s => s.signInWithEmail)
@@ -16,18 +24,29 @@ export default function Login() {
   const signUp = useAuthStore(s => s.signUp)
   const resetPassword = useAuthStore(s => s.resetPassword)
   const navigate = useNavigate()
-
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [mode, setMode] = useState('login')
   const [confirmationSent, setConfirmationSent] = useState(false)
+  const [validationError, setValidationError] = useState('')
 
-  // Already logged in — redirect to home
   if (user) return <Navigate to="/" replace />
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
+  const switchMode = nextMode => {
+    setMode(nextMode)
+    setConfirmationSent(false)
+    setValidationError('')
+  }
+
+  const handleSubmit = async event => {
+    event.preventDefault()
+    setValidationError('')
+    if (mode === 'register' && password !== confirmPassword) {
+      setValidationError(copy.mismatch)
+      return
+    }
     setSubmitting(true)
     try {
       if (mode === 'reset') {
@@ -38,15 +57,9 @@ export default function Login() {
         if (!error) navigate('/')
       } else {
         const { error, confirmationNeeded } = await signUp(email, password)
-        if (error) return
-        if (confirmationNeeded) {
-          setConfirmationSent(true)
-        } else {
-          navigate('/')
-        }
+        if (!error && confirmationNeeded) setConfirmationSent(true)
+        if (!error && !confirmationNeeded) navigate('/')
       }
-    } catch {
-      // signUp/signIn already set error in the store
     } finally {
       setSubmitting(false)
     }
@@ -54,168 +67,64 @@ export default function Login() {
 
   return (
     <PageTransition>
-      <div className="min-h-screen bg-bg flex items-center justify-center px-4">
-        <div className="w-full max-w-sm">
-          <div className="mb-4 flex justify-end">
-            <LanguageSelect />
-          </div>
-
-          {/* Logo + welcome text */}
-          <div className="text-center">
-            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-primary-hover text-white text-2xl font-bold">
-              G
-            </div>
-            <h1 className="mt-4 text-2xl font-bold text-text-primary text-center">
+      <main className="min-h-screen bg-bg px-4 py-5 sm:flex sm:items-center sm:justify-center sm:py-10">
+        <div className="mx-auto w-full max-w-sm">
+          <div className="flex justify-end"><LanguageSelect /></div>
+          <div className="mt-7 text-center">
+            <BrandMark className="mx-auto h-[60px] w-[60px]" />
+            <h1 className="mt-5 text-[30px] font-extrabold leading-tight tracking-tight text-text-primary">
               {mode === 'reset' ? t('login.resetTitle') : mode === 'login' ? t('login.welcomeBack') : t('login.niceToMeet')}
             </h1>
-            <p className="mt-1 text-sm text-text-secondary text-center">
+            <p className="mt-2 text-sm text-text-secondary">
               {mode === 'reset' ? t('login.resetSubtitle') : mode === 'login' ? t('login.loginSubtitle') : t('login.registerSubtitle')}
             </p>
           </div>
 
-          {/* Form card */}
-          <div className="mt-6 bg-bg rounded-2xl p-6 shadow-lg border border-theme-border">
-
-            {/* Mode toggle */}
+          <section className="mt-7">
             {mode !== 'reset' && (
-            <div className="flex rounded-xl bg-surface p-1 mb-4">
-              <Button
-                type="button"
-                onClick={() => { setMode('login'); setConfirmationSent(false) }}
-                variant={mode === 'login' ? 'primary' : 'ghost'}
-                size="sm"
-                className={`flex-1 rounded-lg py-2 shadow-none ${mode !== 'login' ? 'text-text-secondary hover:text-text-primary hover:bg-transparent' : ''}`}
-              >
-                {t('common.login')}
-              </Button>
-              <Button
-                type="button"
-                onClick={() => { setMode('register'); setConfirmationSent(false) }}
-                variant={mode === 'register' ? 'primary' : 'ghost'}
-                size="sm"
-                className={`flex-1 rounded-lg py-2 shadow-none ${mode !== 'register' ? 'text-text-secondary hover:text-text-primary hover:bg-transparent' : ''}`}
-              >
-                {t('login.register')}
-              </Button>
-            </div>
-            )}
-
-            {authError && (
-              <div className="rounded-xl bg-wrong/10 border border-wrong/20 text-wrong text-sm p-3 mb-4">
-                {authError}
+              <div className="mb-5 grid grid-cols-2 rounded-[14px] bg-[#EAE5D8] p-1">
+                {['login', 'register'].map(tab => (
+                  <button key={tab} type="button" onClick={() => switchMode(tab)} className={`min-h-10 rounded-[11px] text-sm font-bold transition-all ${mode === tab ? 'bg-white text-text-primary shadow-sm' : 'text-text-secondary'}`}>
+                    {tab === 'login' ? t('common.login') : t('login.register')}
+                  </button>
+                ))}
               </div>
             )}
 
-            {confirmationSent && (
-              <div className="rounded-xl bg-correct/10 border border-correct/20 text-correct text-sm p-3 mb-4">
-                {mode === 'reset' ? t('login.resetSent') : t('login.confirmationSent')}
-              </div>
-            )}
+            {(authError || validationError) && <div className="mb-4 rounded-xl border border-wrong/20 bg-[#FDECEA] p-3 text-sm text-wrong">{validationError || authError}</div>}
+            {confirmationSent && <div className="mb-4 rounded-xl border border-correct/20 bg-[#E7F6ED] p-3 text-sm text-correct">{mode === 'reset' ? t('login.resetSent') : t('login.confirmationSent')}</div>}
 
             <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label htmlFor="email" className="block text-sm font-medium text-text-primary mb-1.5">
-                  {t('login.email')}
-                </label>
-                <input
-                  id="email"
-                  type="email"
-                  required
-                  value={email}
-                  onChange={e => setEmail(e.target.value)}
-                  className="w-full rounded-xl border-[1.5px] border-theme-border bg-bg px-3.5 py-2.5 text-sm text-text-primary placeholder:text-text-secondary focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10 transition-colors"
-                />
-              </div>
-
-              {mode !== 'reset' && (
-              <div>
-                <label htmlFor="password" className="block text-sm font-medium text-text-primary mb-1.5">
-                  {t('login.password')}
-                </label>
-                <input
-                  id="password"
-                  type="password"
-                  required
-                  value={password}
-                  onChange={e => setPassword(e.target.value)}
-                  className="w-full rounded-xl border-[1.5px] border-theme-border bg-bg px-3.5 py-2.5 text-sm text-text-primary placeholder:text-text-secondary focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/10 transition-colors"
-                />
-              </div>
-              )}
-
-              <Button
-                type="submit"
-                disabled={submitting}
-                className="w-full shadow-primary/30"
-              >
-                {submitting ? <Spinner size="h-5 w-5" /> : (mode === 'reset' ? t('login.sendResetLink') : mode === 'login' ? t('common.login') : t('login.createAccount'))}
+              <Field id="email" label={t('login.email')} type="email" value={email} onChange={setEmail} />
+              {mode !== 'reset' && <Field id="password" label={t('login.password')} type="password" value={password} onChange={setPassword} />}
+              {mode === 'register' && <Field id="confirm-password" label={copy.confirm} type="password" value={confirmPassword} onChange={setConfirmPassword} />}
+              <Button type="submit" disabled={submitting} className="w-full">
+                {submitting ? <Spinner size="h-5 w-5" /> : mode === 'reset' ? t('login.sendResetLink') : mode === 'login' ? t('common.login') : t('login.createAccount')}
               </Button>
             </form>
 
-            {mode === 'login' && (
-              <Button
-                type="button"
-                onClick={() => { setMode('reset'); setConfirmationSent(false) }}
-                variant="ghost"
-                size="sm"
-                className="mt-3 px-0"
-              >
-                {t('login.forgotPassword')}
+            {mode === 'login' && <button type="button" onClick={() => switchMode('reset')} className="mt-3 text-sm font-semibold text-primary">{t('login.forgotPassword')}</button>}
+            {mode !== 'reset' && <div className="my-5 flex items-center gap-3"><span className="h-px flex-1 bg-theme-border" /><span className="text-xs text-text-secondary">{t('login.or')}</span><span className="h-px flex-1 bg-theme-border" /></div>}
+            {mode !== 'reset' && (
+              <Button onClick={signInWithGoogle} variant="outline" className="w-full">
+                <GoogleLogo />{mode === 'register' ? copy.google : t('login.google')}
               </Button>
             )}
+          </section>
 
-            {/* Divider */}
-            {mode !== 'reset' && <div className="flex items-center gap-3 my-5">
-              <div className="flex-1 h-px bg-theme-border" />
-              <span className="text-xs text-text-secondary">{t('login.or')}</span>
-              <div className="flex-1 h-px bg-theme-border" />
-            </div>}
-
-            {/* Social buttons */}
-            {mode !== 'reset' && <div className="space-y-3">
-              <Button
-                onClick={signInWithGoogle}
-                variant="outline"
-                className="w-full border-[1.5px]"
-              >
-                <svg className="h-5 w-5" viewBox="0 0 24 24">
-                  <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" />
-                  <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
-                  <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
-                  <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
-                </svg>
-                {t('login.google')}
-              </Button>
-
-              {/* Facebook login — hidden until provider is configured */}
-            </div>}
-          </div>
-
-          {/* Sign up / sign in toggle link */}
-          <p className="text-center text-sm text-text-secondary mt-4">
-            {mode === 'reset' ? (
-              <Button variant="ghost" size="sm" onClick={() => { setMode('login'); setConfirmationSent(false) }} className="px-0">
-                {t('login.backToLogin')}
-              </Button>
-            ) : mode === 'login' ? (
-              <>
-                {t('login.noAccount')}{' '}
-                <Button variant="ghost" size="sm" onClick={() => { setMode('register'); setConfirmationSent(false) }} className="px-0 min-h-0">
-                  {t('login.register')}
-                </Button>
-              </>
-            ) : (
-              <>
-                {t('login.hasAccount')}{' '}
-                <Button variant="ghost" size="sm" onClick={() => { setMode('login'); setConfirmationSent(false) }} className="px-0 min-h-0">
-                  {t('common.login')}
-                </Button>
-              </>
-            )}
+          <p className="mt-5 text-center text-sm text-text-secondary">
+            {mode === 'reset' ? <button onClick={() => switchMode('login')} className="font-bold text-primary">{t('login.backToLogin')}</button> : mode === 'login' ? <>{t('login.noAccount')} <button onClick={() => switchMode('register')} className="font-bold text-primary">{t('login.register')}</button></> : <>{t('login.hasAccount')} <button onClick={() => switchMode('login')} className="font-bold text-primary">{t('common.login')}</button></>}
           </p>
-
         </div>
-      </div>
+      </main>
     </PageTransition>
   )
+}
+
+function Field({ id, label, type, value, onChange }) {
+  return <label htmlFor={id} className="block text-sm font-semibold text-text-primary">{label}<input id={id} type={type} required value={value} onChange={event => onChange(event.target.value)} className="signal-input mt-1.5" /></label>
+}
+
+function GoogleLogo() {
+  return <svg className="h-5 w-5" viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" /><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" /><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" /><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" /></svg>
 }
